@@ -30,6 +30,7 @@ struct SpwifiyApp: App {
                     MainView()
                         .environmentObject(spotifyViewModel)
                         .environmentObject(HomeViewModel(spotifyViewModel: spotifyViewModel))
+                        .environmentObject(MainViewModel())
                         .onAppear {
                             showAuthLoading = false
                         }

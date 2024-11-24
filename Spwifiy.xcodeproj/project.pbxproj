@@ -33,6 +33,7 @@
 		B6EDE4AC2CF2BC30004666B1 /* Exceptions for "Spwifiy" folder in "Spwifiy" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"Assets/Satoshi-Black.otf",
 				"Assets/Satoshi-Light.otf",
 				Assets/Satoshi.ttf,
 				Info.plist,

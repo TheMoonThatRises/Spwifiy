@@ -13,33 +13,41 @@ struct MainView: View {
     @EnvironmentObject var spotifyViewModel: SpotifyViewModel
     @EnvironmentObject var homeViewModel: HomeViewModel
 
-    @State var currentView: MainViewOptions = .home
-
-    @State var userProfile: SpotifyUser?
+    @EnvironmentObject var mainViewModel: MainViewModel
 
     var body: some View {
         GeometryReader { geom in
             HStack {
                 VStack {
-                    SidebarElementView(currentView: $currentView,
-                                       collapsed: geom.size.width < 1020)
+                    SidebarElementView(collapsed: geom.size.width < 1020)
+                        .environmentObject(mainViewModel)
 
                     Spacer()
                 }
 
                 VStack {
-                    HeadElementView(userProfile: $userProfile,
-                                    currentView: $currentView,
-                                    collapsed: geom.size.width < 1020)
+                    HeadElementView(collapsed: geom.size.width < 1020)
+                        .environmentObject(mainViewModel)
 
                     Spacer()
 
                     Group {
-                        switch currentView {
+                        switch mainViewModel.currentView {
                         case .home:
                             HomeView(personalizedPlaylists: homeViewModel.personalizedPlaylists,
                                      userArtists: homeViewModel.userArtists)
                                 .environmentObject(homeViewModel)
+                                .environmentObject(mainViewModel)
+                        case .selectedPlaylist:
+                            if let selectedPlaylist = mainViewModel.selectedPlaylist {
+                                SelectedPlaylistView(
+                                    selectedPlaylistViewModel:
+                                        SelectedPlaylistViewModel(spotifyViewModel: spotifyViewModel,
+                                                                  playlist: selectedPlaylist)
+                                )
+                            } else {
+                                Text("Unable to get selected playlist")
+                            }
                         default:
                             Text("Unknown error")
                         }
@@ -56,13 +64,7 @@ struct MainView: View {
             .padding()
         }
         .task {
-            userProfile = await spotifyViewModel.getUserProfile()
+            mainViewModel.userProfile = await spotifyViewModel.getUserProfile()
         }
     }
-}
-
-#Preview("Spwifiy Homepage Preview") {
-    MainView()
-        .environment(\.font, .satoshi)
-        .background(.bgMain)
 }

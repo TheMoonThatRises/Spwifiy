@@ -2,7 +2,7 @@
 //  HomeView.swift
 //  Spwifiy
 //
-//  Created by RangerEmerald on 11/24/24.
+//  Created by Peter Duanmu on 11/24/24.
 //
 
 import SwiftUI
@@ -12,6 +12,7 @@ import CachedAsyncImage
 struct HomeView: View {
 
     @EnvironmentObject var homeViewModel: HomeViewModel
+    @EnvironmentObject var mainViewModel: MainViewModel
 
     @ObservedObject var personalizedPlaylists: PersonalizedPlaylists
     @ObservedObject var userArtists: UserArtists
@@ -46,14 +47,20 @@ struct HomeView: View {
                 .padding()
 
                 HomeViewRow(title: "Made For You",
+                            selectedPlaylist: $mainViewModel.selectedPlaylist,
+                            selectedArtist: $mainViewModel.selectedArtist,
                             playlists: $personalizedPlaylists.dailyMixes,
                             artists: .constant([]))
 
                 HomeViewRow(title: "Your Top Mixes",
+                            selectedPlaylist: $mainViewModel.selectedPlaylist,
+                            selectedArtist: $mainViewModel.selectedArtist,
                             playlists: $personalizedPlaylists.typeMixes,
                             artists: .constant([]))
 
                 HomeViewRow(title: "Your Favorite Artists",
+                            selectedPlaylist: $mainViewModel.selectedPlaylist,
+                            selectedArtist: $mainViewModel.selectedArtist,
                             playlists: .constant([]),
                             artists: $userArtists.topArtists)
 
@@ -70,6 +77,9 @@ struct HomeView: View {
 struct HomeViewRow: View {
 
     var title: String
+
+    @Binding var selectedPlaylist: Playlist<PlaylistItemsReference>?
+    @Binding var selectedArtist: Artist?
 
     @Binding var playlists: [Playlist<PlaylistItemsReference>]
     @Binding var artists: [Artist]
@@ -118,7 +128,7 @@ struct HomeViewRow: View {
                 }
                 .buttonStyle(.plain)
                 .cursorHover(.pointingHand)
-                .popover(isPresented: $showMoreOption, attachmentAnchor: .point(.bottomLeading), arrowEdge: .leading) {
+                .popover(isPresented: $showMoreOption, arrowEdge: .leading) {
                     VStack(alignment: .leading) {
                         HStack {
                             Image("spwifiy.pin")
@@ -151,7 +161,7 @@ struct HomeViewRow: View {
                     if playlists.count > 0 {
                         ForEach(playlists, id: \.uri) { playlist in
                             Button {
-
+                                selectedPlaylist = playlist
                             } label: {
                                 HomeViewPlaylistItem(playlist: playlist)
                                     .contentShape(.rect)
@@ -168,7 +178,7 @@ struct HomeViewRow: View {
                     } else if artists.count > 0 {
                         ForEach(artists, id: \.uri) { artist in
                             Button {
-
+                                selectedArtist = artist
                             } label: {
                                 HomeViewArtistItem(artist: artist)
                                     .contentShape(.rect)

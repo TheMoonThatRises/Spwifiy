@@ -2,21 +2,21 @@
 //  SidebarElementView.swift
 //  Spwifiy
 //
-//  Created by RangerEmerald on 11/24/24.
+//  Created by Peter Duanmu on 11/24/24.
 //
 
 import SwiftUI
 
 public struct SidebarElementView: View {
 
-    @Binding var currentView: MainViewOptions
+    @EnvironmentObject var mainViewModel: MainViewModel
 
     let collapsed: Bool
 
     public var body: some View {
         VStack {
             NavButton(currentButton: .library,
-                      currentView: $currentView) {
+                      currentView: $mainViewModel.currentView) {
 
             } label: {
                 HStack {
@@ -42,7 +42,7 @@ public struct SidebarElementView: View {
                 .frame(height: 20)
 
             NavButton(currentButton: .pins,
-                      currentView: $currentView) {
+                      currentView: $mainViewModel.currentView) {
 
             } label: {
                 HStack {
@@ -70,7 +70,7 @@ public struct SidebarElementView: View {
                 .frame(height: 5)
 
             NavButton(currentButton: .playlist,
-                      currentView: $currentView) {
+                      currentView: $mainViewModel.currentView) {
 
             } label: {
                 HStack {
@@ -98,7 +98,7 @@ public struct SidebarElementView: View {
                 .frame(height: 5)
 
             NavButton(currentButton: .likedSongs,
-                      currentView: $currentView) {
+                      currentView: $mainViewModel.currentView) {
 
             } label: {
                 HStack {
@@ -120,7 +120,7 @@ public struct SidebarElementView: View {
                 .frame(height: 5)
 
             NavButton(currentButton: .saves,
-                      currentView: $currentView) {
+                      currentView: $mainViewModel.currentView) {
 
             } label: {
                 HStack {
@@ -142,7 +142,7 @@ public struct SidebarElementView: View {
                 .frame(height: 5)
 
             NavButton(currentButton: .albums,
-                      currentView: $currentView) {
+                      currentView: $mainViewModel.currentView) {
 
             } label: {
                 HStack {
@@ -164,7 +164,7 @@ public struct SidebarElementView: View {
                 .frame(height: 5)
 
             NavButton(currentButton: .folders,
-                      currentView: $currentView) {
+                      currentView: $mainViewModel.currentView) {
 
             } label: {
                 HStack {
@@ -186,7 +186,7 @@ public struct SidebarElementView: View {
                 .frame(height: 5)
 
             NavButton(currentButton: .artists,
-                      currentView: $currentView) {
+                      currentView: $mainViewModel.currentView) {
 
             } label: {
                 HStack {

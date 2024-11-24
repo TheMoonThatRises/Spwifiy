@@ -2,7 +2,7 @@
 //  HeadElementView.swift
 //  Spwifiy
 //
-//  Created by RangerEmerald on 11/24/24.
+//  Created by Peter Duanmu on 11/24/24.
 //
 
 import SwiftUI
@@ -11,9 +11,9 @@ import CachedAsyncImage
 
 public struct HeadElementView: View {
 
-    @Binding var userProfile: SpotifyUser?
+    @EnvironmentObject var mainViewModel: MainViewModel
 
-    @Binding var currentView: MainViewOptions
+    @State var userProfileURL: URL?
     @State var searchText: String = ""
 
     let collapsed: Bool
@@ -22,7 +22,7 @@ public struct HeadElementView: View {
         HStack {
             Group {
                 NavButton(currentButton: .home,
-                          currentView: $currentView) {
+                          currentView: $mainViewModel.currentView) {
 
                 } label: {
                     HStack {
@@ -47,7 +47,7 @@ public struct HeadElementView: View {
                 Spacer()
 
                 NavButton(currentButton: .discover,
-                          currentView: $currentView) {
+                          currentView: $mainViewModel.currentView) {
 
                 } label: {
                     HStack {
@@ -73,7 +73,7 @@ public struct HeadElementView: View {
             Spacer()
 
             NavButton(currentButton: .search,
-                      currentView: $currentView) {
+                      currentView: $mainViewModel.currentView) {
 
             } label: {
                 HStack {
@@ -84,7 +84,7 @@ public struct HeadElementView: View {
                     Spacer()
                         .frame(width: 5)
 
-                    if currentView == .search {
+                    if mainViewModel.currentView == .search {
                         TextField(text: $searchText) {
                             Text("Search")
                                 .font(.title3)
@@ -105,7 +105,7 @@ public struct HeadElementView: View {
 
             Group {
                 NavButton(currentButton: .notification,
-                          currentView: $currentView) {
+                          currentView: $mainViewModel.currentView) {
 
                 } label: {
                     Image("spwifiy.news")
@@ -135,7 +135,7 @@ public struct HeadElementView: View {
                 .cursorHover(.pointingHand)
 
                 NavButton(currentButton: .settings,
-                          currentView: $currentView) {
+                          currentView: $mainViewModel.currentView) {
 
                 } label: {
                     Image("spwifiy.settings")
@@ -145,10 +145,11 @@ public struct HeadElementView: View {
                 .toButton()
 
                 NavButton(currentButton: .profile,
-                          currentView: $currentView) {
+                          currentView: $mainViewModel.currentView) {
 
                 } label: {
-                    CachedAsyncImage(url: userProfile?.images?.first?.url, urlCache: .imageCache) { phase in
+                    CachedAsyncImage(url: userProfileURL,
+                                     urlCache: .imageCache) { phase in
                         switch phase {
                         case .empty:
                             ProgressView()
@@ -168,6 +169,9 @@ public struct HeadElementView: View {
                 .toButton()
             }
             .foregroundStyle(.fgSecondary)
+        }
+        .onChange(of: mainViewModel.userProfile) { profile in
+            userProfileURL = profile?.images?.first?.url
         }
     }
 }

@@ -2,7 +2,7 @@
 //  Color+toHSB.swift
 //  Spwifiy
 //
-//  Created by RangerEmerald on 11/24/24.
+//  Created by Peter Duanmu on 11/24/24.
 //
 
 import SwiftUI

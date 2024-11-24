@@ -1,6 +1,19 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld hr %lld min" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld hr %2$lld min"
+          }
+        }
+      }
+    },
+    "%lld songs" : {
+
+    },
     "1:24" : {
 
     },
@@ -17,6 +30,9 @@
 
     },
     "Attemptimg to authorize..." : {
+
+    },
+    "By" : {
 
     },
     "Click the URL below if an authorization window does not appear" : {
@@ -59,6 +75,9 @@
 
     },
     "TTYL (Feat. IV JAY)" : {
+
+    },
+    "Unable to get selected playlist" : {
 
     },
     "Unknown error" : {

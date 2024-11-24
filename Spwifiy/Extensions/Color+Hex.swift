@@ -2,7 +2,7 @@
 //  Color+Custom.swift
 //  Spwifiy
 //
-//  Created by RangerEmerald on 11/23/24.
+//  Created by Peter Duanmu on 11/23/24.
 //
 
 import SwiftUI
