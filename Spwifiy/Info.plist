@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ATSApplicationFontsPath</key>
+	<string>Assets</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>io.github.themoonthatrises.spwifiy</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>spwifiy</string>
+			</array>
+		</dict>
+	</array>
+	<key>SpotifyClientId</key>
+	<string>72ef80b9d2aa4dd580f8a68f0c92334c</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Satoshi.ttf</string>
+		<string>Satoshi-Light.otf</string>
+	</array>
+</dict>
+</plist>

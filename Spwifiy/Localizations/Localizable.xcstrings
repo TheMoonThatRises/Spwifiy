@@ -1,0 +1,72 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "1:24" : {
+
+    },
+    "2:57" : {
+
+    },
+    "Albums" : {
+
+    },
+    "All" : {
+
+    },
+    "Artists" : {
+
+    },
+    "Attemptimg to authorize..." : {
+
+    },
+    "Click the URL below if an authorization window does not appear" : {
+
+    },
+    "Discover" : {
+      "extractionState" : "manual"
+    },
+    "Folders" : {
+
+    },
+    "Hide this Section" : {
+
+    },
+    "Home" : {
+      "extractionState" : "manual"
+    },
+    "Liked songs" : {
+
+    },
+    "My Library" : {
+      "extractionState" : "manual"
+    },
+    "Pin to Home" : {
+
+    },
+    "Pins" : {
+
+    },
+    "Playlists" : {
+
+    },
+    "Saves" : {
+
+    },
+    "Search" : {
+      "extractionState" : "manual"
+    },
+    "Trade L, IV Jay" : {
+
+    },
+    "TTYL (Feat. IV JAY)" : {
+
+    },
+    "Unknown error" : {
+
+    },
+    "UNSTEADY" : {
+
+    }
+  },
+  "version" : "1.0"
+}

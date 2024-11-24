@@ -6,13 +6,59 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */ = {isa = PBXBuildFile; productRef = B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */; };
+		B6E81A5D2CF3DD7A002060FA /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A5C2CF3DD7A002060FA /* AlertToast */; };
+		B6E81A602CF3EA39002060FA /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A5F2CF3EA39002060FA /* KeychainAccess */; };
+		B6E81A632CF3EDF9002060FA /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A622CF3EDF9002060FA /* CachedAsyncImage */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B6EDE4B02CF2BC9E004666B1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Assets;
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		B6EDE45D2CF2923B004666B1 /* Spwifiy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Spwifiy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B6EDE4AC2CF2BC30004666B1 /* Exceptions for "Spwifiy" folder in "Spwifiy" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Assets/Satoshi-Light.otf",
+				Assets/Satoshi.ttf,
+				Info.plist,
+			);
+			target = B6EDE45C2CF2923B004666B1 /* Spwifiy */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		B6EDE4B32CF2BCB4004666B1 /* Exceptions for "Spwifiy" folder in "Copy Files" phase from "Spwifiy" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = B6EDE4B02CF2BC9E004666B1 /* CopyFiles */;
+			membershipExceptions = (
+				"Assets/Satoshi-Light.otf",
+				Assets/Satoshi.ttf,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		B6EDE45F2CF2923B004666B1 /* Spwifiy */ = {
+		B6EDE4A52CF2BC30004666B1 /* Spwifiy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B6EDE4AC2CF2BC30004666B1 /* Exceptions for "Spwifiy" folder in "Spwifiy" target */,
+				B6EDE4B32CF2BCB4004666B1 /* Exceptions for "Spwifiy" folder in "Copy Files" phase from "Spwifiy" target */,
+			);
 			path = Spwifiy;
 			sourceTree = "<group>";
 		};
@@ -23,6 +69,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */,
+				B6E81A632CF3EDF9002060FA /* CachedAsyncImage in Frameworks */,
+				B6E81A5D2CF3DD7A002060FA /* AlertToast in Frameworks */,
+				B6E81A602CF3EA39002060FA /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32,8 +82,8 @@
 		B6EDE4542CF2923B004666B1 = {
 			isa = PBXGroup;
 			children = (
-				B6EDE45F2CF2923B004666B1 /* Spwifiy */,
 				B6EDE45E2CF2923B004666B1 /* Products */,
+				B6EDE4A52CF2BC30004666B1 /* Spwifiy */,
 			);
 			sourceTree = "<group>";
 		};
@@ -56,16 +106,21 @@
 				B6EDE4592CF2923B004666B1 /* Sources */,
 				B6EDE45A2CF2923B004666B1 /* Frameworks */,
 				B6EDE45B2CF2923B004666B1 /* Resources */,
+				B6EDE4B02CF2BC9E004666B1 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				B6EDE45F2CF2923B004666B1 /* Spwifiy */,
+				B6EDE4A52CF2BC30004666B1 /* Spwifiy */,
 			);
 			name = Spwifiy;
 			packageProductDependencies = (
+				B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */,
+				B6E81A5C2CF3DD7A002060FA /* AlertToast */,
+				B6E81A5F2CF3EA39002060FA /* KeychainAccess */,
+				B6E81A622CF3EDF9002060FA /* CachedAsyncImage */,
 			);
 			productName = Spwifiy;
 			productReference = B6EDE45D2CF2923B004666B1 /* Spwifiy.app */;
@@ -95,6 +150,12 @@
 			);
 			mainGroup = B6EDE4542CF2923B004666B1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B6DAB6B22CF32B60000FAE96 /* XCRemoteSwiftPackageReference "SpotifyAPI" */,
+				B6E81A5B2CF3DD7A002060FA /* XCRemoteSwiftPackageReference "AlertToast" */,
+				B6E81A5E2CF3EA39002060FA /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				B6E81A612CF3EDF9002060FA /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B6EDE45E2CF2923B004666B1 /* Products */;
 			projectDirPath = "";
@@ -132,7 +193,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint\nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
+			shellScript = "if command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint --strict\nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -206,6 +267,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -262,6 +324,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};
@@ -274,17 +337,21 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Spwifiy/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "Spwifiy/Preview\\ Content";
 				DEVELOPMENT_TEAM = 6V935SBNGL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Spwifiy/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Spwifiy;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.github.themoonthatrises.Spwifiy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -302,17 +369,21 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Spwifiy/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "Spwifiy/Preview\\ Content";
 				DEVELOPMENT_TEAM = 6V935SBNGL;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Spwifiy/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Spwifiy;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.github.themoonthatrises.Spwifiy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -343,6 +414,64 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B6DAB6B22CF32B60000FAE96 /* XCRemoteSwiftPackageReference "SpotifyAPI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Peter-Schorn/SpotifyAPI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.4;
+			};
+		};
+		B6E81A5B2CF3DD7A002060FA /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elai950/AlertToast";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.9;
+			};
+		};
+		B6E81A5E2CF3EA39002060FA /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		B6E81A612CF3EDF9002060FA /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lorenzofiamingo/swiftui-cached-async-image";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B6DAB6B22CF32B60000FAE96 /* XCRemoteSwiftPackageReference "SpotifyAPI" */;
+			productName = SpotifyAPI;
+		};
+		B6E81A5C2CF3DD7A002060FA /* AlertToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B6E81A5B2CF3DD7A002060FA /* XCRemoteSwiftPackageReference "AlertToast" */;
+			productName = AlertToast;
+		};
+		B6E81A5F2CF3EA39002060FA /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B6E81A5E2CF3EA39002060FA /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		B6E81A622CF3EDF9002060FA /* CachedAsyncImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B6E81A612CF3EDF9002060FA /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */;
+			productName = CachedAsyncImage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B6EDE4552CF2923B004666B1 /* Project object */;
 }
