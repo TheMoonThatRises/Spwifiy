@@ -12,7 +12,11 @@ import AlertToast
 @main
 struct SpwifiyApp: App {
 
-    @ObservedObject var spotifyViewModel = SpotifyViewModel()
+    public static let redirectURI: String = "spwifiy://"
+    public static let service = "io.github.themoonthatrises.spwifiy"
+
+    @StateObject var spotifyViewModel: SpotifyViewModel = SpotifyViewModel()
+    @StateObject var spotifyDataViewModel: SpotifyDataViewModel = SpotifyDataViewModel()
 
     @State var showAuthLoading: Bool = false
     @State var showErrorMessage: Bool = false
@@ -27,16 +31,15 @@ struct SpwifiyApp: App {
         WindowGroup {
             Group {
                 if spotifyViewModel.isAuthorized {
-                    MainView()
-                        .environmentObject(spotifyViewModel)
-                        .environmentObject(HomeViewModel(spotifyViewModel: spotifyViewModel))
-                        .environmentObject(MainViewModel())
+                    MainView(spotifyViewModel: spotifyViewModel,
+                             spotifyDataViewModel: spotifyDataViewModel,
+                             cacheViewModel: CacheViewModel(spotifyViewModel: spotifyViewModel),
+                             mainViewModel: MainViewModel())
                         .onAppear {
                             showAuthLoading = false
                         }
                 } else {
-                    LoginView()
-                        .environmentObject(spotifyViewModel)
+                    LoginView(spotifyViewModel: spotifyViewModel)
                 }
             }
             .handlesExternalEvents(preferring: ["{path of URL?}"], allowing: ["*"])
@@ -62,6 +65,11 @@ struct SpwifiyApp: App {
             .frame(minWidth: 950, minHeight: 500)
             .background(.bgMain)
             .environment(\.font, .satoshi)
+            .task {
+                if spotifyDataViewModel.spotifyViewModel == nil {
+                    spotifyDataViewModel.setSpotifyViewModel(spotifyViewModel: spotifyViewModel)
+                }
+            }
         }
     }
 }

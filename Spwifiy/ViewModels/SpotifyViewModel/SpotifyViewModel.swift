@@ -12,9 +12,9 @@ import KeychainAccess
 
 class SpotifyViewModel: ObservableObject {
 
+    private var isLoadingUserProfile: Bool = false
+
     private static let authorizationManagerKey = "authorizationManager"
-    private static let service = "io.github.themoonthatrises.spwifiy"
-    private static let redirectURI: String = "spwifiy://login-callback"
 
     private static let authScopes: Set<Scope> = [
         .playlistReadPrivate,
@@ -44,12 +44,12 @@ class SpotifyViewModel: ObservableObject {
 
     private let keychain: Keychain
 
-    private var userProfile: SpotifyUser?
+    @Published var userProfile: SpotifyUser?
 
     init() {
         self.clientId = Bundle.main.infoDictionary?["SpotifyClientId"] as? String ?? ""
 
-        self.keychain = Keychain(service: SpotifyViewModel.service)
+        self.keychain = Keychain(service: SpwifiyApp.service)
 
         self.spotify = SpotifyAPI(
             authorizationManager: AuthorizationCodeFlowPKCEManager(clientId: clientId)
@@ -63,7 +63,7 @@ class SpotifyViewModel: ObservableObject {
         self.state = String.randomURLSafe(length: 128)
 
         self.authorizationURL = spotify.authorizationManager.makeAuthorizationURL(
-            redirectURI: URL(string: SpotifyViewModel.redirectURI)!,
+            redirectURI: URL(string: SpwifiyApp.redirectURI + "login-callback")!,
             codeChallenge: self.codeChallenge,
             state: self.state,
             scopes: SpotifyViewModel.authScopes
@@ -92,7 +92,11 @@ class SpotifyViewModel: ObservableObject {
                         try self.authorizeCallback(completion: completion)
                     } catch {
                         print(error)
-                        self.useURLAuth = true
+
+                        Task { @MainActor in
+                            self.isAuthorized = false
+                            self.useURLAuth = true
+                        }
                     }
                 }
                 .store(in: &cancellables)
@@ -129,7 +133,7 @@ class SpotifyViewModel: ObservableObject {
     }
 
     private func authorizationManagerDidDeauthorize() {
-        self.isAuthorized = false
+        isAuthorized = false
 
         do {
             try keychain.remove(SpotifyViewModel.authorizationManagerKey)
@@ -157,20 +161,25 @@ class SpotifyViewModel: ObservableObject {
         }
     }
 
-    func getUserProfile() async -> SpotifyUser {
-        if let userProfile {
-            return userProfile
-        } else {
-            return await withCheckedContinuation { continuation in
-                spotify.currentUserProfile()
-                    .sink { _ in
-
-                    } receiveValue: { user in
-                        self.userProfile = user
-                        continuation.resume(returning: user)
-                    }
-                    .store(in: &cancellables)
-            }
+    func loadUserProfile() {
+        guard !isLoadingUserProfile else {
+            return
         }
+
+        isLoadingUserProfile = true
+
+        spotify.currentUserProfile()
+            .sink { _ in
+
+            } receiveValue: { user in
+                Task { @MainActor in
+                    defer {
+                        self.isLoadingUserProfile = false
+                    }
+
+                    self.userProfile = user
+                }
+            }
+            .store(in: &cancellables)
     }
 }

@@ -37,6 +37,7 @@ public struct NavButton<Label>: View where Label: View {
                 if isSelected {
                     RoundedRectangle(cornerRadius: 5)
                         .foregroundStyle(.fgPrimary.opacity(0.1))
+                        .allowsHitTesting(false)
                 }
             }
     }

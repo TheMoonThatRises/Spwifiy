@@ -11,9 +11,10 @@ import CachedAsyncImage
 
 public struct HeadElementView: View {
 
-    @EnvironmentObject var mainViewModel: MainViewModel
+    @ObservedObject var mainViewModel: MainViewModel
 
-    @State var userProfileURL: URL?
+    @Binding var userProfile: SpotifyUser?
+
     @State var searchText: String = ""
 
     let collapsed: Bool
@@ -45,6 +46,7 @@ public struct HeadElementView: View {
                 .toButton()
 
                 Spacer()
+                    .frame(width: 20)
 
                 NavButton(currentButton: .discover,
                           currentView: $mainViewModel.currentView) {
@@ -97,7 +99,7 @@ public struct HeadElementView: View {
                         Spacer()
                     }
                 }
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: 300)
             }
             .toButton()
 
@@ -148,7 +150,7 @@ public struct HeadElementView: View {
                           currentView: $mainViewModel.currentView) {
 
                 } label: {
-                    CachedAsyncImage(url: userProfileURL,
+                    CachedAsyncImage(url: userProfile?.images?.first?.url,
                                      urlCache: .imageCache) { phase in
                         switch phase {
                         case .empty:
@@ -169,9 +171,6 @@ public struct HeadElementView: View {
                 .toButton()
             }
             .foregroundStyle(.fgSecondary)
-        }
-        .onChange(of: mainViewModel.userProfile) { profile in
-            userProfileURL = profile?.images?.first?.url
         }
     }
 }

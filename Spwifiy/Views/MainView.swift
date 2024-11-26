@@ -10,41 +10,44 @@ import SpotifyWebAPI
 
 struct MainView: View {
 
-    @EnvironmentObject var spotifyViewModel: SpotifyViewModel
-    @EnvironmentObject var homeViewModel: HomeViewModel
+    @ObservedObject var spotifyViewModel: SpotifyViewModel
+    @ObservedObject var spotifyDataViewModel: SpotifyDataViewModel
+    @ObservedObject var cacheViewModel: CacheViewModel
 
-    @EnvironmentObject var mainViewModel: MainViewModel
+    @ObservedObject var mainViewModel: MainViewModel
 
     var body: some View {
         GeometryReader { geom in
             HStack {
                 VStack {
-                    SidebarElementView(collapsed: geom.size.width < 1020)
-                        .environmentObject(mainViewModel)
+                    SidebarElementView(mainViewModel: mainViewModel,
+                                       collapsed: geom.size.width < 1020)
 
                     Spacer()
                 }
 
                 VStack {
-                    HeadElementView(collapsed: geom.size.width < 1020)
-                        .environmentObject(mainViewModel)
+                    HeadElementView(mainViewModel: mainViewModel,
+                                    userProfile: $spotifyViewModel.userProfile,
+                                    collapsed: geom.size.width < 1020)
 
                     Spacer()
 
                     Group {
                         switch mainViewModel.currentView {
                         case .home:
-                            HomeView(personalizedPlaylists: homeViewModel.personalizedPlaylists,
-                                     userArtists: homeViewModel.userArtists)
-                                .environmentObject(homeViewModel)
-                                .environmentObject(mainViewModel)
+                            HomeView(spotifyDataViewModel: spotifyDataViewModel,
+                                     mainViewModel: mainViewModel)
+                                .task {
+                                    await spotifyDataViewModel.populatePersonalizedPlaylists()
+                                }
+                                .task {
+                                    await spotifyDataViewModel.populateTopArtists()
+                                }
                         case .selectedPlaylist:
-                            if let selectedPlaylist = mainViewModel.selectedPlaylist {
-                                SelectedPlaylistView(
-                                    selectedPlaylistViewModel:
-                                        SelectedPlaylistViewModel(spotifyViewModel: spotifyViewModel,
-                                                                  playlist: selectedPlaylist)
-                                )
+                            if let selectedPlaylist = mainViewModel.selectedPlaylist,
+                               let viewModel = cacheViewModel.getPlaylist(playlist: selectedPlaylist) {
+                                SelectedPlaylistView(selectedPlaylistViewModel: viewModel)
                             } else {
                                 Text("Unable to get selected playlist")
                             }
@@ -56,6 +59,7 @@ struct MainView: View {
                     .overlay {
                         RoundedRectangle(cornerRadius: 5)
                             .stroke(.fgTertiary, lineWidth: 0.5)
+                            .allowsHitTesting(false)
                     }
 
                     PlayingElementView()
@@ -63,8 +67,8 @@ struct MainView: View {
             }
             .padding()
         }
-        .task {
-            mainViewModel.userProfile = await spotifyViewModel.getUserProfile()
+        .onAppear {
+            spotifyViewModel.loadUserProfile()
         }
     }
 }

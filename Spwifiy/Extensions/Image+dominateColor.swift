@@ -21,17 +21,16 @@ extension Image {
             return color
         }
 
-        let width = cgImage.width
-        let height = cgImage.height
+        let totalPixels = cgImage.width * cgImage.height
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bytesPerPixel = 4
-        let bytesPerRow = bytesPerPixel * width
+        let bytesPerRow = bytesPerPixel * cgImage.width
         let bitsPerComponent = 8
-        var pixelData = [UInt8](repeating: 0, count: width * height * bytesPerPixel)
+        var pixelData = [UInt8](repeating: 0, count: totalPixels * bytesPerPixel)
 
         guard let context = CGContext(data: &pixelData,
-                                      width: width,
-                                      height: height,
+                                      width: cgImage.width,
+                                      height: cgImage.height,
                                       bitsPerComponent: bitsPerComponent,
                                       bytesPerRow: bytesPerRow,
                                       space: colorSpace,
@@ -39,12 +38,11 @@ extension Image {
             return nil
         }
 
-        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: cgImage.width, height: cgImage.height))
 
         var colorScores: [UInt32: Double] = [:]
 
         var idx = 0
-        let totalPixels = width * height
 
         while idx < totalPixels {
             let index = idx * bytesPerPixel
@@ -74,11 +72,9 @@ extension Image {
             return nil
         }
 
-        let red = CGFloat((mostVibrantKey >> 16) & 0xFF) / 255.0
-        let green = CGFloat((mostVibrantKey >> 8) & 0xFF) / 255.0
-        let blue = CGFloat(mostVibrantKey & 0xFF) / 255.0
-
-        let color = Color(red: red, green: green, blue: blue)
+        let color = Color(red: CGFloat((mostVibrantKey >> 16) & 0xFF) / 255.0,
+                          green: CGFloat((mostVibrantKey >> 8) & 0xFF) / 255.0,
+                          blue: CGFloat(mostVibrantKey & 0xFF) / 255.0)
 
         Image.cache[id] = color
 

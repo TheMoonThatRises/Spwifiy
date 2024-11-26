@@ -15,6 +15,8 @@ class SelectedPlaylistViewModel: ObservableObject {
 
     private let playlist: Playlist<PlaylistItemsReference>
 
+    private var isFetchingPlaylistDetails: Bool = false
+
     private var cancellables: Set<AnyCancellable> = []
 
     @Published var playlistDetails: Playlist<PlaylistItems>?
@@ -22,18 +24,32 @@ class SelectedPlaylistViewModel: ObservableObject {
 
     @Published var totalDuration: HumanFormat?
 
+    @Published var didSelectSearch: Bool = false
+    @Published var searchText: String = ""
+
     init(spotifyViewModel: SpotifyViewModel, playlist: Playlist<PlaylistItemsReference>) {
         self.spotifyViewModel = spotifyViewModel
         self.playlist = playlist
+    }
 
-        self.spotifyViewModel.spotify.playlist(self.playlist.uri)
+    public func fetchPlaylistDetails() {
+        guard !isFetchingPlaylistDetails else {
+            return
+        }
+
+        isFetchingPlaylistDetails = true
+
+        spotifyViewModel.spotify.playlist(self.playlist.uri)
             .sink { _ in
 
             } receiveValue: { playlistDetails in
                 Task { @MainActor in
+                    defer {
+                        self.isFetchingPlaylistDetails = false
+                    }
+
                     self.playlistDetails = playlistDetails
-                    print("detailed playlist")
-                    print(playlistDetails)
+//                    print(playlistDetails)
 
                     self.totalDuration = self.playlistDetails?
                         .items

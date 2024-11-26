@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
 
-    @EnvironmentObject var spotifyViewModel: SpotifyViewModel
+    @ObservedObject var spotifyViewModel: SpotifyViewModel
 
     var body: some View {
         VStack {
@@ -26,6 +26,7 @@ struct LoginView: View {
 
             Spacer()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: spotifyViewModel.useURLAuth) { value in
             if value {
                 NSWorkspace.shared.open(spotifyViewModel.authorizationURL)

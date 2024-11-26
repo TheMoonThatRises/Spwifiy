@@ -12,8 +12,6 @@ class MainViewModel: ObservableObject {
 
     @Published var currentView: MainViewOptions = .home
 
-    @Published var userProfile: SpotifyUser?
-
     @Published var selectedArtist: Artist? {
         didSet {
             currentView = .selectedArtist

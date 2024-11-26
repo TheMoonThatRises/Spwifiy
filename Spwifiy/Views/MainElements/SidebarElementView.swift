@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct SidebarElementView: View {
 
-    @EnvironmentObject var mainViewModel: MainViewModel
+    @ObservedObject var mainViewModel: MainViewModel
 
     let collapsed: Bool
 

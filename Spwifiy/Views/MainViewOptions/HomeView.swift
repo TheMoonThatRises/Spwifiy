@@ -11,15 +11,12 @@ import CachedAsyncImage
 
 struct HomeView: View {
 
-    @EnvironmentObject var homeViewModel: HomeViewModel
-    @EnvironmentObject var mainViewModel: MainViewModel
-
-    @ObservedObject var personalizedPlaylists: PersonalizedPlaylists
-    @ObservedObject var userArtists: UserArtists
+    @ObservedObject var spotifyDataViewModel: SpotifyDataViewModel
+    @ObservedObject var mainViewModel: MainViewModel
 
     var body: some View {
         ScrollView {
-            VStack {
+            LazyVStack {
                 HStack {
                     Text("All")
                         .foregroundStyle(.bgPrimary)
@@ -49,27 +46,23 @@ struct HomeView: View {
                 HomeViewRow(title: "Made For You",
                             selectedPlaylist: $mainViewModel.selectedPlaylist,
                             selectedArtist: $mainViewModel.selectedArtist,
-                            playlists: $personalizedPlaylists.dailyMixes,
+                            playlists: $spotifyDataViewModel.dailyMixes,
                             artists: .constant([]))
 
                 HomeViewRow(title: "Your Top Mixes",
                             selectedPlaylist: $mainViewModel.selectedPlaylist,
                             selectedArtist: $mainViewModel.selectedArtist,
-                            playlists: $personalizedPlaylists.typeMixes,
+                            playlists: $spotifyDataViewModel.typeMixes,
                             artists: .constant([]))
 
                 HomeViewRow(title: "Your Favorite Artists",
                             selectedPlaylist: $mainViewModel.selectedPlaylist,
                             selectedArtist: $mainViewModel.selectedArtist,
                             playlists: .constant([]),
-                            artists: $userArtists.topArtists)
+                            artists: $spotifyDataViewModel.topArtists)
 
                 Spacer()
             }
-        }
-        .task {
-            await personalizedPlaylists.populatePersonalizedPlaylists()
-            await userArtists.populateTopArtists()
         }
     }
 }
@@ -157,7 +150,7 @@ struct HomeViewRow: View {
                 .frame(height: 10)
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
+                LazyHStack {
                     if playlists.count > 0 {
                         ForEach(playlists, id: \.uri) { playlist in
                             Button {
@@ -211,11 +204,11 @@ struct HomeViewPlaylistItem: View {
         VStack(alignment: .leading) {
             VStack(alignment: .center, spacing: 2) {
                 UnevenRoundedRectangle(topLeadingRadius: 5, topTrailingRadius: 5)
-                    .fill(dominantColor.opacity(0.5))
+                    .fill(dominantColor.opacity(0.2))
                     .frame(width: 133, height: 3)
 
                 UnevenRoundedRectangle(topLeadingRadius: 5, topTrailingRadius: 5)
-                    .fill(dominantColor.opacity(0.2))
+                    .fill(dominantColor.opacity(0.4))
                     .frame(width: 154, height: 6)
 
                 CachedAsyncImage(url: playlist.images.first?.url, urlCache: .imageCache) { image in
