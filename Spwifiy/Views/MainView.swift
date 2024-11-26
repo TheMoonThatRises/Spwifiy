@@ -12,9 +12,10 @@ struct MainView: View {
 
     @ObservedObject var spotifyViewModel: SpotifyViewModel
     @ObservedObject var spotifyDataViewModel: SpotifyDataViewModel
-    @ObservedObject var cacheViewModel: CacheViewModel
 
     @ObservedObject var mainViewModel: MainViewModel
+
+    @ObservedObject var spotifyCache: SpotifyCache
 
     var body: some View {
         GeometryReader { geom in
@@ -39,14 +40,21 @@ struct MainView: View {
                             HomeView(spotifyDataViewModel: spotifyDataViewModel,
                                      mainViewModel: mainViewModel)
                         case .selectedPlaylist:
-                            if let selectedPlaylist = mainViewModel.selectedPlaylist,
-                               let viewModel = cacheViewModel.getPlaylist(playlist: selectedPlaylist) {
-                                SelectedPlaylistView(selectedPlaylistViewModel: viewModel)
+                            if let selectedPlaylist = mainViewModel.selectedPlaylist {
+                                SelectedPlaylistView(selectedPlaylistViewModel:
+                                    SelectedPlaylistViewModel(
+                                        spotifyCache: spotifyCache,
+                                        playlist: selectedPlaylist,
+                                        playlistDetails: spotifyCache[selectedPlaylist.id]
+                                    )
+                                )
                             } else {
                                 Text("Unable to get selected playlist")
+                                    .font(.title)
                             }
                         default:
                             Text("Unknown error")
+                                .font(.title)
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

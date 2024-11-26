@@ -15,20 +15,23 @@ struct LoginView: View {
         VStack {
             Spacer()
 
-            Text("Attemptimg to authorize...")
+            Text("Attempting to authorize...")
+                .font(.title)
 
             Spacer()
 
             Text("Click the URL below if an authorization window does not appear")
+                .font(.title)
             Link(destination: spotifyViewModel.authorizationURL) {
                 Text(spotifyViewModel.authorizationURL.absoluteString)
+                    .font(.title)
             }
 
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .onChange(of: spotifyViewModel.useURLAuth) { value in
-            if value {
+        .onAppear {
+            if spotifyViewModel.useURLAuth {
                 NSWorkspace.shared.open(spotifyViewModel.authorizationURL)
             }
         }

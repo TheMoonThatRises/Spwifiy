@@ -5,7 +5,7 @@
 //  Created by Peter Duanmu on 11/25/24.
 //
 
-import Foundation
+import SwiftUI
 import SpotifyWebAPI
 
 extension SpotifyDataViewModel {
@@ -16,22 +16,18 @@ extension SpotifyDataViewModel {
 
         isRetrievingTopArtists = true
 
-        let cancellable = spotifyViewModel.spotify.currentUserTopArtists(limit: 10)
-            .sink { _ in
+        _ = try? await spotifyViewModel.spotifyRequest {
+            spotifyViewModel.spotify.currentUserTopArtists(limit: 10)
+        } receiveValue: { artists in
+            Task { @MainActor in
+                defer {
+                    self.isRetrievingTopArtists = false
+                }
 
-            } receiveValue: { artists in
-                Task { @MainActor in
-                    defer {
-                        self.isRetrievingTopArtists = false
-                    }
-
+                withAnimation(.defaultAnimation) {
                     self.topArtists = artists.items
                 }
             }
-
-        Task { @MainActor in
-            cancellable
-                .store(in: &cancellables)
         }
     }
 }

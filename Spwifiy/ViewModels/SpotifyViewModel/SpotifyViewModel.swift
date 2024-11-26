@@ -86,20 +86,20 @@ class SpotifyViewModel: ObservableObject {
         }
 
         if self.spotify.authorizationManager.refreshToken != nil {
-            self.spotify.authorizationManager.refreshTokens(onlyIfExpired: false)
-                .sink { completion in
-                    do {
-                        try self.authorizeCallback(completion: completion)
-                    } catch {
-                        print(error)
+            self.spotifyRequest {
+                self.spotify.authorizationManager.refreshTokens(onlyIfExpired: false)
+            } sink: { completion in
+                do {
+                    try self.authorizeCallback(completion: completion)
+                } catch {
+                    print(error)
 
-                        Task { @MainActor in
-                            self.isAuthorized = false
-                            self.useURLAuth = true
-                        }
+                    Task { @MainActor in
+                        self.isAuthorized = false
+                        self.useURLAuth = true
                     }
                 }
-                .store(in: &cancellables)
+            }
         } else {
             self.useURLAuth = true
         }
@@ -142,22 +142,63 @@ class SpotifyViewModel: ObservableObject {
         }
     }
 
-    func spotifyRequestAccess(redirectURL: URL) async throws {
+    public func spotifyRequest<T>(accessPoint: () -> AnyPublisher<T, Error>,
+                                  sink: ((Subscribers.Completion<any Error>) -> Void)? = nil,
+                                  receiveValue: ((T) -> Void)? = nil) {
+        let cancellable = accessPoint()
+            .sink {
+                if let sink {
+                    sink($0)
+                }
+            } receiveValue: {
+                if let receiveValue {
+                    receiveValue($0)
+                }
+            }
+
+        Task { @MainActor in
+            cancellable
+                .store(in: &cancellables)
+        }
+    }
+
+    public func spotifyRequest<T>(accessPoint: () -> AnyPublisher<T, Error>,
+                                  sink: ((Subscribers.Completion<any Error>) throws -> Void)? = nil,
+                                  receiveValue: ((T) throws -> Void)? = nil) async throws -> T {
         try await withCheckedThrowingContinuation { continuation in
+            spotifyRequest(accessPoint: accessPoint) {
+                if let sink {
+                    do {
+                        try sink($0)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                } else if case .failure(let error) = $0 {
+                    continuation.resume(throwing: error)
+                }
+            } receiveValue: {
+                do {
+                    if let receiveValue {
+                        try receiveValue($0)
+                    }
+
+                    continuation.resume(returning: $0)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    func spotifyRequestAccess(redirectURL: URL) async throws {
+        try await spotifyRequest {
             spotify.authorizationManager.requestAccessAndRefreshTokens(
                 redirectURIWithQuery: redirectURL,
                 codeVerifier: codeVerifier,
                 state: state
             )
-            .sink { completion in
-                do {
-                    try self.authorizeCallback(completion: completion)
-                    continuation.resume()
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            }
-            .store(in: &cancellables)
+        } sink: { result in
+            try self.authorizeCallback(completion: result)
         }
     }
 
@@ -168,18 +209,16 @@ class SpotifyViewModel: ObservableObject {
 
         isLoadingUserProfile = true
 
-        spotify.currentUserProfile()
-            .sink { _ in
-
-            } receiveValue: { user in
-                Task { @MainActor in
-                    defer {
-                        self.isLoadingUserProfile = false
-                    }
-
-                    self.userProfile = user
+        spotifyRequest {
+            spotify.currentUserProfile()
+        } receiveValue: { user in
+            Task { @MainActor in
+                defer {
+                    self.isLoadingUserProfile = false
                 }
+
+                self.userProfile = user
             }
-            .store(in: &cancellables)
+        }
     }
 }

@@ -5,7 +5,7 @@
 //  Created by Peter Duanmu on 11/25/24.
 //
 
-import Foundation
+import SwiftUI
 import SpotifyWebAPI
 
 extension SpotifyDataViewModel {
@@ -15,22 +15,10 @@ extension SpotifyDataViewModel {
             throw SpwifiyErrors.spotifyNoViewModel
         }
 
-        return try await withCheckedThrowingContinuation { continuation in
-            let cancellable = spotifyViewModel.spotify.categoryPlaylists(SpotifyIDs.madeForYouCategory,
-                                                                 limit: limit,
-                                                                 offset: offset)
-                .sink { completion in
-                    if case .failure(let error) = completion {
-                        continuation.resume(throwing: error)
-                    }
-                } receiveValue: { playlist in
-                    continuation.resume(returning: playlist)
-                }
-
-            Task { @MainActor in
-                cancellable
-                    .store(in: &cancellables)
-            }
+        return try await spotifyViewModel.spotifyRequest {
+            spotifyViewModel.spotify.categoryPlaylists(SpotifyIDs.madeForYouCategory,
+                                                       limit: limit,
+                                                       offset: offset)
         }
     }
 
@@ -63,32 +51,34 @@ extension SpotifyDataViewModel {
                 isRetrievingPersonalizedPlaylist = false
             }
 
-            dailyMixes = playlists.filter {
-                $0.name.lowercased().contains("daily mix") ||
-                $0.name.lowercased().contains("discover weekly") ||
-                $0.name.lowercased().contains("release radar")
-            }.sorted { $0.name < $1.name }
-            playlists.removeAll(where: { dailyMixes.contains($0) })
-
-            repeatRewindMixes = playlists.filter {
-                $0.name.lowercased().contains("repeat") ||
-                $0.name.lowercased().contains("rewind")
-            }.sorted { $0.name < $1.name }
-            playlists.removeAll(where: { repeatRewindMixes.contains($0) })
-
-            typeMixes = playlists.filter {
-                $0.name.lowercased().contains("mix")
-            }.sorted { $0.name < $1.name }
-            playlists.removeAll(where: { typeMixes.contains($0) })
-
-            if let displayName = spotifyViewModel.userProfile?.displayName?.lowercased() {
-                blends = playlists.filter {
-                    $0.name.lowercased().matches("(\\+ )?\(displayName)( \\+)?")
+            withAnimation(.defaultAnimation) {
+                dailyMixes = playlists.filter {
+                    $0.name.lowercased().contains("daily mix") ||
+                    $0.name.lowercased().contains("discover weekly") ||
+                    $0.name.lowercased().contains("release radar")
                 }.sorted { $0.name < $1.name }
-                playlists.removeAll(where: { blends.contains($0) })
-            }
+                playlists.removeAll(where: { dailyMixes.contains($0) })
 
-            otherPlaylists = playlists
+                repeatRewindMixes = playlists.filter {
+                    $0.name.lowercased().contains("repeat") ||
+                    $0.name.lowercased().contains("rewind")
+                }.sorted { $0.name < $1.name }
+                playlists.removeAll(where: { repeatRewindMixes.contains($0) })
+
+                typeMixes = playlists.filter {
+                    $0.name.lowercased().contains("mix")
+                }.sorted { $0.name < $1.name }
+                playlists.removeAll(where: { typeMixes.contains($0) })
+
+                if let displayName = spotifyViewModel.userProfile?.displayName?.lowercased() {
+                    blends = playlists.filter {
+                        $0.name.lowercased().matches("(\\+ )?\(displayName)( \\+)?")
+                    }.sorted { $0.name < $1.name }
+                    playlists.removeAll(where: { blends.contains($0) })
+                }
+
+                otherPlaylists = playlists
+            }
         }
     }
 }

@@ -11,7 +11,6 @@ import SpotifyWebAPI
 
 class SpotifyDataViewModel: ObservableObject {
 
-    var cancellables: Set<AnyCancellable> = []
     var spotifyViewModel: SpotifyViewModel?
 
     var isRetrievingPersonalizedPlaylist: Bool = false

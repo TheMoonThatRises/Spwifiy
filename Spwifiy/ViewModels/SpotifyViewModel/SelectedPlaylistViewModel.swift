@@ -11,15 +11,12 @@ import SpotifyWebAPI
 
 class SelectedPlaylistViewModel: ObservableObject {
 
-    private let spotifyViewModel: SpotifyViewModel
-
+    private let spotifyCache: SpotifyCache
     private let playlist: Playlist<PlaylistItemsReference>
+    @Published var playlistDetails: Playlist<PlaylistItems>?
 
     private var isFetchingPlaylistDetails: Bool = false
 
-    private var cancellables: Set<AnyCancellable> = []
-
-    @Published var playlistDetails: Playlist<PlaylistItems>?
     @Published var dominantColor: Color = .fgPrimary
 
     @Published var totalDuration: HumanFormat?
@@ -27,9 +24,14 @@ class SelectedPlaylistViewModel: ObservableObject {
     @Published var didSelectSearch: Bool = false
     @Published var searchText: String = ""
 
-    init(spotifyViewModel: SpotifyViewModel, playlist: Playlist<PlaylistItemsReference>) {
-        self.spotifyViewModel = spotifyViewModel
+    init(spotifyCache: SpotifyCache,
+         playlist: Playlist<PlaylistItemsReference>,
+         playlistDetails: Playlist<PlaylistItems>?) {
+        self.spotifyCache = spotifyCache
         self.playlist = playlist
+        self.playlistDetails = playlistDetails
+
+        self.calcTotalDuration()
     }
 
     public func fetchPlaylistDetails() {
@@ -39,29 +41,31 @@ class SelectedPlaylistViewModel: ObservableObject {
 
         isFetchingPlaylistDetails = true
 
-        spotifyViewModel.spotify.playlist(self.playlist.uri)
-            .sink { _ in
-
-            } receiveValue: { playlistDetails in
-                Task { @MainActor in
-                    defer {
-                        self.isFetchingPlaylistDetails = false
-                    }
-
-                    withAnimation(.defaultAnimation) {
-                        self.playlistDetails = playlistDetails
-                    }
-//                    print(playlistDetails)
-
-                    self.totalDuration = self.playlistDetails?
-                        .items
-                        .items
-                        .map { $0.item?.durationMS ?? 0 }
-                        .reduce(0, +)
-                        .humanRedable
-                }
+        Task { @MainActor in
+            defer {
+                self.isFetchingPlaylistDetails = false
             }
-            .store(in: &cancellables)
+
+            do {
+                let result = try await spotifyCache.fetchPlaylist(playlistId: playlist.id)
+
+                withAnimation(.defaultAnimation) {
+                    self.playlistDetails = result
+
+                    self.calcTotalDuration()
+                }
+            } catch {
+                print("unable to refresh playlist details: \(error)")
+            }
+        }
     }
 
+    private func calcTotalDuration() {
+        totalDuration = playlistDetails?
+            .items
+            .items
+            .map { $0.item?.durationMS ?? 0 }
+            .reduce(0, +)
+            .humanRedable
+    }
 }
