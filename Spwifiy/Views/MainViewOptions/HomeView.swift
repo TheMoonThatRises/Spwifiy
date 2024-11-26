@@ -64,6 +64,12 @@ struct HomeView: View {
                 Spacer()
             }
         }
+        .task {
+            await spotifyDataViewModel.populatePersonalizedPlaylists()
+        }
+        .task {
+            await spotifyDataViewModel.populateTopArtists()
+        }
     }
 }
 

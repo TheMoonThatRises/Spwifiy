@@ -38,12 +38,6 @@ struct MainView: View {
                         case .home:
                             HomeView(spotifyDataViewModel: spotifyDataViewModel,
                                      mainViewModel: mainViewModel)
-                                .task {
-                                    await spotifyDataViewModel.populatePersonalizedPlaylists()
-                                }
-                                .task {
-                                    await spotifyDataViewModel.populateTopArtists()
-                                }
                         case .selectedPlaylist:
                             if let selectedPlaylist = mainViewModel.selectedPlaylist,
                                let viewModel = cacheViewModel.getPlaylist(playlist: selectedPlaylist) {

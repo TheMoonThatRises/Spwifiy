@@ -17,6 +17,8 @@ struct SpwifiyApp: App {
 
     @StateObject var spotifyViewModel: SpotifyViewModel = SpotifyViewModel()
     @StateObject var spotifyDataViewModel: SpotifyDataViewModel = SpotifyDataViewModel()
+    @StateObject var cacheViewModel: CacheViewModel = CacheViewModel()
+    @StateObject var mainViewModel: MainViewModel = MainViewModel()
 
     @State var showAuthLoading: Bool = false
     @State var showErrorMessage: Bool = false
@@ -33,8 +35,8 @@ struct SpwifiyApp: App {
                 if spotifyViewModel.isAuthorized {
                     MainView(spotifyViewModel: spotifyViewModel,
                              spotifyDataViewModel: spotifyDataViewModel,
-                             cacheViewModel: CacheViewModel(spotifyViewModel: spotifyViewModel),
-                             mainViewModel: MainViewModel())
+                             cacheViewModel: cacheViewModel,
+                             mainViewModel: mainViewModel)
                         .onAppear {
                             showAuthLoading = false
                         }
@@ -68,6 +70,10 @@ struct SpwifiyApp: App {
             .task {
                 if spotifyDataViewModel.spotifyViewModel == nil {
                     spotifyDataViewModel.setSpotifyViewModel(spotifyViewModel: spotifyViewModel)
+                }
+
+                if cacheViewModel.spotifyViewModel == nil {
+                    cacheViewModel.setSpotifyViewModel(spotifyViewModel: spotifyViewModel)
                 }
             }
         }

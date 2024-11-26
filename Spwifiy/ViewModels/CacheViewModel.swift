@@ -10,16 +10,19 @@ import SpotifyWebAPI
 
 class CacheViewModel: ObservableObject {
 
-    var spotifyViewModel: SpotifyViewModel
+    var spotifyViewModel: SpotifyViewModel?
 
-    private var playlistVMCache: [String: SelectedPlaylistViewModel]
+    private var playlistVMCache: [String: SelectedPlaylistViewModel] = [:]
 
-    init(spotifyViewModel: SpotifyViewModel) {
+    public func setSpotifyViewModel(spotifyViewModel: SpotifyViewModel) {
         self.spotifyViewModel = spotifyViewModel
-        self.playlistVMCache = [:]
     }
 
     public func getPlaylist(playlist: Playlist<PlaylistItemsReference>) -> SelectedPlaylistViewModel? {
+        guard let spotifyViewModel else {
+            return nil
+        }
+
         let id = playlist.id
 
         if !playlistVMCache.keys.contains(id) {
