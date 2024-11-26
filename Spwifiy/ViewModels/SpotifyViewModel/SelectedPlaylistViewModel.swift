@@ -48,7 +48,9 @@ class SelectedPlaylistViewModel: ObservableObject {
                         self.isFetchingPlaylistDetails = false
                     }
 
-                    self.playlistDetails = playlistDetails
+                    withAnimation(.defaultAnimation) {
+                        self.playlistDetails = playlistDetails
+                    }
 //                    print(playlistDetails)
 
                     self.totalDuration = self.playlistDetails?

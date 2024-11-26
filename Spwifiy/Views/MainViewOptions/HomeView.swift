@@ -160,7 +160,9 @@ struct HomeViewRow: View {
                     if playlists.count > 0 {
                         ForEach(playlists, id: \.uri) { playlist in
                             Button {
-                                selectedPlaylist = playlist
+                                withAnimation(.defaultAnimation) {
+                                    selectedPlaylist = playlist
+                                }
                             } label: {
                                 HomeViewPlaylistItem(playlist: playlist)
                                     .contentShape(.rect)
