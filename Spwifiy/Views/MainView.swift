@@ -28,7 +28,8 @@ struct MainView: View {
                 }
 
                 VStack {
-                    HeadElementView(mainViewModel: mainViewModel,
+                    HeadElementView(spotifyViewModel: spotifyViewModel,
+                                    mainViewModel: mainViewModel,
                                     userProfile: $spotifyViewModel.userProfile,
                                     collapsed: geom.size.width < 1020)
 
@@ -44,8 +45,7 @@ struct MainView: View {
                                 SelectedPlaylistView(selectedPlaylistViewModel:
                                     SelectedPlaylistViewModel(
                                         spotifyCache: spotifyCache,
-                                        playlist: selectedPlaylist,
-                                        playlistDetails: spotifyCache[selectedPlaylist.id]
+                                        playlist: selectedPlaylist
                                     )
                                 )
                             } else {

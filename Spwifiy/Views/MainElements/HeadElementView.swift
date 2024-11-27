@@ -11,6 +11,7 @@ import CachedAsyncImage
 
 public struct HeadElementView: View {
 
+    @ObservedObject var spotifyViewModel: SpotifyViewModel
     @ObservedObject var mainViewModel: MainViewModel
 
     @Binding var userProfile: SpotifyUser?
@@ -148,7 +149,9 @@ public struct HeadElementView: View {
 
                 NavButton(currentButton: .profile,
                           currentView: $mainViewModel.currentView) {
+                    spotifyViewModel.spotify.authorizationManager.deauthorize()
 
+                    NSApplication.shared.terminate(nil)
                 } label: {
                     CachedAsyncImage(url: userProfile?.images?.first?.url,
                                      urlCache: .imageCache) { phase in

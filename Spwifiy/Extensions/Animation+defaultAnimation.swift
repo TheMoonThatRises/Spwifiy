@@ -8,5 +8,5 @@
 import SwiftUI
 
 extension Animation {
-    public static var defaultAnimation: Animation = .easeIn(duration: 0.2)
+    public static var defaultAnimation: Animation = .easeIn(duration: 0.1)
 }

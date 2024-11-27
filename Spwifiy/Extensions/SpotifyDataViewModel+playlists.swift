@@ -9,16 +9,17 @@ import SwiftUI
 import SpotifyWebAPI
 
 extension SpotifyDataViewModel {
-    private func getPersonalizedPlaylists(offset: Int, limit: Int)
-    async throws -> PagingObject<Playlist<PlaylistItemsReference>?> {
+    private func getPersonalizedPlaylists(limit: Int)
+    async throws -> [Playlist<PlaylistItemsReference>?] {
         guard let spotifyViewModel else {
             throw SpwifiyErrors.spotifyNoViewModel
         }
 
         return try await spotifyViewModel.spotifyRequest {
             spotifyViewModel.spotify.categoryPlaylists(SpotifyIDs.madeForYouCategory,
-                                                       limit: limit,
-                                                       offset: offset)
+                                                       limit: limit)
+            .extendPagesConcurrently(spotifyViewModel.spotify)
+            .collectAndSortByOffset()
         }
     }
 
@@ -29,22 +30,8 @@ extension SpotifyDataViewModel {
 
         isRetrievingPersonalizedPlaylist = true
 
-        var playlists: [Playlist<PlaylistItemsReference>] = []
-
-        var result = try? await getPersonalizedPlaylists(offset: 0, limit: 25)
-
-        while true {
-            if let result {
-                playlists.append(contentsOf: result.items.compactMap { $0 })
-            }
-
-            if playlists.count >= result?.total ?? 50 {
-                break
-            }
-
-            result = try? await getPersonalizedPlaylists(offset: (result?.limit ?? 0) + (result?.offset ?? 0),
-                                                         limit: 25)
-        }
+        var playlists: [Playlist<PlaylistItemsReference>] = (try? await getPersonalizedPlaylists(limit: 25))?
+            .compactMap { $0 } ?? []
 
         Task { @MainActor in
             defer {

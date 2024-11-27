@@ -13,9 +13,19 @@ class SelectedPlaylistViewModel: ObservableObject {
 
     private let spotifyCache: SpotifyCache
     private let playlist: Playlist<PlaylistItemsReference>
-    @Published var playlistDetails: Playlist<PlaylistItems>?
 
     private var isFetchingPlaylistDetails: Bool = false
+
+    private var artistIds: [String] = []
+
+    @Published var playlistDetails: Playlist<PlaylistItems>?
+    @Published var artists: [Artist] = [] {
+        didSet {
+            sortGenres()
+        }
+    }
+
+    @Published var genreList: [String] = []
 
     @Published var dominantColor: Color = .fgPrimary
 
@@ -25,38 +35,47 @@ class SelectedPlaylistViewModel: ObservableObject {
     @Published var searchText: String = ""
 
     init(spotifyCache: SpotifyCache,
-         playlist: Playlist<PlaylistItemsReference>,
-         playlistDetails: Playlist<PlaylistItems>?) {
+         playlist: Playlist<PlaylistItemsReference>) {
         self.spotifyCache = spotifyCache
         self.playlist = playlist
-        self.playlistDetails = playlistDetails
+        self.playlistDetails = spotifyCache[playlistId: playlist.id]
 
         self.calcTotalDuration()
+        self.updateArtists()
+
+        self.artists = spotifyCache.getArtists(artistIds: self.artistIds)
     }
 
-    public func fetchPlaylistDetails() {
+    @MainActor
+    public func updatePlaylistInfo() async {
         guard !isFetchingPlaylistDetails else {
             return
         }
 
         isFetchingPlaylistDetails = true
 
-        Task { @MainActor in
-            defer {
-                self.isFetchingPlaylistDetails = false
+        defer {
+            self.isFetchingPlaylistDetails = false
+        }
+
+        do {
+            let playlistResult = try await spotifyCache.fetchPlaylist(playlistId: playlist.id)
+
+            updateArtists(playlistDetails: playlistResult)
+
+            withAnimation(.defaultAnimation) {
+                playlistDetails = playlistResult
+
+                calcTotalDuration()
             }
 
-            do {
-                let result = try await spotifyCache.fetchPlaylist(playlistId: playlist.id)
+            let artistResults = try await spotifyCache.fetchArtists(artistIds: artistIds)
 
-                withAnimation(.defaultAnimation) {
-                    self.playlistDetails = result
-
-                    self.calcTotalDuration()
-                }
-            } catch {
-                print("unable to refresh playlist details: \(error)")
+            withAnimation(.defaultAnimation) {
+                artists = artistResults
             }
+        } catch {
+            print("unable to refresh playlist details: \(error)")
         }
     }
 
@@ -67,5 +86,27 @@ class SelectedPlaylistViewModel: ObservableObject {
             .map { $0.item?.durationMS ?? 0 }
             .reduce(0, +)
             .humanRedable
+    }
+
+    private func updateArtists(playlistDetails: Playlist<PlaylistItems>? = nil) {
+        artistIds = (
+            playlistDetails ?? self.playlistDetails
+        )?.items.items.compactMap {
+            if case let .track(value) = $0.item {
+                return value.artists?.compactMap { $0.id }
+            } else {
+                return nil
+            }
+        }.flatMap { $0 } ?? []
+    }
+
+    private func sortGenres() {
+        let totalGenres = artists.compactMap { $0.genres }.flatMap { $0 }
+
+        genreList = Array(
+            Array(Set(totalGenres)).sorted { one, two in
+                totalGenres.filter { $0 == one }.count > totalGenres.filter { $0 == two }.count
+            }.prefix(5)
+        )
     }
 }

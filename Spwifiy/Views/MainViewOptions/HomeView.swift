@@ -256,6 +256,8 @@ struct HomeViewPlaylistItem: View {
                 Text(description)
                     .foregroundStyle(.fgSecondary)
                     .font(.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(3)
             }
 
             Spacer()

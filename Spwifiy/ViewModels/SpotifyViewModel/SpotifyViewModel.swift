@@ -190,6 +190,34 @@ class SpotifyViewModel: ObservableObject {
         }
     }
 
+    public func spotifyRequest<T>(accessPoint: () -> AnyPublisher<[T], Error>,
+                                  sink: ((Subscribers.Completion<any Error>) throws -> Void)? = nil,
+                                  receiveValue: (([T]) throws -> Void)? = nil) async throws -> [T] {
+        try await withCheckedThrowingContinuation { continuation in
+            spotifyRequest(accessPoint: accessPoint) {
+                if let sink {
+                    do {
+                        try sink($0)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                } else if case .failure(let error) = $0 {
+                    continuation.resume(throwing: error)
+                }
+            } receiveValue: {
+                do {
+                    if let receiveValue {
+                        try receiveValue($0)
+                    }
+
+                    continuation.resume(returning: $0)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
     func spotifyRequestAccess(redirectURL: URL) async throws {
         try await spotifyRequest {
             spotify.authorizationManager.requestAccessAndRefreshTokens(

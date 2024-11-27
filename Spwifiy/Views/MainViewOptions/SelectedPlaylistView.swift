@@ -190,10 +190,22 @@ struct SelectedPlaylistView: View {
                         }
                         .frame(width: 260, height: 260)
 
-                        LazyVGrid(columns: [.init(.adaptive(minimum: 80))]) {
-                            //                        ForEach(playlist.items.items.first.item.) { mood in
-                            //
-                            //                        }
+                        ScrollView {
+                            LazyVGrid(columns: [GridItem(.flexible())]) {
+                                ForEach(selectedPlaylistViewModel.genreList, id: \.self) { genre in
+                                    Text(genre)
+                                        .foregroundStyle(.fgSecondary)
+                                        .font(.title2)
+                                        .multilineTextAlignment(.center)
+                                        .padding(5)
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(.fgSecondary, lineWidth: 1)
+                                        }
+                                }
+                            }
+
+//                            List
                         }
 
                         Spacer()
@@ -215,7 +227,7 @@ struct SelectedPlaylistView: View {
             }
         }
         .task {
-            selectedPlaylistViewModel.fetchPlaylistDetails()
+            await selectedPlaylistViewModel.updatePlaylistInfo()
         }
     }
 }

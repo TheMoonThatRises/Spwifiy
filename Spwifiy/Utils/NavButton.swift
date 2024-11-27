@@ -44,6 +44,8 @@ public struct NavButton<Label>: View where Label: View {
 
     func toButton() -> some View {
         Button {
+            action()
+            
             withAnimation(.defaultAnimation) {
                 self.currentView = self.currentButton
             }
