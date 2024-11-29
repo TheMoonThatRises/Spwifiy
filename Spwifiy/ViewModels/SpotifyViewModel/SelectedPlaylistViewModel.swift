@@ -49,6 +49,10 @@ class SelectedPlaylistViewModel: ObservableObject {
     @Published var didSelectSearch: Bool = false
     @Published var searchText: String = ""
 
+    var didPlaylistChange: Bool {
+        playlist.snapshotId != playlistDetails?.snapshotId
+    }
+
     init(spotifyCache: SpotifyCache,
          playlist: Playlist<PlaylistItemsReference>) {
         self.spotifyCache = spotifyCache
@@ -67,7 +71,11 @@ class SelectedPlaylistViewModel: ObservableObject {
 
     @MainActor
     public func updatePlaylistInfo() async {
-        guard !isFetchingPlaylistDetails && playlist.snapshotId != playlistDetails?.snapshotId else {
+        let willUpdatePlaylist = didPlaylistChange || playlistDetails == nil
+        let willUpdateTracks = tracks.isEmpty || willUpdatePlaylist
+        let willUpdateArtists = artists.isEmpty || willUpdateTracks
+
+        guard !isFetchingPlaylistDetails && willUpdateArtists else {
             return
         }
 
@@ -78,41 +86,32 @@ class SelectedPlaylistViewModel: ObservableObject {
         }
 
         do {
-            let playlistResult = try await spotifyCache.fetchPlaylist(playlistId: playlist.id)
+            if willUpdatePlaylist {
+                let playlistResult = try await spotifyCache.fetchPlaylist(playlistId: playlist.id)
 
-            withAnimation(.defaultAnimation) {
-                playlistDetails = playlistResult
+                withAnimation(.defaultAnimation) {
+                    playlistDetails = playlistResult
 
-                calcTotalDuration()
+                    calcTotalDuration()
+                }
             }
 
-            let trackResults = try await spotifyCache.fetchPlaylistTracks(playlistId: playlist.id)
+            if willUpdateTracks {
+                let trackResults = try await spotifyCache.fetchPlaylistTracks(playlistId: playlist.id)
 
-            updateArtists(tracks: trackResults)
+                updateArtists(tracks: trackResults)
 
-            withAnimation(.defaultAnimation) {
-                populateTracks(tracks: trackResults)
-//                tracks = trackResults
-//                tracks = Array(trackResults.prefix(100))
-//
-//                Task { @MainActor in
-//                    try await Task.sleep(for: .seconds(0.5))
-//
-//                    tracks.append(contentsOf: trackResults.suffix(trackResults.count - 100))
-//                }
+                withAnimation(.defaultAnimation) {
+                    populateTracks(tracks: trackResults)
+                }
             }
 
-            let artistResults = sortArtist(artistResults: try await spotifyCache.fetchArtists(artistIds: artistIds))
+            if willUpdateArtists {
+                let artistResults = sortArtist(artistResults: try await spotifyCache.fetchArtists(artistIds: artistIds))
 
-            withAnimation(.defaultAnimation) {
-                populateArtists(artists: artistResults)
-//                artists = Array(artistResults.prefix(50))
-//
-//                Task { @MainActor in
-//                    try await Task.sleep(for: .seconds(0.5))
-//
-//                    artists.append(contentsOf: artistResults.suffix(trackResults.count - 50))
-//                }
+                withAnimation(.defaultAnimation) {
+                    populateArtists(artists: artistResults)
+                }
             }
         } catch {
             print("unable to refresh playlist details: \(error)")
