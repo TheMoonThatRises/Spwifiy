@@ -12,10 +12,19 @@ struct HumanFormat {
     let minutes: Int
     let hours: Int
     let days: Int
+
+    var description: String {
+        [days, hours, minutes, seconds]
+            .map { String(format: "%02d", $0) }
+            .joined()
+            .replacingOccurrences(of: "^(00)+", with: "", options: .regularExpression)
+            .separate(every: 2, with: ":")
+            .replacingOccurrences(of: "^0+", with: "", options: .regularExpression)
+    }
 }
 
 extension Int {
-    var humanRedable: HumanFormat {
+    var humanReadable: HumanFormat {
         var time = self / 1000
 
         let seconds = time % 60

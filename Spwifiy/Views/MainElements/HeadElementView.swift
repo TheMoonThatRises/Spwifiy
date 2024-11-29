@@ -153,8 +153,7 @@ public struct HeadElementView: View {
 
                     NSApplication.shared.terminate(nil)
                 } label: {
-                    CachedAsyncImage(url: userProfile?.images?.first?.url,
-                                     urlCache: .imageCache) { phase in
+                    CachedAsyncImage(url: userProfile?.images?.first?.url, urlCache: .imageCache) { phase in
                         switch phase {
                         case .empty:
                             ProgressView()
@@ -168,7 +167,9 @@ public struct HeadElementView: View {
                                 .resizable()
                         }
                     }
-                    .frame(width: 40, height: 40)
+                    .scaledToFill()
+                    .frame(width: 40, height: 40, alignment: .center)
+                    .clipped()
                     .clipShape(Circle())
                 }
                 .toButton()

@@ -25,4 +25,11 @@ extension Color {
 
         return HSB(hue: hue, saturation: saturation, brightness: brightness)
     }
+
+    static func hsbToRGB(hsb: HSB) -> NSColor {
+        return NSColor(hue: hsb.hue,
+                       saturation: hsb.saturation,
+                       brightness: hsb.brightness,
+                       alpha: 1)
+    }
 }

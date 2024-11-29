@@ -13,9 +13,7 @@ extension Image {
 
     @MainActor
     func calculateDominantColor(id: String) -> Color? {
-        guard let cgImage = ImageRenderer(content: self).cgImage else {
-            return nil
-        }
+        guard let cgImage = ImageRenderer(content: self).cgImage else { return nil }
 
         if let color = Image.cache[id] {
             return color
@@ -34,9 +32,7 @@ extension Image {
                                       bitsPerComponent: bitsPerComponent,
                                       bytesPerRow: bytesPerRow,
                                       space: colorSpace,
-                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
-            return nil
-        }
+                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
 
         context.draw(cgImage, in: CGRect(x: 0, y: 0, width: cgImage.width, height: cgImage.height))
 
@@ -52,13 +48,24 @@ extension Image {
             let alpha = CGFloat(pixelData[index + 3]) / 255.0
 
             if alpha > 0 { // Ignore transparent pixels
-                // Convert to HSB for vibrancy calculation
+                           // Convert to HSB for vibrancy calculation
                 let color = Color(red: red, green: green, blue: blue, opacity: alpha)
-                let hsb = color.toHSB()
+                var hsb = color.toHSB()
+
+                if hsb.brightness < 0.7 {
+                    hsb = Color.HSB(hue: hsb.hue,
+                                    saturation: hsb.saturation,
+                                    brightness: 0.7)
+                }
+
                 let vibrancy = hsb.saturation * hsb.brightness
 
+                let reColor = Color.hsbToRGB(hsb: hsb)
+
                 // Create a color key for exact RGB matches
-                let colorKey = UInt32(red * 255) << 16 | UInt32(green * 255) << 8 | UInt32(blue * 255)
+                let colorKey = UInt32(reColor.redComponent * 255) << 16
+                            | UInt32(reColor.greenComponent * 255) << 8
+                            | UInt32(reColor.blueComponent * 255)
 
                 // Increment the score by vibrancy for this color
                 colorScores[colorKey, default: 0] += vibrancy
@@ -68,9 +75,7 @@ extension Image {
         }
 
         // Find the color with the highest score
-        guard let mostVibrantKey = colorScores.max(by: { $0.value < $1.value })?.key else {
-            return nil
-        }
+        guard let mostVibrantKey = colorScores.max(by: { $0.value < $1.value })?.key else { return nil }
 
         let color = Color(red: CGFloat((mostVibrantKey >> 16) & 0xFF) / 255.0,
                           green: CGFloat((mostVibrantKey >> 8) & 0xFF) / 255.0,

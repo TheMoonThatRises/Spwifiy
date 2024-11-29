@@ -145,21 +145,7 @@ class SpotifyViewModel: ObservableObject {
     public func spotifyRequest<T>(accessPoint: () -> AnyPublisher<T, Error>,
                                   sink: ((Subscribers.Completion<any Error>) -> Void)? = nil,
                                   receiveValue: ((T) -> Void)? = nil) {
-        let cancellable = accessPoint()
-            .sink {
-                if let sink {
-                    sink($0)
-                }
-            } receiveValue: {
-                if let receiveValue {
-                    receiveValue($0)
-                }
-            }
-
-        Task { @MainActor in
-            cancellable
-                .store(in: &cancellables)
-        }
+        CombineHandler.handler(result: accessPoint(), sink: sink, receiveValue: receiveValue)
     }
 
     public func spotifyRequest<T>(accessPoint: () -> AnyPublisher<T, Error>,
@@ -173,7 +159,9 @@ class SpotifyViewModel: ObservableObject {
                     } catch {
                         continuation.resume(throwing: error)
                     }
-                } else if case .failure(let error) = $0 {
+                }
+
+                if case .failure(let error) = $0 {
                     continuation.resume(throwing: error)
                 }
             } receiveValue: {
@@ -201,7 +189,9 @@ class SpotifyViewModel: ObservableObject {
                     } catch {
                         continuation.resume(throwing: error)
                     }
-                } else if case .failure(let error) = $0 {
+                }
+
+                if case .failure(let error) = $0 {
                     continuation.resume(throwing: error)
                 }
             } receiveValue: {

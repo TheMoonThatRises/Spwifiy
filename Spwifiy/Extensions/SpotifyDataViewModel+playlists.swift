@@ -9,20 +9,6 @@ import SwiftUI
 import SpotifyWebAPI
 
 extension SpotifyDataViewModel {
-    private func getPersonalizedPlaylists(limit: Int)
-    async throws -> [Playlist<PlaylistItemsReference>?] {
-        guard let spotifyViewModel else {
-            throw SpwifiyErrors.spotifyNoViewModel
-        }
-
-        return try await spotifyViewModel.spotifyRequest {
-            spotifyViewModel.spotify.categoryPlaylists(SpotifyIDs.madeForYouCategory,
-                                                       limit: limit)
-            .extendPagesConcurrently(spotifyViewModel.spotify)
-            .collectAndSortByOffset()
-        }
-    }
-
     public func populatePersonalizedPlaylists() async {
         guard let spotifyViewModel, !isRetrievingPersonalizedPlaylist else {
             return
@@ -30,8 +16,12 @@ extension SpotifyDataViewModel {
 
         isRetrievingPersonalizedPlaylist = true
 
-        var playlists: [Playlist<PlaylistItemsReference>] = (try? await getPersonalizedPlaylists(limit: 25))?
-            .compactMap { $0 } ?? []
+        var playlists: [Playlist<PlaylistItemsReference>] = (try? await spotifyViewModel.spotifyRequest {
+                spotifyViewModel.spotify.categoryPlaylists(SpotifyIDs.madeForYouCategory,
+                                                           limit: 20)
+                .extendPagesConcurrently(spotifyViewModel.spotify)
+                .collectAndSortByOffset()
+            })?.compactMap { $0 } ?? []
 
         Task { @MainActor in
             defer {
@@ -66,6 +56,22 @@ extension SpotifyDataViewModel {
 
                 otherPlaylists = playlists
             }
+        }
+    }
+
+    public func populateFollowingPlaylist() async {
+        guard let spotifyViewModel, !isRetrievingFollowingPlaylist else {
+            return
+        }
+
+        let playlists = (try? await spotifyViewModel.spotifyRequest {
+            spotifyViewModel.spotify.currentUserPlaylists()
+                .extendPagesConcurrently(spotifyViewModel.spotify)
+                .collectAndSortByOffset()
+        }) ?? []
+
+        Task { @MainActor in
+            followingPlaylists = playlists
         }
     }
 }

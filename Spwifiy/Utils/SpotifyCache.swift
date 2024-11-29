@@ -21,7 +21,7 @@ class SpotifyCache: ObservableObject {
     var artistsCache: [String: Artist] = [:]
     var albumCache: [String: Album] = [:]
     var playlistCache: [String: Playlist<PlaylistItems>] = [:]
-    var trackCache: [String: Track] = [:]
+    var playlistTrackCache: [String: [Track]] = [:]
 
     subscript(artistId id: String) -> Artist? {
         artistsCache[id]
@@ -35,8 +35,8 @@ class SpotifyCache: ObservableObject {
         playlistCache[id]
     }
 
-    subscript(trackId id: String) -> Track? {
-        trackCache[id]
+    subscript(playlistTrackId id: String) -> [Track]? {
+        playlistTrackCache[id]
     }
 
     public func getArtists(artistIds: [String]) -> [Artist] {

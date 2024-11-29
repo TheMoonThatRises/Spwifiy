@@ -156,8 +156,8 @@ struct PlayingElementView: View {
         }
         .foregroundStyle(.fgSecondary)
         .padding()
-        .frame(maxWidth: .infinity, maxHeight: 81)
-        .background(.fgSecondary.opacity(0.5))
+        .frame(maxWidth: .infinity, maxHeight: 80)
+        .background(.fgSecondary.opacity(0.3))
         .clipShape(RoundedRectangle(cornerRadius: 5))
     }
 }

@@ -41,7 +41,7 @@ extension SpotifyCache {
         let ids = artistIds.map { SpotifyIdentifier(id: $0, idCategory: .artist) }
 
         return try await withThrowingTaskGroup(of: [Artist].self) { taskGroup in
-            for idsChunk in ids.splitInSubArrays(into: ids.count % 5) {
+            for idsChunk in ids.splitInSubArrays(into: ids.count % 50) {
                 taskGroup.addTask {
                     let result = try await spotifyViewModel.spotifyRequest {
                         spotifyViewModel.spotify.artists(idsChunk)
@@ -77,10 +77,20 @@ extension SpotifyCache {
         }
     }
 
-    public func fetchTrack(trackId: String) async throws -> Track {
-        try await fetchItem(cache: &trackCache, id: trackId) {
-            $0.spotify.track(SpotifyIdentifier(id: trackId, idCategory: .track))
+    public func fetchPlaylistTracks(playlistId: String) async throws -> [Track] {
+        guard let spotifyViewModel else {
+            throw SpwifiyErrors.spotifyNoViewModel
         }
+
+        let tracks = try await spotifyViewModel.spotifyRequest {
+            spotifyViewModel.spotify.playlistTracks(SpotifyIdentifier(id: playlistId, idCategory: .playlist))
+                .extendPagesConcurrently(spotifyViewModel.spotify)
+                .collectAndSortByOffset()
+        }.compactMap { $0.item }
+
+        playlistTrackCache[playlistId] = tracks
+
+        return tracks
     }
 
 }

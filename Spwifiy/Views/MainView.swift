@@ -42,8 +42,10 @@ struct MainView: View {
                                      mainViewModel: mainViewModel)
                         case .selectedPlaylist:
                             if let selectedPlaylist = mainViewModel.selectedPlaylist {
-                                SelectedPlaylistView(selectedPlaylistViewModel:
-                                    SelectedPlaylistViewModel(
+                                SelectedPlaylistView(
+                                    showFlags: PlaylistShowFlags.sideBar
+                                        | PlaylistShowFlags.topView,
+                                    selectedPlaylistViewModel: SelectedPlaylistViewModel(
                                         spotifyCache: spotifyCache,
                                         playlist: selectedPlaylist
                                     )

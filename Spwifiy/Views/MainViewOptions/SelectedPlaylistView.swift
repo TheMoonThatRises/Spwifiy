@@ -7,8 +7,18 @@
 
 import SwiftUI
 import CachedAsyncImage
+import SpotifyWebAPI
+
+class PlaylistShowFlags {
+    static let album = 1 << 1
+    static let sideBar = 1 << 2
+    static let largerSide = 1 << 3
+    static let topView = 1 << 4
+}
 
 struct SelectedPlaylistView: View {
+
+    var showFlags: Int
 
     @ObservedObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
 
@@ -17,205 +27,33 @@ struct SelectedPlaylistView: View {
             if let playlist = selectedPlaylistViewModel.playlistDetails {
                 HStack {
                     VStack(alignment: .leading) {
-                        Text(playlist.name)
-                            .font(.custom("Satoshi-Black", size: 40))
-                            .fontWeight(.black)
-                            .foregroundStyle(.fgPrimary)
-
-                        Spacer()
-                            .frame(height: 20)
-
-                        HStack {
-                            Text("By")
-                                .font(.callout)
-                                .foregroundStyle(.fgSecondary)
-
-                            Text(playlist.owner?.displayName ?? "unknown")
-                                .font(.callout)
-                                .foregroundStyle(.fgPrimary)
-
-                            Circle()
-                                .frame(width: 3, height: 3)
-                                .foregroundStyle(.fgSecondary)
-
-                            Text("\(playlist.items.total) songs")
-                                .font(.callout)
-                                .foregroundStyle(.fgSecondary)
-
-                            Circle()
-                                .frame(width: 3, height: 3)
-                                .foregroundStyle(.fgSecondary)
-
-                            if let duration = selectedPlaylistViewModel.totalDuration {
-                                Text("\(duration.hours) hr \(duration.minutes) min")
-                                    .font(.callout)
-                                    .foregroundStyle(.fgSecondary)
-                            }
-                        }
-
-                        Spacer()
-                            .frame(height: 20)
-
-                        HStack {
-                            Button {
-
-                            } label: {
-                                Image("spwifiy.play.fill")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                            }
-                            .buttonStyle(.plain)
-                            .cursorHover(.pointingHand)
-
-                            Button {
-
-                            } label: {
-                                Image("spwifiy.shuffle")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                            }
-                            .buttonStyle(.plain)
-                            .cursorHover(.pointingHand)
-
-                            Button {
-
-                            } label: {
-                                Image("spwifiy.add")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                            }
-                            .buttonStyle(.plain)
-                            .cursorHover(.pointingHand)
-
-                            Button {
-
-                            } label: {
-                                Image("spwifiy.add.queue")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                            }
-                            .buttonStyle(.plain)
-                            .cursorHover(.pointingHand)
-
-                            Button {
-
-                            } label: {
-                                Image("spwifiy.download")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                            }
-                            .buttonStyle(.plain)
-                            .cursorHover(.pointingHand)
-
-                            Button {
-
-                            } label: {
-                                Image("spwifiy.share")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                            }
-                            .buttonStyle(.plain)
-                            .cursorHover(.pointingHand)
-
-                            Button {
-
-                            } label: {
-                                Image("spwifiy.more")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                            }
-                            .buttonStyle(.plain)
-                            .cursorHover(.pointingHand)
+                        if (showFlags & PlaylistShowFlags.topView) > 0 {
+                            PlaylistTopElement(playlist: playlist,
+                                               selectedPlaylistViewModel: selectedPlaylistViewModel)
 
                             Spacer()
-
-                            Group {
-                                HStack {
-                                    Button {
-                                        withAnimation {
-                                            selectedPlaylistViewModel.didSelectSearch.toggle()
-                                        }
-                                    } label: {
-                                        Image("spwifiy.search")
-                                            .resizable()
-                                            .frame(width: 40, height: 40)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .cursorHover(.pointingHand)
-
-                                    if selectedPlaylistViewModel.didSelectSearch {
-                                        TextField(text: $selectedPlaylistViewModel.searchText) {
-                                            Text("Search")
-                                                .font(.title3)
-                                        }
-                                        .padding(.trailing, 10)
-                                    }
-                                }
-                            }
-                            .foregroundStyle(selectedPlaylistViewModel.didSelectSearch ? .fgPrimary : .fgSecondary)
-                            .frame(maxWidth: 300)
-                            .overlay {
-                                if selectedPlaylistViewModel.didSelectSearch {
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .foregroundStyle(.fgPrimary.opacity(0.1))
-                                        .allowsHitTesting(false)
-                                }
-                            }
+                                .frame(height: 20)
                         }
-                        .foregroundStyle(.fgSecondary)
 
-                        Spacer()
-                            .frame(height: 20)
+                        PlaylistSongListElement(showFlags: showFlags,
+                                                selectedPlaylistViewModel: selectedPlaylistViewModel)
 
                         Spacer()
                     }
                     .padding()
 
-                    Spacer()
-
-                    VStack {
-                        CachedAsyncImage(url: playlist.images.first?.url, urlCache: .imageCache) { image in
-                            image
-                                .resizable()
-                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                .task {
-                                    let id = playlist.images.first?.url.absoluteString ?? ""
-                                    let dominantColor = image.calculateDominantColor(id: id)
-                                    selectedPlaylistViewModel.dominantColor = dominantColor ?? .fgPrimary
-                                }
-                        } placeholder: {
-                            ProgressView()
-                                .progressViewStyle(.circular)
-                                .controlSize(.small)
-                        }
-                        .frame(width: 260, height: 260)
-
-                        ScrollView {
-                            LazyVGrid(columns: [GridItem(.flexible())]) {
-                                ForEach(selectedPlaylistViewModel.genreList, id: \.self) { genre in
-                                    Text(genre)
-                                        .foregroundStyle(.fgSecondary)
-                                        .font(.title2)
-                                        .multilineTextAlignment(.center)
-                                        .padding(5)
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(.fgSecondary, lineWidth: 1)
-                                        }
-                                }
-                            }
-
-//                            List
-                        }
-
+                    if (showFlags & PlaylistShowFlags.sideBar) > 0 {
                         Spacer()
+
+                        PlaylistSidebarElement(playlist: playlist,
+                                               showFlags: showFlags,
+                                               selectedPlaylistViewModel: selectedPlaylistViewModel)
                     }
-                    .padding()
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(
-                    LinearGradient(gradient: Gradient(colors: [selectedPlaylistViewModel.dominantColor.opacity(0.5),
+                    LinearGradient(gradient: Gradient(colors: [selectedPlaylistViewModel.dominantColor.opacity(0.8),
                                                                .bgMain]),
                                    startPoint: .top,
                                    endPoint: .bottom)

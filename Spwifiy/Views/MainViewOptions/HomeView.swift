@@ -43,16 +43,24 @@ struct HomeView: View {
                 }
                 .padding()
 
-                HomeViewRow(title: "Made For You",
-                            selectedPlaylist: $mainViewModel.selectedPlaylist,
-                            selectedArtist: $mainViewModel.selectedArtist,
-                            playlists: $spotifyDataViewModel.dailyMixes,
-                            artists: .constant([]))
+//                Depricated due to https://developer.spotify.com/blog/2024-11-27-changes-to-the-web-api
+//
+//                HomeViewRow(title: "Made For You",
+//                            selectedPlaylist: $mainViewModel.selectedPlaylist,
+//                            selectedArtist: $mainViewModel.selectedArtist,
+//                            playlists: $spotifyDataViewModel.dailyMixes,
+//                            artists: .constant([]))
+//
+//                HomeViewRow(title: "Your Top Mixes",
+//                            selectedPlaylist: $mainViewModel.selectedPlaylist,
+//                            selectedArtist: $mainViewModel.selectedArtist,
+//                            playlists: $spotifyDataViewModel.typeMixes,
+//                            artists: .constant([]))
 
-                HomeViewRow(title: "Your Top Mixes",
+                HomeViewRow(title: "Following Playlists",
                             selectedPlaylist: $mainViewModel.selectedPlaylist,
                             selectedArtist: $mainViewModel.selectedArtist,
-                            playlists: $spotifyDataViewModel.typeMixes,
+                            playlists: $spotifyDataViewModel.followingPlaylists,
                             artists: .constant([]))
 
                 HomeViewRow(title: "Your Favorite Artists",
@@ -65,11 +73,14 @@ struct HomeView: View {
             }
         }
         .task {
-            await spotifyDataViewModel.populatePersonalizedPlaylists()
+            await spotifyDataViewModel.populateFollowingPlaylist()
         }
         .task {
             await spotifyDataViewModel.populateTopArtists()
         }
+//        .task {
+//            await spotifyDataViewModel.populatePersonalizedPlaylists()
+//        }
     }
 }
 
@@ -86,118 +97,120 @@ struct HomeViewRow: View {
     @State var showMoreOption: Bool = false
 
     var body: some View {
-        VStack {
-            HStack {
-                Text(title)
-                    .foregroundStyle(.fgPrimary)
-                    .font(.title2)
-                    .bold()
+        if playlists.count > 0 || artists.count > 0 {
+            VStack {
+                HStack {
+                    Text(title)
+                        .foregroundStyle(.fgPrimary)
+                        .font(.title2)
+                        .bold()
+
+                    Spacer()
+
+                    Button {
+
+                    } label: {
+                        Image("spwifiy.arrow.left")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundStyle(.fgSecondary.opacity(0.5))
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
+
+                    Button {
+
+                    } label: {
+                        Image("spwifiy.arrow.right")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundStyle(.fgSecondary.opacity(0.5))
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
+
+                    Button {
+                        showMoreOption.toggle()
+                    } label: {
+                        Image("spwifiy.more")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundStyle(.fgSecondary)
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
+                    .popover(isPresented: $showMoreOption, arrowEdge: .leading) {
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Image("spwifiy.pin")
+                                    .resizable()
+                                    .frame(width: 40, height: 40)
+                                    .foregroundStyle(.fgSecondary)
+
+                                Text("Pin to Home")
+                            }
+
+                            HStack {
+                                Image("spwifiy.hide")
+                                    .resizable()
+                                    .frame(width: 40, height: 40)
+                                    .foregroundStyle(.fgSecondary)
+
+                                Text("Hide this Section")
+                            }
+                        }
+                        .padding()
+                        .presentationBackground(.bgPrimary)
+                    }
+                }
 
                 Spacer()
+                    .frame(height: 10)
 
-                Button {
-
-                } label: {
-                    Image("spwifiy.arrow.left")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundStyle(.fgSecondary.opacity(0.5))
-                }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
-
-                Button {
-
-                } label: {
-                    Image("spwifiy.arrow.right")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundStyle(.fgSecondary.opacity(0.5))
-                }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
-
-                Button {
-                    showMoreOption.toggle()
-                } label: {
-                    Image("spwifiy.more")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundStyle(.fgSecondary)
-                }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
-                .popover(isPresented: $showMoreOption, arrowEdge: .leading) {
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Image("spwifiy.pin")
-                                .resizable()
-                                .frame(width: 40, height: 40)
-                                .foregroundStyle(.fgSecondary)
-
-                            Text("Pin to Home")
-                        }
-
-                        HStack {
-                            Image("spwifiy.hide")
-                                .resizable()
-                                .frame(width: 40, height: 40)
-                                .foregroundStyle(.fgSecondary)
-
-                            Text("Hide this Section")
-                        }
-                    }
-                    .padding()
-                    .presentationBackground(.bgPrimary)
-                }
-            }
-
-            Spacer()
-                .frame(height: 10)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack {
-                    if playlists.count > 0 {
-                        ForEach(playlists, id: \.uri) { playlist in
-                            Button {
-                                withAnimation(.defaultAnimation) {
-                                    selectedPlaylist = playlist
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack {
+                        if playlists.count > 0 {
+                            ForEach(playlists, id: \.uri) { playlist in
+                                Button {
+                                    withAnimation(.defaultAnimation) {
+                                        selectedPlaylist = playlist
+                                    }
+                                } label: {
+                                    HomeViewPlaylistItem(playlist: playlist)
+                                        .contentShape(.rect)
                                 }
-                            } label: {
-                                HomeViewPlaylistItem(playlist: playlist)
-                                    .contentShape(.rect)
-                            }
-                            .buttonStyle(.plain)
-                            .cursorHover(.pointingHand)
-                            .id(playlist.id)
+                                .buttonStyle(.plain)
+                                .cursorHover(.pointingHand)
+                                .id(playlist.id)
 
-                            if playlist != playlists.last {
-                                Spacer()
-                                    .frame(width: 20)
+                                if playlist != playlists.last {
+                                    Spacer()
+                                        .frame(width: 20)
+                                }
                             }
-                        }
-                    } else if artists.count > 0 {
-                        ForEach(artists, id: \.uri) { artist in
-                            Button {
-                                selectedArtist = artist
-                            } label: {
-                                HomeViewArtistItem(artist: artist)
-                                    .contentShape(.rect)
-                            }
-                            .buttonStyle(.plain)
-                            .cursorHover(.pointingHand)
-                            .id(artist.id)
+                        } else if artists.count > 0 {
+                            ForEach(artists, id: \.uri) { artist in
+                                Button {
+                                    selectedArtist = artist
+                                } label: {
+                                    HomeViewArtistItem(artist: artist)
+                                        .contentShape(.rect)
+                                }
+                                .buttonStyle(.plain)
+                                .cursorHover(.pointingHand)
+                                .id(artist.id)
 
-                            if artist != artists.last {
-                                Spacer()
-                                    .frame(width: 20)
+                                if artist != artists.last {
+                                    Spacer()
+                                        .frame(width: 20)
+                                }
                             }
                         }
                     }
                 }
             }
+            .padding()
         }
-        .padding()
     }
 
 }
@@ -222,17 +235,18 @@ struct HomeViewPlaylistItem: View {
                 CachedAsyncImage(url: playlist.images.first?.url, urlCache: .imageCache) { image in
                     image
                         .resizable()
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
                         .task {
-                            let id = playlist.images.first?.url.absoluteString ?? ""
-                            dominantColor = image.calculateDominantColor(id: id) ?? .fgPrimary
+                            dominantColor = image.calculateDominantColor(id: playlist.uri) ?? .fgPrimary
                         }
                 } placeholder: {
                     ProgressView()
                         .progressViewStyle(.circular)
                         .controlSize(.small)
                 }
-                .frame(width: 170, height: 170)
+                .scaledToFill()
+                .frame(width: 170, height: 170, alignment: .center)
+                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 5))
             }
 
             HStack {
@@ -276,13 +290,15 @@ struct HomeViewArtistItem: View {
             CachedAsyncImage(url: artist.images?.first?.url, urlCache: .imageCache) { image in
                 image
                     .resizable()
-                    .clipShape(Circle())
             } placeholder: {
                 ProgressView()
                     .progressViewStyle(.circular)
                     .controlSize(.small)
             }
-            .frame(width: 170, height: 170)
+            .scaledToFill()
+            .frame(width: 170, height: 170, alignment: .center)
+            .clipped()
+            .clipShape(Circle())
 
             Spacer()
                 .frame(height: 20)
