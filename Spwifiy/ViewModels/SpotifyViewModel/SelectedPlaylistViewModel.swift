@@ -67,7 +67,7 @@ class SelectedPlaylistViewModel: ObservableObject {
 
     @MainActor
     public func updatePlaylistInfo() async {
-        guard !isFetchingPlaylistDetails else {
+        guard !isFetchingPlaylistDetails && playlist.snapshotId != playlistDetails?.snapshotId else {
             return
         }
 

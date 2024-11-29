@@ -81,6 +81,7 @@ struct PlaylistSongListElement: View {
                     }
 
                     Text(track.album?.name ?? "Unknown album")
+                        .lineLimit(2)
 
                     Text(track.durationMS?.humanReadable.description ?? "00:00")
 

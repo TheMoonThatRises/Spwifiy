@@ -20,7 +20,15 @@ struct SelectedPlaylistView: View {
 
     var showFlags: Int
 
-    @ObservedObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
+    @StateObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
+
+    init(showFlags: Int, spotifyCache: SpotifyCache, playlist: Playlist<PlaylistItemsReference>) {
+        self.showFlags = showFlags
+        self._selectedPlaylistViewModel = StateObject(
+            wrappedValue: SelectedPlaylistViewModel(spotifyCache: spotifyCache,
+                                                    playlist: playlist)
+        )
+    }
 
     var body: some View {
         Group {

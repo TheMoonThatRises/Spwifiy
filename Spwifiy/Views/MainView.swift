@@ -45,10 +45,8 @@ struct MainView: View {
                                 SelectedPlaylistView(
                                     showFlags: PlaylistShowFlags.sideBar
                                         | PlaylistShowFlags.topView,
-                                    selectedPlaylistViewModel: SelectedPlaylistViewModel(
-                                        spotifyCache: spotifyCache,
-                                        playlist: selectedPlaylist
-                                    )
+                                    spotifyCache: spotifyCache,
+                                    playlist: selectedPlaylist
                                 )
                             } else {
                                 Text("Unable to get selected playlist")
