@@ -65,7 +65,7 @@ struct SpwifiyApp: App {
             .toast(isPresenting: $showErrorMessage) {
                 AlertToast(displayMode: .alert, type: .error(.red), title: errorMessage)
             }
-            .frame(minWidth: 950, minHeight: 500)
+            .frame(minWidth: 950, minHeight: 550)
             .background(.bgMain)
             .environment(\.font, .satoshi)
             .task {
