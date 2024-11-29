@@ -30,6 +30,20 @@ class SelectedPlaylistViewModel: ObservableObject {
 
     @Published var dominantColor: Color = .fgPrimary
 
+    var linearGradient: LinearGradient {
+        let hsb = dominantColor.toHSB()
+
+        let reColor = Color(hue: hsb.hue,
+                            saturation: hsb.saturation,
+                            brightness: 0.5)
+
+        return LinearGradient(
+            gradient: Gradient(colors: [reColor.opacity(0.8), .bgMain]),
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+
     @Published var totalDuration: HumanFormat?
 
     @Published var didSelectSearch: Bool = false

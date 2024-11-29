@@ -60,7 +60,7 @@ extension Image {
 
                 let vibrancy = hsb.saturation * hsb.brightness
 
-                let reColor = Color.hsbToRGB(hsb: hsb)
+                let reColor = hsb.toRGB()
 
                 // Create a color key for exact RGB matches
                 let colorKey = UInt32(reColor.redComponent * 255) << 16

@@ -52,12 +52,7 @@ struct SelectedPlaylistView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(
-                    LinearGradient(gradient: Gradient(colors: [selectedPlaylistViewModel.dominantColor.opacity(0.8),
-                                                               .bgMain]),
-                                   startPoint: .top,
-                                   endPoint: .bottom)
-                )
+                .background(selectedPlaylistViewModel.linearGradient)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
             } else {
                 Text("Fetching playlist...")

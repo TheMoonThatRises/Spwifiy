@@ -12,6 +12,13 @@ extension Color {
         let hue: CGFloat
         let saturation: CGFloat
         let brightness: CGFloat
+
+        func toRGB() -> NSColor {
+            return NSColor(hue: hue,
+                           saturation: saturation,
+                           brightness: brightness,
+                           alpha: 1)
+        }
     }
 
     func toHSB() -> HSB {
@@ -24,12 +31,5 @@ extension Color {
         nsColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: nil)
 
         return HSB(hue: hue, saturation: saturation, brightness: brightness)
-    }
-
-    static func hsbToRGB(hsb: HSB) -> NSColor {
-        return NSColor(hue: hsb.hue,
-                       saturation: hsb.saturation,
-                       brightness: hsb.brightness,
-                       alpha: 1)
     }
 }
