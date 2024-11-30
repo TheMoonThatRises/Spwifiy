@@ -41,7 +41,7 @@ extension SpotifyCache {
         let ids = artistIds.map { SpotifyIdentifier(id: $0, idCategory: .artist) }
 
         return try await withThrowingTaskGroup(of: [Artist].self) { taskGroup in
-            for idsChunk in ids.splitInSubArrays(into: ids.count % 50) {
+            for idsChunk in ids.splitInSubArrays(into: ids.count % 100) {
                 taskGroup.addTask {
                     let result = try await spotifyViewModel.spotifyRequest {
                         spotifyViewModel.spotify.artists(idsChunk)
