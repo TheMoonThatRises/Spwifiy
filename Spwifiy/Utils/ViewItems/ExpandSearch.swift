@@ -10,6 +10,7 @@ import SwiftUI
 struct ExpandSearch: View {
 
     @State var didSelectSearch: Bool = false
+    @FocusState var isFocused: Bool
 
     @Binding var searchText: String
 
@@ -33,7 +34,11 @@ struct ExpandSearch: View {
                         Text("Search")
                             .font(.title3)
                     }
+                    .focused($isFocused)
                     .padding(.trailing, 10)
+                    .onAppear {
+                        isFocused = true
+                    }
                 }
             }
         }
