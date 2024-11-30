@@ -25,7 +25,7 @@ class SelectedPlaylistViewModel: GenericPlaylistViewModel {
         super.init(spotifyCache: spotifyCache)
 
         self.playlistDetails = spotifyCache[playlistId: playlist.id]
-        self.tracks = spotifyCache[playlistTrackId: playlist.id] ?? []
+        self.allTracks = spotifyCache[playlistTrackId: playlist.id] ?? []
 
         self.calcTotalDuration()
         self.sortGenres()
@@ -61,7 +61,7 @@ class SelectedPlaylistViewModel: GenericPlaylistViewModel {
                 let trackResults = try await spotifyCache.fetchPlaylistTracks(playlistId: playlist.id)
 
                 withAnimation(.defaultAnimation) {
-                    tracks = trackResults
+                    allTracks = trackResults
 
                     calcTotalDuration()
                 }

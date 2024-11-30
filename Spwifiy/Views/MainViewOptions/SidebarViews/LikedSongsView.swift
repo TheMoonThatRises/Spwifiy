@@ -102,7 +102,7 @@ struct LikedSongsView: View {
         }
         .padding()
         .task {
-            await likedSongsViewModel.updateLikedSongs()
+            await likedSongsViewModel.updatePlaylistInfo()
         }
     }
 

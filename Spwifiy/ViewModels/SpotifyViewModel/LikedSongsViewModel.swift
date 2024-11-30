@@ -8,41 +8,33 @@
 import SwiftUI
 import SpotifyWebAPI
 
-class LikedSongsViewModel: ObservableObject {
-
-    private let spotifyCache: SpotifyCache
-
-    private var isFetchingLikedSongs: Bool = false
+class LikedSongsViewModel: GenericPlaylistViewModel {
 
     @Published var displayType: DisplayType = .list
 
-    @Published var tracks: [Track] = []
+    override init(spotifyCache: SpotifyCache) {
+        super.init(spotifyCache: spotifyCache)
 
-    @Published var searchText: String = ""
-
-    init(spotifyCache: SpotifyCache) {
-        self.spotifyCache = spotifyCache
-
-        self.tracks = spotifyCache.getSavedTracks()
+        self.allTracks = spotifyCache.getSavedTracks()
     }
 
     @MainActor
-    public func updateLikedSongs() async {
-        guard !isFetchingLikedSongs else {
+    override public func updatePlaylistInfo() async {
+        guard !isFetchingPlaylist else {
             return
         }
 
-        isFetchingLikedSongs = true
+        isFetchingPlaylist = true
 
         defer {
-            isFetchingLikedSongs = false
+            isFetchingPlaylist = false
         }
 
         do {
             let savedTracks = try await spotifyCache.fetchSavedTracks()
 
             withAnimation(.defaultAnimation) {
-                tracks = savedTracks
+                allTracks = savedTracks
             }
         } catch {
             print("unable to refresh liked songs: \(error)")

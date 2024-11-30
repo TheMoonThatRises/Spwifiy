@@ -32,21 +32,23 @@ struct PlaylistSongListElement: View {
     }
 
     var body: some View {
-        LazyVGrid(columns: columnFormat, alignment: .leading) {
-            Text("#")
+        if (showFlags & PlaylistShowFlags.noSongListTitle) == 0 {
+            LazyVGrid(columns: columnFormat, alignment: .leading) {
+                Text("#")
 
-            Text("Title")
+                Text("Title")
 
-            if (showFlags & PlaylistShowFlags.album) == 0 {
-                Text("Album")
+                if (showFlags & PlaylistShowFlags.album) == 0 {
+                    Text("Album")
+                }
+
+                Text("Duration")
+
+                Spacer()
             }
 
-            Text("Duration")
-
-            Spacer()
+            Divider()
         }
-
-        Divider()
 
         ScrollView {
             LazyVGrid(columns: columnFormat, alignment: .leading) {

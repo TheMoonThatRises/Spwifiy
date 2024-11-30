@@ -13,6 +13,7 @@ class PlaylistShowFlags {
     static let none = 1 << 1
     static let album = 1 << 2
     static let largerSide = 1 << 3
+    static let noSongListTitle = 1 << 4
 }
 
 struct SelectedPlaylistView: View {
