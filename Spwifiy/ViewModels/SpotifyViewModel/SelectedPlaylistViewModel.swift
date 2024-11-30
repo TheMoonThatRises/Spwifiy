@@ -16,7 +16,13 @@ class SelectedPlaylistViewModel: ObservableObject {
 
     private var isFetchingPlaylistDetails: Bool = false
 
-    private var artistIds: [String] = []
+    private var artistIds: [String] = [] {
+        didSet {
+            populateArtists(
+                artists: sortArtist(artistResults: spotifyCache.getArtists(artistIds: artistIds))
+            )
+        }
+    }
 
     @Published var playlistDetails: Playlist<PlaylistItems>?
     @Published var artists: [Artist] = [] {
@@ -24,7 +30,12 @@ class SelectedPlaylistViewModel: ObservableObject {
             sortGenres()
         }
     }
-    @Published var tracks: [Track] = []
+    @Published var tracks: [Track] = [] {
+        didSet {
+            updateArtists()
+        }
+    }
+    @Published var savedTracks: [Bool] = []
 
     @Published var genreList: [String] = []
 
@@ -46,7 +57,6 @@ class SelectedPlaylistViewModel: ObservableObject {
 
     @Published var totalDuration: HumanFormat?
 
-    @Published var didSelectSearch: Bool = false
     @Published var searchText: String = ""
 
     var didPlaylistChange: Bool {
@@ -62,11 +72,6 @@ class SelectedPlaylistViewModel: ObservableObject {
         self.populateTracks(tracks: spotifyCache[playlistTrackId: playlist.id] ?? [])
 
         self.calcTotalDuration()
-        self.updateArtists()
-
-        self.populateArtists(
-            artists: self.sortArtist(artistResults: spotifyCache.getArtists(artistIds: self.artistIds))
-        )
     }
 
     @MainActor
@@ -74,15 +79,16 @@ class SelectedPlaylistViewModel: ObservableObject {
         let willUpdatePlaylist = didPlaylistChange || playlistDetails == nil
         let willUpdateTracks = tracks.isEmpty || willUpdatePlaylist
         let willUpdateArtists = artists.isEmpty || willUpdateTracks
+        let willUpdateSavedTracks = savedTracks.isEmpty || willUpdateArtists
 
-        guard !isFetchingPlaylistDetails && willUpdateArtists else {
+        guard !isFetchingPlaylistDetails && willUpdateSavedTracks else {
             return
         }
 
         isFetchingPlaylistDetails = true
 
         defer {
-            self.isFetchingPlaylistDetails = false
+            isFetchingPlaylistDetails = false
         }
 
         do {
@@ -113,6 +119,15 @@ class SelectedPlaylistViewModel: ObservableObject {
                     populateArtists(artists: artistResults)
                 }
             }
+
+//            if willUpdateSavedTracks {
+//                let savedTracksResult = try await spotifyCache
+//                    .fetchSavedTracksContain(trackIds: tracks.map { $0.id ?? "" })
+//
+//                withAnimation(.defaultAnimation) {
+//                    savedTracks = savedTracksResult
+//                }
+//            }
         } catch {
             print("unable to refresh playlist details: \(error)")
         }
@@ -167,6 +182,11 @@ class SelectedPlaylistViewModel: ObservableObject {
 
             Task { @MainActor in
                 self.tracks.append(contentsOf: tracks.suffix(tracks.count - max))
+
+//                let savedTracksCache = spotifyCache.getSavedTrackContains(trackIds: self.tracks.map { $0.id ?? "" })
+//                self.savedTracks = savedTracksCache.count < tracks.count
+//                    ? [Bool](repeating: false, count: tracks.count)
+//                    : savedTracksCache
             }
         }
     }

@@ -10,12 +10,14 @@ import SpotifyWebAPI
 
 struct PlaylistTopElement: View {
 
-    var playlist: Playlist<PlaylistItems>
+    @Binding var playlist: Playlist<PlaylistItems>?
+    @Binding var album: Album?
 
-    @ObservedObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
+    @Binding var totalDuration: HumanFormat?
+    @Binding var searchText: String
 
     var body: some View {
-        Text(playlist.name)
+        Text(playlist?.name ?? album?.name ?? "Unknown")
             .font(.custom("Satoshi-Black", size: 40))
             .fontWeight(.black)
             .foregroundStyle(.fgPrimary)
@@ -28,7 +30,7 @@ struct PlaylistTopElement: View {
                 .font(.callout)
                 .foregroundStyle(.fgSecondary)
 
-            Text(playlist.owner?.displayName ?? "unknown")
+            Text(playlist?.owner?.displayName ?? album?.artists?.first?.name ?? "Unknown")
                 .font(.callout)
                 .foregroundStyle(.fgPrimary)
 
@@ -36,7 +38,7 @@ struct PlaylistTopElement: View {
                 .frame(width: 3, height: 3)
                 .foregroundStyle(.fgSecondary)
 
-            Text("\(playlist.items.total) songs")
+            Text("\(playlist?.items.total ?? album?.totalTracks ?? 0) songs")
                 .font(.callout)
                 .foregroundStyle(.fgSecondary)
 
@@ -44,7 +46,7 @@ struct PlaylistTopElement: View {
                 .frame(width: 3, height: 3)
                 .foregroundStyle(.fgSecondary)
 
-            if let duration = selectedPlaylistViewModel.totalDuration {
+            if let duration = totalDuration {
                 Text("\(duration.hours) hr \(duration.minutes) min")
                     .font(.callout)
                     .foregroundStyle(.fgSecondary)
@@ -127,38 +129,7 @@ struct PlaylistTopElement: View {
 
             Spacer()
 
-            Group {
-                HStack {
-                    Button {
-                        withAnimation {
-                            selectedPlaylistViewModel.didSelectSearch.toggle()
-                        }
-                    } label: {
-                        Image("spwifiy.search")
-                            .resizable()
-                            .frame(width: 40, height: 40)
-                    }
-                    .buttonStyle(.plain)
-                    .cursorHover(.pointingHand)
-
-                    if selectedPlaylistViewModel.didSelectSearch {
-                        TextField(text: $selectedPlaylistViewModel.searchText) {
-                            Text("Search")
-                                .font(.title3)
-                        }
-                        .padding(.trailing, 10)
-                    }
-                }
-            }
-            .foregroundStyle(selectedPlaylistViewModel.didSelectSearch ? .fgPrimary : .fgSecondary)
-            .frame(maxWidth: 300)
-            .overlay {
-                if selectedPlaylistViewModel.didSelectSearch {
-                    RoundedRectangle(cornerRadius: 5)
-                        .foregroundStyle(.fgPrimary.opacity(0.1))
-                        .allowsHitTesting(false)
-                }
-            }
+            ExpandSearch(searchText: $searchText)
         }
         .foregroundStyle(.fgSecondary)
     }

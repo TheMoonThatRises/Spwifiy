@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PlayingElementView: View {
 
-    @State var progress: Double = 84/177
+    @State var progress: Double = 0
 
     var body: some View {
         HStack {
@@ -64,12 +64,12 @@ struct PlayingElementView: View {
                 .buttonStyle(.plain)
                 .cursorHover(.pointingHand)
 
-                Text("1:24")
+                Text("-:-")
 
                 ProgressView(value: progress)
                     .frame(minWidth: 100)
 
-                Text("2:57")
+                Text("-:-")
 
                 Button {
 
@@ -83,19 +83,19 @@ struct PlayingElementView: View {
             }
 
             Group {
-                Image("devasset_playingalbum")
+                Image("")
                     .resizable()
                     .frame(width: 40, height: 40)
                     .clipShape(RoundedRectangle(cornerRadius: 5))
 
                 VStack(alignment: .leading) {
-                    Text("TTYL (Feat. IV JAY)")
+                    Text("Title")
                         .foregroundStyle(.fgPrimary)
 
                     Button {
 
                     } label: {
-                        Text("Trade L, IV Jay")
+                        Text("Artists")
                     }
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)
@@ -103,7 +103,7 @@ struct PlayingElementView: View {
                     Button {
 
                     } label: {
-                        Text("UNSTEADY")
+                        Text("Album")
                     }
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)

@@ -13,7 +13,8 @@ struct PlaylistSongListElement: View {
 
     var showFlags: Int
 
-    @ObservedObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
+    @Binding var tracks: [Track]
+    @Binding var savedTracks: [Bool]
 
     private var columnFormat: [GridItem] {
         var defaultColumn: [GridItem] = [
@@ -49,7 +50,8 @@ struct PlaylistSongListElement: View {
 
         ScrollView {
             LazyVGrid(columns: columnFormat, alignment: .leading) {
-                ForEach(Array(selectedPlaylistViewModel.tracks.enumerated()), id: \.offset) { index, track in
+                ForEach(Array(tracks.enumerated()), id: \.offset) { index, track in
+//                ForEach(Array(zip(tracks, savedTracks).enumerated()), id: \.offset) { index, item in
                     Text(String(index + 1))
 
                     HStack {
@@ -88,9 +90,10 @@ struct PlaylistSongListElement: View {
                     Button {
 
                     } label: {
-                        Image("spwifiy.like")
+                        Image(false ? "spwifiy.like.fill" : "spwifiy.like")
                             .resizable()
                             .frame(width: 40, height: 40)
+                            .foregroundStyle(false ? .primary : .fgSecondary)
                     }
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)

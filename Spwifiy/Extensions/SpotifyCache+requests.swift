@@ -93,4 +93,48 @@ extension SpotifyCache {
         return tracks
     }
 
+    public func fetchSavedTracks() async throws -> [Track] {
+        guard let spotifyViewModel else {
+            throw SpwifiyErrors.spotifyNoViewModel
+        }
+
+        let savedTracks = try await spotifyViewModel.spotifyRequest {
+            spotifyViewModel.spotify.currentUserSavedTracks()
+                .extendPagesConcurrently(spotifyViewModel.spotify)
+                .collectAndSortByOffset()
+        }.compactMap { $0.item }
+
+        savedTracksCache = savedTracks
+
+        return savedTracks
+    }
+
+    public func fetchSavedTracksContain(trackIds: [String]) async throws -> [Bool] {
+        guard let spotifyViewModel else {
+            throw SpwifiyErrors.spotifyNoViewModel
+        }
+
+        let ids = trackIds.map { SpotifyIdentifier(id: $0, idCategory: .track) }
+
+        return try await withThrowingTaskGroup(of: [Bool].self) { taskGroup in
+            for idsChunk in ids.splitInSubArrays(into: ids.count % 100) {
+                taskGroup.addTask {
+                    let result = try await spotifyViewModel.spotifyRequest {
+                        spotifyViewModel.spotify.currentUserSavedTracksContains(idsChunk)
+                    }.compactMap { $0 }
+
+                    zip(idsChunk, result).forEach { id, doesContain in
+                        self.savedTracksContainsCache[id.id] = doesContain
+                    }
+
+                    return result
+                }
+            }
+
+            return try await taskGroup.reduce(into: [Bool]()) { partialResult, doesContain in
+                partialResult.append(contentsOf: doesContain)
+            }
+        }
+    }
+
 }

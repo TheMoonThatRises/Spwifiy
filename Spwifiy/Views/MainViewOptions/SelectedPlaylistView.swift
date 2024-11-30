@@ -10,10 +10,9 @@ import CachedAsyncImage
 import SpotifyWebAPI
 
 class PlaylistShowFlags {
-    static let album = 1 << 1
-    static let sideBar = 1 << 2
+    static let none = 1 << 1
+    static let album = 1 << 2
     static let largerSide = 1 << 3
-    static let topView = 1 << 4
 }
 
 struct SelectedPlaylistView: View {
@@ -35,28 +34,30 @@ struct SelectedPlaylistView: View {
             if let playlist = selectedPlaylistViewModel.playlistDetails {
                 HStack {
                     VStack(alignment: .leading) {
-                        if (showFlags & PlaylistShowFlags.topView) > 0 {
-                            PlaylistTopElement(playlist: playlist,
-                                               selectedPlaylistViewModel: selectedPlaylistViewModel)
+                        PlaylistTopElement(playlist: $selectedPlaylistViewModel.playlistDetails,
+                                           album: .constant(nil),
+                                           totalDuration: $selectedPlaylistViewModel.totalDuration,
+                                           searchText: $selectedPlaylistViewModel.searchText)
 
-                            Spacer()
-                                .frame(height: 20)
-                        }
+                        Spacer()
+                            .frame(height: 20)
 
                         PlaylistSongListElement(showFlags: showFlags,
-                                                selectedPlaylistViewModel: selectedPlaylistViewModel)
+                                                tracks: $selectedPlaylistViewModel.tracks,
+                                                savedTracks: $selectedPlaylistViewModel.savedTracks)
 
                         Spacer()
                     }
                     .padding()
 
-                    if (showFlags & PlaylistShowFlags.sideBar) > 0 {
-                        Spacer()
+                    Spacer()
 
-                        PlaylistSidebarElement(playlist: playlist,
-                                               showFlags: showFlags,
-                                               selectedPlaylistViewModel: selectedPlaylistViewModel)
-                    }
+                    PlaylistSidebarElement(showFlags: showFlags,
+                                           imageURL: playlist.images.first?.url,
+                                           uri: playlist.uri,
+                                           dominantColor: $selectedPlaylistViewModel.dominantColor,
+                                           genreList: $selectedPlaylistViewModel.genreList,
+                                           artists: $selectedPlaylistViewModel.artists)
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "-:-" : {
+
+    },
     "#" : {
 
     },
@@ -15,12 +18,6 @@
       }
     },
     "%lld songs" : {
-
-    },
-    "1:24" : {
-
-    },
-    "2:57" : {
 
     },
     "Album" : {
@@ -53,6 +50,9 @@
     "Fetching playlist..." : {
 
     },
+    "Filter: All" : {
+
+    },
     "Folders" : {
 
     },
@@ -77,6 +77,9 @@
     "Playlists" : {
 
     },
+    "Recent" : {
+
+    },
     "Saves" : {
 
     },
@@ -86,19 +89,10 @@
     "Title" : {
 
     },
-    "Trade L, IV Jay" : {
-
-    },
-    "TTYL (Feat. IV JAY)" : {
-
-    },
     "Unable to get selected playlist" : {
 
     },
     "Unknown error" : {
-
-    },
-    "UNSTEADY" : {
 
     }
   },

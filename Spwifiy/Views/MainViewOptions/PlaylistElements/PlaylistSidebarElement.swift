@@ -11,10 +11,14 @@ import CachedAsyncImage
 
 struct PlaylistSidebarElement: View {
 
-    var playlist: Playlist<PlaylistItems>
     var showFlags: Int
 
-    @ObservedObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
+    var imageURL: URL?
+    var uri: String
+
+    @Binding var dominantColor: Color
+    @Binding var genreList: [String]
+    @Binding var artists: [Artist]
 
     var sidebarSize: CGFloat {
         (showFlags & PlaylistShowFlags.largerSide) > 0 ? 400 : 260
@@ -22,12 +26,12 @@ struct PlaylistSidebarElement: View {
 
     var body: some View {
         VStack {
-            CachedAsyncImage(url: playlist.images.first?.url, urlCache: .imageCache) { image in
+            CachedAsyncImage(url: imageURL, urlCache: .imageCache) { image in
                 image
                     .resizable()
                     .task {
-                        let dominantColor = image.calculateDominantColor(id: playlist.uri)
-                        selectedPlaylistViewModel.dominantColor = dominantColor ?? .fgPrimary
+                        let color = image.calculateDominantColor(id: uri)
+                        dominantColor = color ?? .fgPrimary
                     }
             } placeholder: {
                 ProgressView()
@@ -40,7 +44,7 @@ struct PlaylistSidebarElement: View {
             .clipShape(RoundedRectangle(cornerRadius: 5))
 
             VStack {
-                WrapHStack(items: selectedPlaylistViewModel.genreList) { item in
+                WrapHStack(items: genreList) { item in
                     Text(item)
                         .foregroundStyle(.fgSecondary)
                         .font(.callout)
@@ -54,7 +58,7 @@ struct PlaylistSidebarElement: View {
 
                 ScrollView {
                     LazyVStack {
-                        ForEach(selectedPlaylistViewModel.artists, id: \.id) { artist in
+                        ForEach(artists, id: \.id) { artist in
                             Button {
 
                             } label: {

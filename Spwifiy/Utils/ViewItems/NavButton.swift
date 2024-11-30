@@ -7,18 +7,18 @@
 
 import SwiftUI
 
-public struct NavButton<Label>: View where Label: View {
+public struct NavButton<Label: View, Option>: View where Option: Equatable {
 
-    @Binding var currentView: MainViewOptions
+    @Binding var currentView: Option
 
-    let currentButton: MainViewOptions
+    let currentButton: Option
     let isSelected: Bool
 
     let action: @MainActor () -> Void
     let label: Label
 
-    init(currentButton: MainViewOptions,
-         currentView: Binding<MainViewOptions>,
+    init(currentButton: Option,
+         currentView: Binding<Option>,
          action: @escaping @MainActor () -> Void,
          @ViewBuilder label: () -> Label) {
         self._currentView = currentView

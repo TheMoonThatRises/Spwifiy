@@ -23,6 +23,10 @@ class SpotifyCache: ObservableObject {
     var playlistCache: [String: Playlist<PlaylistItems>] = [:]
     var playlistTrackCache: [String: [Track]] = [:]
 
+    var savedTracksCache: [Track] = []
+
+    var savedTracksContainsCache: [String: Bool] = [:]
+
     subscript(artistId id: String) -> Artist? {
         artistsCache[id]
     }
@@ -39,8 +43,20 @@ class SpotifyCache: ObservableObject {
         playlistTrackCache[id]
     }
 
+    subscript(isSavedTrack id: String) -> Bool? {
+        savedTracksContainsCache[id]
+    }
+
     public func getArtists(artistIds: [String]) -> [Artist] {
         artistIds.compactMap { self[artistId: $0] }
+    }
+
+    public func getSavedTracks() -> [Track] {
+        savedTracksCache
+    }
+
+    public func getSavedTrackContains(trackIds: [String]) -> [Bool] {
+        trackIds.map { savedTracksContainsCache[$0] ?? false }
     }
 
     public func setSpotifyViewModel(spotifyViewModel: SpotifyViewModel) {
