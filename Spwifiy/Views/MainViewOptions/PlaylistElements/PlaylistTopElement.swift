@@ -47,7 +47,7 @@ struct PlaylistTopElement: View {
                 .foregroundStyle(.fgSecondary)
 
             if let duration = totalDuration {
-                Text("\(duration.hours) hr \(duration.minutes) min")
+                Text("\(duration.hours + duration.days * 24) hr \(duration.minutes) min")
                     .font(.callout)
                     .foregroundStyle(.fgSecondary)
             }
