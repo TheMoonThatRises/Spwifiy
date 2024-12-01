@@ -18,7 +18,7 @@ struct PlaylistTopElement: View {
 
     var body: some View {
         Text(playlist?.name ?? album?.name ?? "Unknown")
-            .font(.custom("Satoshi-Black", size: 40))
+            .font(.satoshiBlack(40))
             .fontWeight(.black)
             .foregroundStyle(.fgPrimary)
 
