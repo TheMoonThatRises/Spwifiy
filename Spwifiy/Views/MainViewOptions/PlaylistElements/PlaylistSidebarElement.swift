@@ -20,6 +20,8 @@ struct PlaylistSidebarElement: View {
     @Binding var genreList: [String]
     @Binding var artists: [Artist]
 
+    @Binding var selectedArtist: Artist?
+
     var sidebarSize: CGFloat {
         (showFlags & PlaylistShowFlags.largerSide) > 0 ? 400 : 260
     }
@@ -52,7 +54,7 @@ struct PlaylistSidebarElement: View {
                     LazyVStack {
                         ForEach(artists, id: \.id) { artist in
                             Button {
-
+                                selectedArtist = artist
                             } label: {
                                 HStack {
                                     CroppedCachedAsyncImage(url: artist.images?.first?.url,

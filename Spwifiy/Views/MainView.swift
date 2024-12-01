@@ -52,7 +52,8 @@ struct MainView: View {
                                 SelectedPlaylistView(
                                     showFlags: PlaylistShowFlags.none,
                                     spotifyCache: spotifyCache,
-                                    playlist: selectedPlaylist
+                                    playlist: selectedPlaylist,
+                                    selectedArtist: $mainViewModel.selectedArtist
                                 )
                             } else {
                                 Text("Unable to get selected playlist")

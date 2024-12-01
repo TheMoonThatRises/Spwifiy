@@ -22,12 +22,17 @@ struct SelectedPlaylistView: View {
 
     @StateObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
 
-    init(showFlags: Int, spotifyCache: SpotifyCache, playlist: Playlist<PlaylistItemsReference>) {
+    @Binding var selectedArtist: Artist?
+
+    init(showFlags: Int, spotifyCache: SpotifyCache,
+         playlist: Playlist<PlaylistItemsReference>,
+         selectedArtist: Binding<Artist?>) {
         self.showFlags = showFlags
         self._selectedPlaylistViewModel = StateObject(
             wrappedValue: SelectedPlaylistViewModel(spotifyCache: spotifyCache,
                                                     playlist: playlist)
         )
+        self._selectedArtist = selectedArtist
     }
 
     var body: some View {
@@ -58,7 +63,8 @@ struct SelectedPlaylistView: View {
                                            uri: playlist.uri,
                                            dominantColor: $selectedPlaylistViewModel.dominantColor,
                                            genreList: $selectedPlaylistViewModel.genreList,
-                                           artists: $selectedPlaylistViewModel.artists)
+                                           artists: $selectedPlaylistViewModel.artists,
+                                           selectedArtist: $selectedArtist)
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
