@@ -70,6 +70,7 @@ struct SpwifiyApp: App {
             .frame(minWidth: 950, minHeight: 550)
             .background(.bgMain)
             .environment(\.font, .satoshi)
+            .tracking(0.5)
             .task {
                 if spotifyDataViewModel.spotifyViewModel == nil {
                     spotifyDataViewModel.setSpotifyViewModel(spotifyViewModel: spotifyViewModel)
