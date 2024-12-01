@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SpotifyWebAPI
 
 enum DisplayType {
     case list, grid
@@ -15,10 +16,18 @@ struct LikedSongsView: View {
 
     @StateObject var likedSongsViewModel: LikedSongsViewModel
 
-    init(spotifyCache: SpotifyCache) {
+    @Binding var selectedArtist: Artist?
+    @Binding var selectedAlbum: Album?
+
+    init(spotifyCache: SpotifyCache,
+         selectedArtist: Binding<Artist?>,
+         selectedAlbum: Binding<Album?>) {
         self._likedSongsViewModel = StateObject(
             wrappedValue: LikedSongsViewModel(spotifyCache: spotifyCache)
         )
+
+        self._selectedArtist = selectedArtist
+        self._selectedAlbum = selectedAlbum
     }
 
     var body: some View {
@@ -98,7 +107,9 @@ struct LikedSongsView: View {
 
             PlaylistSongListElement(showFlags: 0,
                                     tracks: $likedSongsViewModel.tracks,
-                                    savedTracks: .constant([]))
+                                    savedTracks: .constant([]),
+                                    selectedArtist: $selectedArtist,
+                                    selectedAlbum: $selectedAlbum)
         }
         .padding()
         .task {

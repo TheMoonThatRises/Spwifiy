@@ -25,7 +25,7 @@ class ArtistViewModel: ObservableObject {
     init(spotifyCache: SpotifyCache, artist: Artist) {
         self.spotifyCache = spotifyCache
 
-        self.artist = artist
+        self.artist = artist.followers == nil ? spotifyCache[artistId: artist.id ?? ""] ?? artist : artist
         self.topTracks = spotifyCache[artistTopTracksId: artist.id ?? ""] ?? []
 
         Task { @MainActor in
@@ -39,7 +39,8 @@ class ArtistViewModel: ObservableObject {
 
     @MainActor
     public func updateArtistDetails() async {
-        let willUpdateTopTracks = topTracks.isEmpty
+        let willUpdateArtist = artist.followers == nil
+        let willUpdateTopTracks = willUpdateArtist || topTracks.isEmpty
         let willUpdateMonthlyListeners = monthlyListeners == nil
 
         guard !isFetchingArtistDetails &&
@@ -52,6 +53,10 @@ class ArtistViewModel: ObservableObject {
 
         do {
             if let id = artist.id {
+                if willUpdateArtist {
+                    try await getArtist(artistId: id)
+                }
+
                 if willUpdateTopTracks {
                     topTracks = try await spotifyCache.fetchArtistTopTracks(artistId: id)
 
@@ -64,6 +69,15 @@ class ArtistViewModel: ObservableObject {
             }
         } catch {
             print("unable to refresh artist details: \(error)")
+        }
+    }
+
+    @MainActor
+    private func getArtist(artistId: String) async throws {
+        if let artistCache = spotifyCache[artistId: artistId] {
+            artist = artistCache
+        } else {
+            artist = try await spotifyCache.fetchArtist(artistId: artistId)
         }
     }
 

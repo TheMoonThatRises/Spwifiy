@@ -40,12 +40,12 @@ class SpotifyScraper {
     }
 
     public func getArtistMonthlyListeners(artistId: String) async -> Int? {
-        guard let html = await getArtistHTML(artistId: artistId) else {
-            return nil
-        }
-
         if let cacheListeners = monthlyListenersCache[artistId] {
             return cacheListeners
+        }
+
+        guard let html = await getArtistHTML(artistId: artistId) else {
+            return nil
         }
 
         let monthlyListeners = Int(

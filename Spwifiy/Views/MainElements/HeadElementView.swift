@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SpotifyWebAPI
-import CachedAsyncImage
 
 public struct HeadElementView: View {
 

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import CachedAsyncImage
 import SpotifyWebAPI
 
 struct ArtistView: View {

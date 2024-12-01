@@ -20,7 +20,7 @@ extension Color {
 }
 
 extension ShapeStyle where Self == Color {
-    static var primary: Color {
+    static var sPrimary: Color {
         Color(hex: 0x1ED760)
     }
 

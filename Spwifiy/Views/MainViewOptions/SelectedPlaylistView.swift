@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import CachedAsyncImage
 import SpotifyWebAPI
 
 class PlaylistShowFlags {
@@ -23,16 +22,22 @@ struct SelectedPlaylistView: View {
     @StateObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
 
     @Binding var selectedArtist: Artist?
+    @Binding var selectedAlbum: Album?
 
-    init(showFlags: Int, spotifyCache: SpotifyCache,
+    init(showFlags: Int,
+         spotifyCache: SpotifyCache,
          playlist: Playlist<PlaylistItemsReference>,
-         selectedArtist: Binding<Artist?>) {
+         selectedArtist: Binding<Artist?>,
+         selectedAlbum: Binding<Album?>) {
         self.showFlags = showFlags
+
         self._selectedPlaylistViewModel = StateObject(
             wrappedValue: SelectedPlaylistViewModel(spotifyCache: spotifyCache,
                                                     playlist: playlist)
         )
+
         self._selectedArtist = selectedArtist
+        self._selectedAlbum = selectedAlbum
     }
 
     var body: some View {
@@ -50,7 +55,9 @@ struct SelectedPlaylistView: View {
 
                         PlaylistSongListElement(showFlags: showFlags,
                                                 tracks: $selectedPlaylistViewModel.tracks,
-                                                savedTracks: $selectedPlaylistViewModel.savedTracks)
+                                                savedTracks: $selectedPlaylistViewModel.savedTracks,
+                                                selectedArtist: $selectedArtist,
+                                                selectedAlbum: $selectedAlbum)
 
                         Spacer()
                     }

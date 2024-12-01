@@ -59,7 +59,7 @@ struct ArtistBannerElement: View {
                             Spacer()
                                 .frame(height: 25)
 
-                            Text("\(monthlyListeners?.formatted() ?? ". . .") monthly listeners")
+                            Text("\(monthlyListeners?.formatted() ?? "-") monthly listeners")
                                 .font(.title3)
                         }
 

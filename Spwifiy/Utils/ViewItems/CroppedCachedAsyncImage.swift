@@ -35,7 +35,7 @@ struct CroppedCachedAsyncImage<GenericShape: Shape>: View {
                         onLoadTask?(image)
                     }
             default:
-                Image("spwifiy.profile.default")
+                Image("spwifiy.noimage")
                     .resizable()
             }
         }

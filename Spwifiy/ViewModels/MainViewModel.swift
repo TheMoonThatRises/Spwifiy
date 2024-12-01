@@ -10,7 +10,14 @@ import SpotifyWebAPI
 
 class MainViewModel: ObservableObject {
 
-    @Published var currentView: MainViewOptions = .home
+    @Published var currentView: MainViewOptions = .home {
+        willSet {
+            withAnimation(.defaultAnimation) {
+                currentViewAnimated = newValue
+            }
+        }
+    }
+    @Published var currentViewAnimated: MainViewOptions = .home
 
     @Published var selectedArtist: Artist? {
         didSet {
@@ -27,5 +34,7 @@ class MainViewModel: ObservableObject {
             currentView = .selectedAlbum
         }
     }
+
+    @Published var playingTrack: Track?
 
 }

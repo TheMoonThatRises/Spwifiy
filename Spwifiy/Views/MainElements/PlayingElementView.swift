@@ -6,10 +6,22 @@
 //
 
 import SwiftUI
+import SpotifyWebAPI
 
 struct PlayingElementView: View {
 
-    @State var progress: Double = 0
+    @StateObject var playingViewModel: PlayingViewModel
+
+    @Binding var selectedArtist: Artist?
+    @Binding var selectedAlbum: Album?
+
+    init(playingTrack: Binding<Track?>,
+         selectedArtist: Binding<Artist?>,
+         selectedAlbum: Binding<Album?>) {
+        self._playingViewModel = StateObject(wrappedValue: PlayingViewModel(playingTrack: playingTrack))
+        self._selectedArtist = selectedArtist
+        self._selectedAlbum = selectedAlbum
+    }
 
     var body: some View {
         HStack {
@@ -44,32 +56,18 @@ struct PlayingElementView: View {
                 .buttonStyle(.plain)
                 .cursorHover(.pointingHand)
 
-                Button {
+                DotButton(toggle: $playingViewModel.isShuffled,
+                          image: Image("spwifiy.shuffle"))
 
-                } label: {
-                    Image("spwifiy.shuffle")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
+                DotButton(toggle: $playingViewModel.isLooping,
+                          image: Image("spwifiy.loop"))
 
-                Button {
+                Text(playingViewModel.currentTime?.humanReadable.description ?? "-:-")
 
-                } label: {
-                    Image("spwifiy.loop")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
-
-                Text("-:-")
-
-                ProgressView(value: progress)
+                ProgressView(value: playingViewModel.progress ?? 0)
                     .frame(minWidth: 100)
 
-                Text("-:-")
+                Text(playingViewModel.totalTime?.humanReadable.description ?? "-:-")
 
                 Button {
 
@@ -83,25 +81,27 @@ struct PlayingElementView: View {
             }
 
             Group {
-                Image("")
-                    .resizable()
-                    .frame(width: 40, height: 40)
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                CroppedCachedAsyncImage(url: playingViewModel.playingTrack?.album?.images?.first?.url,
+                                        width: 40,
+                                        height: 40,
+                                        alignment: .center,
+                                        clipShape: RoundedRectangle(cornerRadius: 5))
+                    .foregroundStyle(.fgSecondary)
 
                 VStack(alignment: .leading) {
-                    Text("Title")
+                    Text(playingViewModel.playingTrack?.name ?? "Title")
                         .foregroundStyle(.fgPrimary)
 
                     Button {
-
+                        selectedArtist = playingViewModel.playingTrack?.artists?.first
                     } label: {
-                        Text("Artists")
+                        Text(playingViewModel.playingTrack?.artists?.description ?? "Artist")
                     }
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)
 
                     Button {
-
+                        selectedAlbum = playingViewModel.playingTrack?.album
                     } label: {
                         Text("Album")
                     }
@@ -109,6 +109,7 @@ struct PlayingElementView: View {
                     .cursorHover(.pointingHand)
                 }
             }
+            .lineLimit(1)
 
             Spacer()
 

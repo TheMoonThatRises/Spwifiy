@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SpotifyWebAPI
-import CachedAsyncImage
 
 struct PlaylistSongListElement: View {
 
@@ -15,6 +14,9 @@ struct PlaylistSongListElement: View {
 
     @Binding var tracks: [Track]
     @Binding var savedTracks: [Bool]
+
+    @Binding var selectedArtist: Artist?
+    @Binding var selectedAlbum: Album?
 
     private var columnFormat: [GridItem] {
         var defaultColumn: [GridItem] = [
@@ -72,13 +74,25 @@ struct PlaylistSongListElement: View {
                             Spacer()
                                 .frame(height: 5)
 
-                            Text(track.artists?.map { $0.name }.joined(separator: ", ") ?? "Unknown artists")
-                                .lineLimit(1)
+                            Button {
+                                selectedArtist = track.artists?.first
+                            } label: {
+                                Text(track.artists?.description ?? "Unknown artists")
+                                    .lineLimit(1)
+                            }
+                            .buttonStyle(.plain)
+                            .cursorHover(.pointingHand)
                         }
                     }
 
-                    Text(track.album?.name ?? "Unknown album")
-                        .lineLimit(2)
+                    Button {
+                        selectedAlbum = track.album
+                    } label: {
+                        Text(track.album?.name ?? "Unknown album")
+                            .lineLimit(2)
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
 
                     Text(track.durationMS?.humanReadable.description ?? "00:00")
 
@@ -88,7 +102,7 @@ struct PlaylistSongListElement: View {
                         Image(false ? "spwifiy.like.fill" : "spwifiy.like")
                             .resizable()
                             .frame(width: 40, height: 40)
-                            .foregroundStyle(false ? .primary : .fgSecondary)
+                            .foregroundStyle(false ? .sPrimary : .fgSecondary)
                     }
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)

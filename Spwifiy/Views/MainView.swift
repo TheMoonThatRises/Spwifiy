@@ -36,7 +36,7 @@ struct MainView: View {
                     Spacer()
 
                     Group {
-                        switch mainViewModel.currentView {
+                        switch mainViewModel.currentViewAnimated {
                         // default view
                         case .home:
                             HomeView(spotifyDataViewModel: spotifyDataViewModel,
@@ -44,7 +44,9 @@ struct MainView: View {
 
                         // sidebar views
                         case .likedSongs:
-                            LikedSongsView(spotifyCache: spotifyCache)
+                            LikedSongsView(spotifyCache: spotifyCache,
+                                           selectedArtist: $mainViewModel.selectedArtist,
+                                           selectedAlbum: $mainViewModel.selectedAlbum)
 
                         // layers deep abstracted view
                         case .selectedPlaylist:
@@ -53,7 +55,8 @@ struct MainView: View {
                                     showFlags: PlaylistShowFlags.none,
                                     spotifyCache: spotifyCache,
                                     playlist: selectedPlaylist,
-                                    selectedArtist: $mainViewModel.selectedArtist
+                                    selectedArtist: $mainViewModel.selectedArtist,
+                                    selectedAlbum: $mainViewModel.selectedAlbum
                                 )
                             } else {
                                 Text("Unable to get selected playlist")
@@ -80,7 +83,9 @@ struct MainView: View {
                             .allowsHitTesting(false)
                     }
 
-                    PlayingElementView()
+                    PlayingElementView(playingTrack: $mainViewModel.playingTrack,
+                                       selectedArtist: $mainViewModel.selectedArtist,
+                                       selectedAlbum: $mainViewModel.selectedAlbum)
                 }
             }
             .padding()
