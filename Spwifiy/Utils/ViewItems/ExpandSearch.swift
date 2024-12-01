@@ -51,6 +51,7 @@ struct ExpandSearch: View {
                     .allowsHitTesting(false)
             }
         }
+        .fixedSize(horizontal: !didSelectSearch, vertical: true)
     }
 
 }
