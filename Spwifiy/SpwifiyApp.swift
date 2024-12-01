@@ -48,15 +48,17 @@ struct SpwifiyApp: App {
             .handlesExternalEvents(preferring: ["{path of URL?}"], allowing: ["*"])
             .onOpenURL { url in
                 Task { @MainActor in
-                    do {
-                        showAuthLoading = true
+                    if url.absoluteString.contains(SpotifyViewModel.loginCallback) {
+                        do {
+                            showAuthLoading = true
 
-                        try await spotifyViewModel.spotifyRequestAccess(redirectURL: url)
-                    } catch {
-                        errorMessage = error.localizedDescription
+                            try await spotifyViewModel.spotifyRequestAccess(redirectURL: url)
+                        } catch {
+                            errorMessage = error.localizedDescription
+                        }
+
+                        showAuthLoading = false
                     }
-
-                    showAuthLoading = false
                 }
             }
             .toast(isPresenting: $showAuthLoading) {

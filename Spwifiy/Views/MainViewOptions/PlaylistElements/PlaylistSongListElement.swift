@@ -57,18 +57,11 @@ struct PlaylistSongListElement: View {
                     Text(String(index + 1))
 
                     HStack {
-                        CachedAsyncImage(url: track.album?.images?.first?.url, urlCache: .imageCache) { image in
-                            image
-                                .resizable()
-                        } placeholder: {
-                            ProgressView()
-                                .progressViewStyle(.circular)
-                                .controlSize(.small)
-                        }
-                        .scaledToFill()
-                        .frame(width: 50, height: 50, alignment: .center)
-                        .clipped()
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
+                        CroppedCachedAsyncImage(url: track.album?.images?.first?.url,
+                                                width: 50,
+                                                height: 50,
+                                                alignment: .center,
+                                                clipShape: RoundedRectangle(cornerRadius: 5))
 
                         VStack(alignment: .leading) {
                             Text(track.name)

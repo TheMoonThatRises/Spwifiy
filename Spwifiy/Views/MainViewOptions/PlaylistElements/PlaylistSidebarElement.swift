@@ -26,22 +26,14 @@ struct PlaylistSidebarElement: View {
 
     var body: some View {
         VStack {
-            CachedAsyncImage(url: imageURL, urlCache: .imageCache) { image in
-                image
-                    .resizable()
-                    .task {
-                        let color = image.calculateDominantColor(id: uri)
-                        dominantColor = color ?? .fgPrimary
-                    }
-            } placeholder: {
-                ProgressView()
-                    .progressViewStyle(.circular)
-                    .controlSize(.small)
+            CroppedCachedAsyncImage(url: imageURL,
+                                    width: sidebarSize,
+                                    height: sidebarSize,
+                                    alignment: .center,
+                                    clipShape: RoundedRectangle(cornerRadius: 5)) { image in
+                let color = image.calculateDominantColor(id: uri)
+                dominantColor = color ?? .fgPrimary
             }
-            .scaledToFill()
-            .frame(width: sidebarSize, height: sidebarSize, alignment: .center)
-            .clipped()
-            .clipShape(RoundedRectangle(cornerRadius: 5))
 
             VStack {
                 WrapHStack(items: genreList) { item in
@@ -63,19 +55,11 @@ struct PlaylistSidebarElement: View {
 
                             } label: {
                                 HStack {
-                                    CachedAsyncImage(url: artist.images?.first?.url,
-                                                     urlCache: .imageCache) { image in
-                                        image
-                                            .resizable()
-                                    } placeholder: {
-                                        ProgressView()
-                                            .progressViewStyle(.circular)
-                                            .controlSize(.small)
-                                    }
-                                    .scaledToFill()
-                                    .frame(width: 60, height: 60, alignment: .center)
-                                    .clipped()
-                                    .clipShape(Circle())
+                                    CroppedCachedAsyncImage(url: artist.images?.first?.url,
+                                                            width: 60,
+                                                            height: 60,
+                                                            alignment: .center,
+                                                            clipShape: Circle())
 
                                     Text(artist.name)
                                         .font(.title3)

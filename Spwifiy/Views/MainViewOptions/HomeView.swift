@@ -232,21 +232,13 @@ struct HomeViewPlaylistItem: View {
                     .fill(dominantColor.opacity(0.4))
                     .frame(width: 154, height: 6)
 
-                CachedAsyncImage(url: playlist.images.first?.url, urlCache: .imageCache) { image in
-                    image
-                        .resizable()
-                        .task {
-                            dominantColor = image.calculateDominantColor(id: playlist.uri) ?? .fgPrimary
-                        }
-                } placeholder: {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .controlSize(.small)
+                CroppedCachedAsyncImage(url: playlist.images.first?.url,
+                                        width: 170,
+                                        height: 170,
+                                        alignment: .center,
+                                        clipShape: RoundedRectangle(cornerRadius: 5)) { image in
+                    dominantColor = image.calculateDominantColor(id: playlist.uri) ?? .fgPrimary
                 }
-                .scaledToFill()
-                .frame(width: 170, height: 170, alignment: .center)
-                .clipped()
-                .clipShape(RoundedRectangle(cornerRadius: 5))
             }
 
             HStack {
@@ -287,18 +279,11 @@ struct HomeViewArtistItem: View {
 
     var body: some View {
         VStack(alignment: .center) {
-            CachedAsyncImage(url: artist.images?.first?.url, urlCache: .imageCache) { image in
-                image
-                    .resizable()
-            } placeholder: {
-                ProgressView()
-                    .progressViewStyle(.circular)
-                    .controlSize(.small)
-            }
-            .scaledToFill()
-            .frame(width: 170, height: 170, alignment: .center)
-            .clipped()
-            .clipShape(Circle())
+            CroppedCachedAsyncImage(url: artist.images?.first?.url,
+                                    width: 170,
+                                    height: 170,
+                                    alignment: .center,
+                                    clipShape: Circle())
 
             Spacer()
                 .frame(height: 20)

@@ -158,24 +158,11 @@ public struct HeadElementView: View {
 
                     NSApplication.shared.terminate(nil)
                 } label: {
-                    CachedAsyncImage(url: userProfile?.images?.first?.url, urlCache: .imageCache) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()
-                                .progressViewStyle(.circular)
-                                .controlSize(.small)
-                        case .success(let image):
-                            image
-                                .resizable()
-                        default:
-                            Image("spwifiy.profile.default")
-                                .resizable()
-                        }
-                    }
-                    .scaledToFill()
-                    .frame(width: 40, height: 40, alignment: .center)
-                    .clipped()
-                    .clipShape(Circle())
+                    CroppedCachedAsyncImage(url: userProfile?.images?.first?.url,
+                                            width: 40,
+                                            height: 40,
+                                            alignment: .center,
+                                            clipShape: Circle())
                 }
                 .toButton()
             }

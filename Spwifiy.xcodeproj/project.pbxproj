@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		346630062CFACCA900B5D8D9 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 346630052CFACCA900B5D8D9 /* SwiftyJSON */; };
 		B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */ = {isa = PBXBuildFile; productRef = B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */; };
 		B6E81A5D2CF3DD7A002060FA /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A5C2CF3DD7A002060FA /* AlertToast */; };
 		B6E81A602CF3EA39002060FA /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A5F2CF3EA39002060FA /* KeychainAccess */; };
@@ -73,6 +74,7 @@
 				B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */,
 				B6E81A632CF3EDF9002060FA /* CachedAsyncImage in Frameworks */,
 				B6E81A5D2CF3DD7A002060FA /* AlertToast in Frameworks */,
+				346630062CFACCA900B5D8D9 /* SwiftyJSON in Frameworks */,
 				B6E81A602CF3EA39002060FA /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -122,6 +124,7 @@
 				B6E81A5C2CF3DD7A002060FA /* AlertToast */,
 				B6E81A5F2CF3EA39002060FA /* KeychainAccess */,
 				B6E81A622CF3EDF9002060FA /* CachedAsyncImage */,
+				346630052CFACCA900B5D8D9 /* SwiftyJSON */,
 			);
 			productName = Spwifiy;
 			productReference = B6EDE45D2CF2923B004666B1 /* Spwifiy.app */;
@@ -156,6 +159,7 @@
 				B6E81A5B2CF3DD7A002060FA /* XCRemoteSwiftPackageReference "AlertToast" */,
 				B6E81A5E2CF3EA39002060FA /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				B6E81A612CF3EDF9002060FA /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
+				346630042CFACCA900B5D8D9 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B6EDE45E2CF2923B004666B1 /* Products */;
@@ -245,6 +249,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -418,6 +423,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		346630042CFACCA900B5D8D9 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.2;
+			};
+		};
 		B6DAB6B22CF32B60000FAE96 /* XCRemoteSwiftPackageReference "SpotifyAPI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Peter-Schorn/SpotifyAPI";
@@ -438,8 +451,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.2.2;
 			};
 		};
 		B6E81A612CF3EDF9002060FA /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */ = {
@@ -453,6 +466,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		346630052CFACCA900B5D8D9 /* SwiftyJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 346630042CFACCA900B5D8D9 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
+			productName = SwiftyJSON;
+		};
 		B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B6DAB6B22CF32B60000FAE96 /* XCRemoteSwiftPackageReference "SpotifyAPI" */;

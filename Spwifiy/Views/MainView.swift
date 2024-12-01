@@ -37,11 +37,16 @@ struct MainView: View {
 
                     Group {
                         switch mainViewModel.currentView {
+                        // default view
                         case .home:
                             HomeView(spotifyDataViewModel: spotifyDataViewModel,
                                      mainViewModel: mainViewModel)
+
+                        // sidebar views
                         case .likedSongs:
                             LikedSongsView(spotifyCache: spotifyCache)
+
+                        // layers deep abstracted view
                         case .selectedPlaylist:
                             if let selectedPlaylist = mainViewModel.selectedPlaylist {
                                 SelectedPlaylistView(
@@ -53,6 +58,15 @@ struct MainView: View {
                                 Text("Unable to get selected playlist")
                                     .font(.title)
                             }
+                        case .selectedArtist:
+                            if let artist = mainViewModel.selectedArtist {
+                                ArtistView(spotifyCache: spotifyCache, artist: artist)
+                            } else {
+                                Text("Unable to get selected artist")
+                                    .font(.title)
+                            }
+
+                        // unimplemented views
                         default:
                             Text("Unknown error")
                                 .font(.title)

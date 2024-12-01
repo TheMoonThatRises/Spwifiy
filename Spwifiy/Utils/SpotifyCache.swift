@@ -18,16 +18,22 @@ class SpotifyCache: ObservableObject {
     var spotifyViewModel: SpotifyViewModel?
 
     var artistsCache: [String: Artist] = [:]
+    var artistTopTracksCache: [String: [Track]] = [:]
+
     var albumCache: [String: Album] = [:]
+
     var playlistCache: [String: Playlist<PlaylistItems>] = [:]
     var playlistTrackCache: [String: [Track]] = [:]
 
     var savedTracksCache: [Track] = []
-
     var savedTracksContainsCache: [String: Bool] = [:]
 
     subscript(artistId id: String) -> Artist? {
         artistsCache[id]
+    }
+
+    subscript(artistTopTracksId id: String) -> [Track]? {
+        artistTopTracksCache[id]
     }
 
     subscript(albumId id: String) -> Album? {

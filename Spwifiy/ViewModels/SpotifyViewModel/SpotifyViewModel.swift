@@ -12,6 +12,8 @@ import KeychainAccess
 
 class SpotifyViewModel: ObservableObject {
 
+    public static let loginCallback = "spotify-login-callback"
+
     private var isLoadingUserProfile: Bool = false
 
     private static let authorizationManagerKey = "authorizationManager"
@@ -63,7 +65,7 @@ class SpotifyViewModel: ObservableObject {
         self.state = String.randomURLSafe(length: 128)
 
         self.authorizationURL = spotify.authorizationManager.makeAuthorizationURL(
-            redirectURI: URL(string: SpwifiyApp.redirectURI + "login-callback")!,
+            redirectURI: URL(string: SpwifiyApp.redirectURI + SpotifyViewModel.loginCallback)!,
             codeChallenge: self.codeChallenge,
             state: self.state,
             scopes: SpotifyViewModel.authScopes
