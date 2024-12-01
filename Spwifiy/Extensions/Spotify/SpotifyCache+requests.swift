@@ -65,6 +65,14 @@ extension SpotifyCache {
         }
     }
 
+    public func fetchArtistTopTracks(artistId: String) async throws -> [Track] {
+        try await fetchItem(cache: &artistTopTracksCache, id: artistId) {
+            $0.spotify.artistTopTracks(
+                SpotifyIdentifier(id: artistId, idCategory: .artist),
+                country: "from_token")
+        }
+    }
+
     public func fetchAlbum(albumId: String) async throws -> Album {
         try await fetchItem(cache: &albumCache, id: albumId) {
             $0.spotify.album(SpotifyIdentifier(id: albumId, idCategory: .album))
