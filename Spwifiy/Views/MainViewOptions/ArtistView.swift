@@ -22,130 +22,30 @@ struct ArtistView: View {
     var body: some View {
         ScrollView {
             VStack {
-                GeometryReader { geom in
-                    ZStack {
-                        Group {
-                            if let backgroundImageURL = artistViewModel.backgroundImageURL {
-                                CroppedCachedAsyncImage(url: backgroundImageURL,
-                                                        width: geom.size.width,
-                                                        height: 400,
-                                                        alignment: .top,
-                                                        clipShape: RoundedRectangle(cornerRadius: 5))
-                            } else {
-                                CroppedCachedAsyncImage(url: artistViewModel.artist.images?.first?.url,
-                                                        width: geom.size.width,
-                                                        height: 400,
-                                                        alignment: .center,
-                                                        clipShape: RoundedRectangle(cornerRadius: 5))
-                            }
-                        }
-                        .overlay(
-                            Rectangle()
-                                .foregroundStyle(
-                                    LinearGradient(colors: [.clear, .clear, .bgSecondary.opacity(0.8)],
-                                                   startPoint: .top,
-                                                   endPoint: .bottom)
-                                )
-                        )
+                ArtistBannerElement(artistImageURL: artistViewModel.artist.images?.first?.url,
+                                    artistName: artistViewModel.artist.name,
+                                    backgroundImageURL: $artistViewModel.backgroundImageURL,
+                                    monthlyListeners: $artistViewModel.monthlyListeners)
 
-                        VStack {
-                            Spacer()
+                VStack {
+                    HStack {
+                        Text("Home")
 
-                            HStack(alignment: .bottom) {
-                                VStack(alignment: .leading) {
-                                    Text(artistViewModel.artist.name)
-                                        .font(.satoshiBlack(60))
-                                        .fontWeight(.black)
-                                        .foregroundStyle(.fgPrimary)
+                        ExpandSearch(searchText: $artistViewModel.searchText)
 
-                                    Spacer()
-                                        .frame(height: 25)
-
-                                    HStack {
-                                        if let monthlyListeners = artistViewModel.monthlyListeners {
-                                            Text(monthlyListeners.formatted())
-                                        } else {
-                                            ProgressView()
-                                        }
-
-                                        Text("monthly listeners")
-                                    }
-                                    .font(.title2)
-                                }
-
-                                Spacer()
-
-                                HStack(spacing: 15) {
-                                    Button {
-
-                                    } label: {
-                                        Image("spwifiy.play.fill")
-                                            .resizable()
-                                            .frame(width: 40, height: 40)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .cursorHover(.pointingHand)
-
-                                    Button {
-
-                                    } label: {
-                                        Text("Follow")
-                                            .font(.satoshiLight(12))
-                                            .padding()
-                                            .overlay {
-                                                RoundedRectangle(cornerRadius: 40)
-                                                    .foregroundStyle(.fgPrimary.opacity(0.3))
-                                                    .allowsHitTesting(false)
-                                            }
-                                    }
-                                    .buttonStyle(.plain)
-                                    .cursorHover(.pointingHand)
-
-                                    Button {
-
-                                    } label: {
-                                        Image("spwifiy.add.playlist")
-                                            .resizable()
-                                            .frame(width: 40, height: 40)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .cursorHover(.pointingHand)
-
-                                    Button {
-
-                                    } label: {
-                                        Image("spwifiy.add.queue")
-                                            .resizable()
-                                            .frame(width: 40, height: 40)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .cursorHover(.pointingHand)
-
-                                    Button {
-
-                                    } label: {
-                                        Image("spwifiy.more")
-                                            .resizable()
-                                            .frame(width: 40, height: 40)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .cursorHover(.pointingHand)
-                                }
-                            }
-                            .foregroundStyle(.fgPrimary)
-                            .padding()
-
-                            Spacer()
-                                .frame(height: 20)
-                        }
+                        Spacer()
                     }
-                    .offset(y: -geom.frame(in: .global).minY / 3)
-                }
-                .frame(height: 400)
+                    .font(.title3)
+                    .padding(5)
 
-                Rectangle()
-                    .foregroundStyle(.bgMain)
-                    .frame(height: 1000)
+                    Divider()
+
+                    Rectangle()
+                        .frame(height: 600)
+                        .foregroundStyle(.clear)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(.bgMain)
             }
         }
         .task {

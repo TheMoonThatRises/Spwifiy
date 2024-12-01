@@ -7,6 +7,9 @@
     "#" : {
 
     },
+    "%@ monthly listeners" : {
+
+    },
     "%lld hr %lld min" : {
       "localizations" : {
         "en" : {
@@ -66,9 +69,6 @@
       "extractionState" : "manual"
     },
     "Liked songs" : {
-
-    },
-    "monthly listeners" : {
 
     },
     "My Library" : {

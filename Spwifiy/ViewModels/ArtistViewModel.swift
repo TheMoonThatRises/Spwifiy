@@ -20,6 +20,8 @@ class ArtistViewModel: ObservableObject {
     @Published var backgroundImageURL: URL?
     @Published var monthlyListeners: Int?
 
+    @Published var searchText: String = ""
+
     init(spotifyCache: SpotifyCache, artist: Artist) {
         self.spotifyCache = spotifyCache
 
