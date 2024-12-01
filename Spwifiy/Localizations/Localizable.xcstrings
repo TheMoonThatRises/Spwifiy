@@ -65,6 +65,9 @@
     "Liked songs" : {
 
     },
+    "monthly listeners" : {
+
+    },
     "My Library" : {
       "extractionState" : "manual"
     },
