@@ -25,6 +25,8 @@ class ArtistViewModel: ObservableObject {
 
     @Published var searchText: String = ""
 
+    private var populateAlbumTrackCount = 10
+
     init(spotifyCache: SpotifyCache, artist: Artist) {
         self.spotifyCache = spotifyCache
 
@@ -91,6 +93,13 @@ class ArtistViewModel: ObservableObject {
     }
 
     @MainActor
+    public func populateNextAlbumChunk() async {
+        populateAlbumTrackCount = min(populateAlbumTrackCount + 10, albums.count)
+
+        await populateAlbumTracks(fetchTracks: true)
+    }
+
+    @MainActor
     private func getArtist(artistId: String) async throws {
         if let artistCache = spotifyCache[artistId: artistId] {
             artist = artistCache
@@ -140,7 +149,7 @@ class ArtistViewModel: ObservableObject {
 
     @MainActor
     private func populateAlbumTracks(fetchTracks: Bool) async {
-        let albumIds = albums.compactMap { $0.id }
+        let albumIds = Array(albums.compactMap { $0.id }.prefix(populateAlbumTrackCount))
 
         if fetchTracks {
             do {
