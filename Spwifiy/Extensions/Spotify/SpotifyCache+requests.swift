@@ -11,9 +11,14 @@ import SpotifyWebAPI
 
 extension SpotifyCache {
 
-    private func fetchItem<T>(cache: inout [String: T],
+    private func fetchItem<T>(cache: inout ThreadSafeDictionary<String, T>,
                               id: String,
+                              cacheFirst: Bool = false,
                               accessPoint: (SpotifyViewModel) -> AnyPublisher<T, any Error>) async throws -> T {
+        if cacheFirst, let item = cache[id] {
+            return item
+        }
+
         guard let spotifyViewModel else {
             throw SpwifiyErrors.spotifyNoViewModel
         }
@@ -28,7 +33,7 @@ extension SpotifyCache {
     }
 
     public func fetchArtist(artistId: String) async throws -> Artist {
-        try await fetchItem(cache: &artistsCache, id: artistId) {
+        try await fetchItem(cache: &artistsCache, id: artistId, cacheFirst: true) {
             $0.spotify.artist(SpotifyIdentifier(id: artistId, idCategory: .artist))
         }
     }
@@ -38,9 +43,12 @@ extension SpotifyCache {
             throw SpwifiyErrors.spotifyNoViewModel
         }
 
-        let ids = artistIds.map { SpotifyIdentifier(id: $0, idCategory: .artist) }
+        let alreadyCachedIds = artistIds.filter { artistsCache[$0] != nil }
+        let ids = artistIds
+            .filter { !alreadyCachedIds.contains($0) }
+            .map { SpotifyIdentifier(id: $0, idCategory: .artist) }
 
-        return try await withThrowingTaskGroup(of: [Artist].self) { taskGroup in
+        var result = try await withThrowingTaskGroup(of: [Artist].self) { taskGroup in
             for idsChunk in ids.splitInSubArrays(into: ids.count % 100) {
                 taskGroup.addTask {
                     let result = try await spotifyViewModel.spotifyRequest {
@@ -63,19 +71,57 @@ extension SpotifyCache {
                 partialResult.append(contentsOf: artist)
             }
         }
+
+        result.append(contentsOf: alreadyCachedIds.compactMap { artistsCache[$0] })
+
+        return result
     }
 
     public func fetchArtistTopTracks(artistId: String) async throws -> [Track] {
-        try await fetchItem(cache: &artistTopTracksCache, id: artistId) {
+        try await fetchItem(cache: &artistTopTracksCache, id: artistId, cacheFirst: true) {
             $0.spotify.artistTopTracks(
                 SpotifyIdentifier(id: artistId, idCategory: .artist),
                 country: "from_token")
         }
     }
 
+    public func fetchArtistAlbum(artistId: String) async throws -> [Album] {
+        try await fetchItem(cache: &artistAlbumsCache, id: artistId) {
+            $0.spotify.artistAlbums(SpotifyIdentifier(id: artistId, idCategory: .artist))
+                .extendPagesConcurrently($0.spotify)
+                .collectAndSortByOffset()
+        }
+    }
+
     public func fetchAlbum(albumId: String) async throws -> Album {
         try await fetchItem(cache: &albumCache, id: albumId) {
             $0.spotify.album(SpotifyIdentifier(id: albumId, idCategory: .album))
+        }
+    }
+
+    public func fetchAlbumTracks(albumId: String) async throws -> [Track] {
+        try await fetchItem(cache: &albumTracksCache, id: albumId, cacheFirst: true) {
+            $0.spotify.albumTracks(SpotifyIdentifier(id: albumId, idCategory: .album))
+                .extendPagesConcurrently($0.spotify)
+                .collectAndSortByOffset()
+        }
+    }
+
+    public func fetchAllAlbumTracks(albumIds: [String]) async throws -> [String: [Track]] {
+        try await withThrowingTaskGroup(of: (String, [Track]).self) { taskGroup in
+            for id in albumIds {
+                taskGroup.addTask {
+                    let result = try await self.fetchAlbumTracks(albumId: id)
+
+                    self.albumTracksCache[id] = result
+
+                    return (id, result)
+                }
+            }
+
+            return try await taskGroup.reduce(into: [String: [Track]]()) { partialResult, result in
+                partialResult[result.0] = result.1
+            }
         }
     }
 

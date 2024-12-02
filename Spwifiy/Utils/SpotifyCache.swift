@@ -17,16 +17,18 @@ class SpotifyCache: ObservableObject {
 
     var spotifyViewModel: SpotifyViewModel?
 
-    var artistsCache: [String: Artist] = [:]
-    var artistTopTracksCache: [String: [Track]] = [:]
+    var artistsCache = ThreadSafeDictionary<String, Artist>()
+    var artistTopTracksCache = ThreadSafeDictionary<String, [Track]>()
+    var artistAlbumsCache = ThreadSafeDictionary<String, [Album]>()
 
-    var albumCache: [String: Album] = [:]
+    var albumCache = ThreadSafeDictionary<String, Album>()
+    var albumTracksCache = ThreadSafeDictionary<String, [Track]>()
 
-    var playlistCache: [String: Playlist<PlaylistItems>] = [:]
-    var playlistTrackCache: [String: [Track]] = [:]
+    var playlistCache = ThreadSafeDictionary<String, Playlist<PlaylistItems>>()
+    var playlistTrackCache = ThreadSafeDictionary<String, [Track]>()
 
     var savedTracksCache: [Track] = []
-    var savedTracksContainsCache: [String: Bool] = [:]
+    var savedTracksContainsCache = ThreadSafeDictionary<String, Bool>()
 
     subscript(artistId id: String) -> Artist? {
         artistsCache[id]
@@ -36,8 +38,16 @@ class SpotifyCache: ObservableObject {
         artistTopTracksCache[id]
     }
 
+    subscript(artistAlbumsId id: String) -> [Album]? {
+        artistAlbumsCache[id]
+    }
+
     subscript(albumId id: String) -> Album? {
         albumCache[id]
+    }
+
+    subscript(albumTracksId id: String) -> [Track]? {
+        albumTracksCache[id]
     }
 
     subscript(playlistId id: String) -> Playlist<PlaylistItems>? {
@@ -54,6 +64,10 @@ class SpotifyCache: ObservableObject {
 
     public func getArtists(artistIds: [String]) -> [Artist] {
         artistIds.compactMap { self[artistId: $0] }
+    }
+
+    public func getAllAlbumTracks(albumIds: [String]) -> [String: [Track]] {
+        albumTracksCache.filter { albumIds.contains($0.0) }
     }
 
     public func getSavedTracks() -> [Track] {

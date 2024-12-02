@@ -20,20 +20,28 @@ class YoutubeMusicAPI {
         "data: '\\{.+?\\}\\);"
     }
 
-    // youtube music search url : background image url
+    // artist id or youtube search string : background image url
     private var backgroundImageCache: [String: String] = [:]
 
-    private var requestURLString: (String, String?) -> String? {
-        { artist, topSong in
+    // youtube music search url : youtube id
+    private var musicIdCache: [String: String] = [:]
+
+    private var requestURLString: (String, String?, String?) -> String? {
+        { artist, songName, albumName in
             guard let safeArtist = artist.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
                 return nil
             }
 
             var baseURL = "https://music.youtube.com/search?q=\(safeArtist)"
 
-            if let topSong = topSong,
-               let topSong = topSong.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-                baseURL += "+\(topSong)"
+            if let songName = songName,
+               let songName = songName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                baseURL += "+\(songName)"
+            }
+
+            if let albumName = albumName,
+               let albumName = albumName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                baseURL += "+\(albumName)"
             }
 
             return baseURL
@@ -66,7 +74,13 @@ class YoutubeMusicAPI {
             return nil
         }
 
-        return try? JSON(data: jsonData)
+        do {
+            return try JSON(data: jsonData)
+        } catch {
+            print("unable to get search result: \(error)")
+
+            return nil
+        }
     }
 
     private func getSearchShelf(json: JSON) -> [JSON]? {
@@ -116,12 +130,17 @@ class YoutubeMusicAPI {
         return url.replacing(/w[0-9]+?-h[0-9]+?.+?rj/, with: "w2880-h1200-p-l90-rj")
     }
 
-    public func getBackgroundArt(artistName: String, topSong: String?) async -> String? {
-        guard let requestString = requestURLString(artistName, topSong) else {
+    public func getBackgroundArt(artistId: String?,
+                                 artistName: String,
+                                 topSong: String?,
+                                 topAlbum: String?) async -> String? {
+        guard let requestString = requestURLString(artistName, topSong, topAlbum) else {
             return nil
         }
 
-        if let backgroundURL = backgroundImageCache[requestString] {
+        let keyString = artistId ?? requestString
+
+        if let backgroundURL = backgroundImageCache[keyString] {
             return backgroundURL
         }
 
@@ -165,10 +184,47 @@ class YoutubeMusicAPI {
         }
 
         if let backgroundImageURL = backgroundImageURL {
-            backgroundImageCache[requestString] = backgroundImageURL
+            backgroundImageCache[keyString] = backgroundImageURL
         }
 
         return backgroundImageURL
+    }
+
+    public func getBackgroundArtCache(artistId: String) -> String? {
+        backgroundImageCache[artistId]
+    }
+
+    public func getArtistSongId(artistName: String, songName: String, albumName: String?) async -> String? {
+        guard let requestString = requestURLString(artistName, songName, albumName) else {
+            return nil
+        }
+
+        if let musicId = musicIdCache[requestString] {
+            return musicId
+        }
+
+        let response = await APIRequest.shared.request(urlString: requestString)
+        let json = parseSearchResult(html: response)
+
+        guard let json = json,
+              let apiContent = getSearchShelf(json: json) else {
+            return nil
+        }
+
+        guard let topResult = getTopSearchItem(json: apiContent)?["musicCardShelfRenderer"] else {
+            return nil
+        }
+
+        guard let musicId = topResult["title"]["runs"]
+            .array?
+            .first?["navigationEndpoint"]["watchEndpoint"]["videoId"]
+            .string else {
+            return nil
+        }
+
+        musicIdCache[requestString] = musicId
+
+        return musicId
     }
 
 }
