@@ -43,7 +43,11 @@ class AVAudioPlayer: ObservableObject {
 
     @Published var isPlaying: Bool = false {
         didSet {
-            if !isPlaying {
+            mpNowPlayingInfoCenter.playbackState = isPlaying ? .playing : .paused
+
+            if isPlaying {
+                setPresence()
+            } else {
                 discordRPC.clearPresence()
             }
         }
@@ -62,11 +66,22 @@ class AVAudioPlayer: ObservableObject {
     }
     @Published var currentPlayTime: Double = 0 {
         didSet {
-            playProgress = currentPlayTime / max(totalRunTime, 1)
+            playProgress = max(min(currentPlayTime / max(totalRunTime, 1), 1), 0)
             nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentPlayTime
         }
     }
     @Published var playProgress: Double = 0
+
+    @Published var isScrubbing: Bool = false {
+        didSet {
+            if isScrubbing {
+                player.pause()
+            } else {
+                seek(time: CMTime(seconds: playProgress * totalRunTime, preferredTimescale: 2))
+                player.play()
+            }
+        }
+    }
 
     @AppStorage("setting.playing.shuffled") var isShuffled: Bool = false
     @AppStorage("setting.playing.looping") var isLooping: Bool = false
@@ -266,6 +281,8 @@ class AVAudioPlayer: ObservableObject {
         } else {
             print("player is not ready to play")
         }
+
+        updateNowPlaying()
     }
 
 }

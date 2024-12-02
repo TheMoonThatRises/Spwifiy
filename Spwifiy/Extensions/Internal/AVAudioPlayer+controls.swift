@@ -58,6 +58,7 @@ extension AVAudioPlayer {
     private func observeTimeControlStatus(avPlayer: AVPlayer) {
         Task { @MainActor in
             isBuffering = false
+            isPlaying = false
 
             switch avPlayer.timeControlStatus {
             case .playing:
@@ -145,19 +146,20 @@ extension AVAudioPlayer {
 
         if mpNowPlayingSetCooldown.timeIntervalSince1970 < currentTime {
             mpNowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
-            mpNowPlayingSetCooldown = Date().addingTimeInterval(1)
+            mpNowPlayingSetCooldown = Date().addingTimeInterval(0.5)
         }
     }
 
     func setupRemoteCommandCenter() {
         let commandCenter = MPRemoteCommandCenter.shared()
 
-        commandCenter.togglePlayPauseCommand.addTarget { _ in
-            if self.player.timeControlStatus == .playing {
-                self.player.pause()
-            } else {
-                self.player.play()
-            }
+        commandCenter.playCommand.addTarget { _ in
+            self.togglePlay()
+            return .success
+        }
+
+        commandCenter.pauseCommand.addTarget { _ in
+            self.togglePlay()
             return .success
         }
 

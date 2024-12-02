@@ -54,12 +54,35 @@ struct PlayingElementView: View {
                 DotButton(toggle: $avAudioPlayer.isLooping,
                           image: Image("spwifiy.loop"))
 
-                Text(Int(avAudioPlayer.currentPlayTime * 1000).humanReadable.description)
+                Group {
+                    if avAudioPlayer.isScrubbing {
+                        Slider(value: $avAudioPlayer.playProgress, in: 0...1) {
 
-                ProgressView(value: max(min(avAudioPlayer.playProgress, 1), 0))
-                    .frame(minWidth: 100)
+                        } minimumValueLabel: {
+                            Text(Int(avAudioPlayer.currentPlayTime * 1000).humanReadable.description)
+                        } maximumValueLabel: {
+                            Text(Int(avAudioPlayer.totalRunTime * 1000).humanReadable.description)
+                        } onEditingChanged: { scrubbing in
+                            if !scrubbing {
+                                avAudioPlayer.isScrubbing = false
+                            }
+                        }
+                        .frame(minWidth: 100)
+                    } else {
+                        Button {
+                            avAudioPlayer.isScrubbing = true
+                        } label: {
+                            Text(Int(avAudioPlayer.currentPlayTime * 1000).humanReadable.description)
 
-                Text(Int(avAudioPlayer.totalRunTime * 1000).humanReadable.description)
+                            ProgressView(value: avAudioPlayer.playProgress)
+                                .frame(minWidth: 100)
+
+                            Text(Int(avAudioPlayer.totalRunTime * 1000).humanReadable.description)
+                        }
+                        .buttonStyle(.plain)
+                        .cursorHover(.pointingHand)
+                    }
+                }
 
                 Button {
 
