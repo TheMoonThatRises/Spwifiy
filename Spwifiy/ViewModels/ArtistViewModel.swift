@@ -25,7 +25,7 @@ class ArtistViewModel: ObservableObject {
 
     @Published var searchText: String = ""
 
-    private var populateAlbumTrackCount = 10
+    private var populateAlbumTrackCount = 25
 
     init(spotifyCache: SpotifyCache, artist: Artist) {
         self.spotifyCache = spotifyCache
@@ -70,7 +70,8 @@ class ArtistViewModel: ObservableObject {
                 }
 
                 if willUpdateAlbums {
-                    albums = try await spotifyCache.fetchArtistAlbum(artistId: id)
+                    albums = (try await spotifyCache.fetchArtistAlbum(artistId: id))
+                        .sorted { ($0.releaseDate ?? Date()) > ($1.releaseDate ?? Date()) }
                 }
 
                 if willUpdateAlbumTracks {
@@ -118,16 +119,35 @@ class ArtistViewModel: ObservableObject {
             }
         } else {
             let track = albumTracks
+                .sorted { one, two in
+                    (
+                        albums.first { $0.id == one.key }?.releaseDate ?? Date()
+                    ) > (
+                        albums.first { $0.id == two.key }?.releaseDate ?? Date()
+                    )
+                }
                 .flatMap { $0.1 }
-                .filter { $0.artists?.count == 1 && $0.artists?.first?.id == artist.id }
+                .filter {
+                    $0.artists?.count == 1 &&
+                    $0.artists?.first?.id == artist.id
+                }
                 .first
 
-            let imageURLString = await YoutubeMusicAPI.shared.getBackgroundArt(
+            var imageURLString = await YoutubeMusicAPI.shared.getBackgroundArt(
                 artistId: artist.id,
                 artistName: artist.name,
                 topSong: track?.name,
                 topAlbum: track?.album?.name
             )
+
+            if imageURLString == nil {
+                imageURLString = await YoutubeMusicAPI.shared.getBackgroundArt(
+                    artistId: artist.id,
+                    artistName: artist.name,
+                    topSong: nil,
+                    topAlbum: nil
+                )
+            }
 
             if let imageURLString = imageURLString,
                let url = URL(string: imageURLString) {

@@ -119,9 +119,17 @@ extension SpotifyCache {
                 }
             }
 
-            return try await taskGroup.reduce(into: [String: [Track]]()) { partialResult, result in
+            let result = try await taskGroup.reduce(into: [String: [Track]]()) { partialResult, result in
                 partialResult[result.0] = result.1
             }
+
+            var returnArray: [String: [Track]] = [:]
+
+            albumIds.forEach { id in
+                returnArray[id] = result[id]
+            }
+
+            return returnArray
         }
     }
 
