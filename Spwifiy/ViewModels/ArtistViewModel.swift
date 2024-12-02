@@ -120,11 +120,15 @@ class ArtistViewModel: ObservableObject {
         } else {
             let track = albumTracks
                 .sorted { one, two in
-                    (
-                        albums.first { $0.id == one.key }?.releaseDate ?? Date()
-                    ) > (
-                        albums.first { $0.id == two.key }?.releaseDate ?? Date()
-                    )
+                    if one.value.first?.album != nil && two.value.first?.album != nil {
+                        return (
+                            albums.first { $0.id == one.key }?.releaseDate ?? Date()
+                        ) > (
+                            albums.first { $0.id == two.key }?.releaseDate ?? Date()
+                        )
+                    } else {
+                        return one.value.first?.album != nil
+                    }
                 }
                 .flatMap { $0.1 }
                 .filter {
