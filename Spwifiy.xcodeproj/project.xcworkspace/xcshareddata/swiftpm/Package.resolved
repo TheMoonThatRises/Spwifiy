@@ -1,5 +1,5 @@
 {
-  "originHash" : "12f5a95f6d0c19e6678b87d37c7b4aeccc6a0f851d43bf33331e2da2c6b6c077",
+  "originHash" : "c187556e65c41c66cd8d019e50793f1f2169d213cce5f5dec64721b3a3a9c0aa",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -80,6 +80,15 @@
       "state" : {
         "revision" : "af76cf3ef710b6ca5f8c05f3a31307d44a3c5828",
         "version" : "5.0.2"
+      }
+    },
+    {
+      "identity" : "youtubekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/b5i/YouTubeKit",
+      "state" : {
+        "revision" : "3bfcc83a4e53fd91aef0818aa3eae74d0304c418",
+        "version" : "2.3.0"
       }
     }
   ],
