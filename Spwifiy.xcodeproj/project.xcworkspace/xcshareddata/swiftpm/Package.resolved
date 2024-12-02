@@ -1,5 +1,5 @@
 {
-  "originHash" : "c187556e65c41c66cd8d019e50793f1f2169d213cce5f5dec64721b3a3a9c0aa",
+  "originHash" : "e6d81aa45bacdc56e673164ea612f27ec6fe250849be747f5ae5ad12f5fb6b7f",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "84e546727d66f1adc5439debad16270d0fdd04e7",
         "version" : "4.2.2"
+      }
+    },
+    {
+      "identity" : "m3u8decoder",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ikhvorost/M3U8Decoder",
+      "state" : {
+        "revision" : "3548e64395c9324aaf4dd336b70e98a4e441ee98",
+        "version" : "2.0.0"
       }
     },
     {

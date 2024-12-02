@@ -7,13 +7,14 @@
 
 import Foundation
 import YouTubeKit
+import M3U8Decoder
 
 class YoutubeAPI {
 
     public static let shared = YoutubeAPI()
 
     // music id : youtube hls url
-    private var musicIdCache: [String: (Double, URL)] = [:]
+    private var musicIdCache: [String: (Date, URL)] = [:]
 
     let youtubeModel: YouTubeModel
 
@@ -26,7 +27,7 @@ class YoutubeAPI {
             return nil
         }
 
-        if expiration - Date().timeIntervalSince1970 > 0 {
+        if expiration.timeIntervalSince1970 - Date().timeIntervalSince1970 > 0 {
             return hls
         } else {
             musicIdCache.removeValue(forKey: musicId)
@@ -35,17 +36,17 @@ class YoutubeAPI {
         }
     }
 
-    private func setHLSCache(musicId: String, hls: URL) {
+    private func setHLSCache(musicId: String, hls: URL, expiration: Date?) {
         musicIdCache[musicId] = (
-            Date().addingTimeInterval(5.5 * 60 * 60).timeIntervalSince1970, // 5.5 hours in the future
+            expiration ?? Date().addingTimeInterval(5.5 * 60 * 60), // 5.5 hours in the future,
             hls
         )
     }
 
-    public func getSongHLS(artistName: String, songName: String, albumName: String?) async -> URL? {
+    public func getSongHLS(artistName: String, songName: String) async -> URL? {
         guard let musicId = await YoutubeMusicAPI.shared.getArtistSongId(artistName: artistName,
                                                                          songName: songName,
-                                                                         albumName: albumName) else {
+                                                                         albumName: nil) else {
             return nil
         }
 
@@ -62,7 +63,16 @@ class YoutubeAPI {
                 return nil
             }
 
-            setHLSCache(musicId: musicId, hls: streamingURL)
+            let m3u8Playlist = try await M3U8Decoder.default.decode(YoutubeM3U8.self, from: streamingURL)
+
+            guard let bestAudioURI = m3u8Playlist.extXMedia
+                    .sorted(by: { (Int($0.groupId) ?? 0) > (Int($1.groupId) ?? 0) })
+                    .first?.uri,
+                  let url = URL(string: bestAudioURI) else {
+                    return nil
+                }
+
+            setHLSCache(musicId: musicId, hls: url, expiration: streamingInfo.videoURLsExpireAt)
 
             return streamingURL
         } catch {

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		346630062CFACCA900B5D8D9 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 346630052CFACCA900B5D8D9 /* SwiftyJSON */; };
 		346630322CFD24DC00B5D8D9 /* YouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 346630312CFD24DC00B5D8D9 /* YouTubeKit */; };
+		346630482CFD75C400B5D8D9 /* M3U8Decoder in Frameworks */ = {isa = PBXBuildFile; productRef = 346630472CFD75C400B5D8D9 /* M3U8Decoder */; };
 		B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */ = {isa = PBXBuildFile; productRef = B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */; };
 		B6E81A5D2CF3DD7A002060FA /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A5C2CF3DD7A002060FA /* AlertToast */; };
 		B6E81A602CF3EA39002060FA /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A5F2CF3EA39002060FA /* KeychainAccess */; };
@@ -73,6 +74,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */,
+				346630482CFD75C400B5D8D9 /* M3U8Decoder in Frameworks */,
 				B6E81A632CF3EDF9002060FA /* CachedAsyncImage in Frameworks */,
 				B6E81A5D2CF3DD7A002060FA /* AlertToast in Frameworks */,
 				346630062CFACCA900B5D8D9 /* SwiftyJSON in Frameworks */,
@@ -128,6 +130,7 @@
 				B6E81A622CF3EDF9002060FA /* CachedAsyncImage */,
 				346630052CFACCA900B5D8D9 /* SwiftyJSON */,
 				346630312CFD24DC00B5D8D9 /* YouTubeKit */,
+				346630472CFD75C400B5D8D9 /* M3U8Decoder */,
 			);
 			productName = Spwifiy;
 			productReference = B6EDE45D2CF2923B004666B1 /* Spwifiy.app */;
@@ -164,6 +167,7 @@
 				B6E81A612CF3EDF9002060FA /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
 				346630042CFACCA900B5D8D9 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				346630302CFD24DC00B5D8D9 /* XCRemoteSwiftPackageReference "YouTubeKit" */,
+				346630462CFD75C400B5D8D9 /* XCRemoteSwiftPackageReference "M3U8Decoder" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B6EDE45E2CF2923B004666B1 /* Products */;
@@ -443,6 +447,14 @@
 				minimumVersion = 2.3.0;
 			};
 		};
+		346630462CFD75C400B5D8D9 /* XCRemoteSwiftPackageReference "M3U8Decoder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ikhvorost/M3U8Decoder";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		B6DAB6B22CF32B60000FAE96 /* XCRemoteSwiftPackageReference "SpotifyAPI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Peter-Schorn/SpotifyAPI";
@@ -487,6 +499,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 346630302CFD24DC00B5D8D9 /* XCRemoteSwiftPackageReference "YouTubeKit" */;
 			productName = YouTubeKit;
+		};
+		346630472CFD75C400B5D8D9 /* M3U8Decoder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 346630462CFD75C400B5D8D9 /* XCRemoteSwiftPackageReference "M3U8Decoder" */;
+			productName = M3U8Decoder;
 		};
 		B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */ = {
 			isa = XCSwiftPackageProductDependency;
