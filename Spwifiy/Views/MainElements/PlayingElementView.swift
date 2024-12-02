@@ -125,6 +125,8 @@ struct PlayingElementView: View {
                 }
             }
             .lineLimit(1)
+            .frame(maxWidth: 80)
+            .fixedSize()
 
             Spacer()
 
