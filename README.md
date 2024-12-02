@@ -1,6 +1,6 @@
 # Spwifiy
 
-An open-source Spotify client utilizing Spotify's data API and YouTube's API written completely in Swift.
+An open-source music client utilizing Spotify and YouTube APIs written completely in Swift.
 
 ## License
 
@@ -31,4 +31,4 @@ Spwifiy is open-source and licensed under the [BSD-4-Clause](/LICENSE) license.
 
 </details>
 
-<div align="center"><p>© Copyright Spwifiy 2024</p></div>
+<div align="center"><p>&copy; Copyright Spwifiy 2024</p></div>
