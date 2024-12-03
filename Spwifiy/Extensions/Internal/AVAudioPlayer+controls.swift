@@ -77,12 +77,14 @@ extension AVAudioPlayer {
 
     private func periodicTimeObserver(cmTime: CMTime) {
         if player.timeControlStatus == .playing {
-            currentPlayTime = player.currentTime().seconds
+            currentPlayTime = normalizeCurrentTime(currentTime: player.currentTime().seconds)
+
+            skipSponsorBlockSegment()
 
             if totalRunTime == 0 {
                 let duration = player.currentItem?.duration.seconds
 
-                totalRunTime = (duration?.isFinite ?? false) ? duration! : 0
+                totalRunTime = normalizeTotalRunTime(runTime: (duration?.isFinite ?? false) ? duration! : 0)
             }
         }
     }
@@ -163,12 +165,12 @@ extension AVAudioPlayer {
             return .success
         }
 
-        commandCenter.previousTrackCommand.addTarget { _ in
+        commandCenter.nextTrackCommand.addTarget { _ in
             self.nextSong()
             return .success
         }
 
-        commandCenter.nextTrackCommand.addTarget { _ in
+        commandCenter.previousTrackCommand.addTarget { _ in
             self.prevSong()
             return .success
         }
