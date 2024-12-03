@@ -118,18 +118,44 @@ class YoutubeMusicAPI {
     }
 
     private func verifyTopIsType(json: JSON, type: YoutubeResultType) -> Bool {
-        json["navigationEndpoint",
-             "browseEndpoint",
-             "browseEndpointContextSupportedConfigs",
-             "browseEndpointContextMusicConfig",
-             "pageType"
+        json[
+            "navigationEndpoint",
+            "browseEndpoint",
+            "browseEndpointContextSupportedConfigs",
+            "browseEndpointContextMusicConfig",
+            "pageType"
         ].string == type.rawValue ||
-        json["navigationEndpoint",
-             "watchEndpoint",
-             "watchEndpointMusicSupportedConfigs",
-             "watchEndpointMusicConfig",
-             "musicVideoType"
+        json[
+            "navigationEndpoint",
+            "watchEndpoint",
+            "watchEndpointMusicSupportedConfigs",
+            "watchEndpointMusicConfig",
+            "musicVideoType"
         ].string == type.rawValue
+    }
+
+    private func getMatchingSongs(json: [JSON], artist: String, title: String) -> JSON? {
+        json.filter { item in
+            guard let accessibilityLabel = item[
+                "musicResponsiveListItemRenderer",
+                "overlay",
+                "musicItemThumbnailOverlayRenderer",
+                "content",
+                "musicPlayButtonRenderer",
+                "accessibilityPlayData",
+                "accessibilityData",
+                "label"
+            ].string?.unescapingUnicodeCharacters.lowercased() else {
+                return false
+            }
+
+            return accessibilityLabel.contains(artist.lowercased()) &&
+                   accessibilityLabel.contains(title.lowercased())
+        }.first
+    }
+
+    private func getSongMusicId(json: JSON) -> String? {
+        json["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"].string
     }
 
     private func getBackgroundArtURL(json: JSON) -> String? {
@@ -211,6 +237,8 @@ class YoutubeMusicAPI {
             return nil
         }
 
+        print(requestString)
+
         if let musicId = musicIdCache[requestString] {
             return musicId
         }
@@ -223,6 +251,8 @@ class YoutubeMusicAPI {
             return nil
         }
 
+        let songResults = getSearchShelfItem(json: apiContent, shelfName: "Songs")?["contents"].array
+
         var musicId = ""
 
         if let topResult = getTopSearchItem(json: apiContent),
@@ -230,13 +260,15 @@ class YoutubeMusicAPI {
            verifyTopIsType(json: run, type: .song),
            let songId = run["navigationEndpoint"]["watchEndpoint"]["videoId"].string {
             musicId = songId
+        } else if let songResults = songResults,
+           let matchJSON = getMatchingSongs(json: songResults, artist: artistName, title: songName),
+           let songId = getSongMusicId(json: matchJSON) {
+            musicId = songId
         } else if albumName != nil {
             return await getYoutubeSongId(artistName: artistName, songName: songName, albumName: nil)
         } else {
-            let songResults = getSearchShelfItem(json: apiContent, shelfName: "Songs")?["contents"].array
-
             guard let song = songResults?.first,
-                  let songId = song["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"].string else {
+                  let songId = getSongMusicId(json: song) else {
                 return nil
             }
 
