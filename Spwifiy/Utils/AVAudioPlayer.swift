@@ -89,6 +89,8 @@ class AVAudioPlayer: ObservableObject {
     var playerItemObserveToken: NSKeyValueObservation?
     var periodicTimeObserverToken: Any?
 
+    private var isQueueingItem: Bool = false
+
     init() {
         self.initNotifiers()
         self.setupRemoteCommandCenter()
@@ -334,6 +336,16 @@ class AVAudioPlayer: ObservableObject {
             player.play()
 
             Task { @MainActor in
+                if isQueueingItem {
+                    return
+                } else {
+                    isQueueingItem = true
+                }
+
+                defer {
+                    isQueueingItem = false
+                }
+
                 while totalRunTime == 0 {
                     try? await Task.sleep(for: .seconds(3))
                 }
