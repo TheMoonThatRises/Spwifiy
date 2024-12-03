@@ -8,6 +8,12 @@
 import Foundation
 import SwiftyJSON
 
+enum YoutubeResultType: String {
+    case artist = "MUSIC_PAGE_TYPE_ARTIST"
+    case song = "MUSIC_VIDEO_TYPE_ATV"
+    case album = "MUSIC_PAGE_TYPE_ALBUM"
+}
+
 class YoutubeMusicAPI {
 
     public static let shared = YoutubeMusicAPI()
@@ -28,19 +34,19 @@ class YoutubeMusicAPI {
 
     private var requestURLString: (String, String?, String?) -> String? {
         { artist, songName, albumName in
-            guard let safeArtist = artist.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            guard let safeArtist = artist.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
                 return nil
             }
 
             var baseURL = "https://music.youtube.com/search?q=\(safeArtist)"
 
             if let songName = songName,
-               let songName = songName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+               let songName = songName.addingPercentEncoding(withAllowedCharacters: .alphanumerics) {
                 baseURL += "+\(songName)"
             }
 
             if let albumName = albumName,
-               let albumName = albumName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+               let albumName = albumName.addingPercentEncoding(withAllowedCharacters: .alphanumerics) {
                 baseURL += "+\(albumName)"
             }
 
@@ -98,7 +104,7 @@ class YoutubeMusicAPI {
                     .array?
                     .first?["text"].string == "Top result"
             }
-            .first
+            .first?["musicCardShelfRenderer"]
     }
 
     private func getSearchShelfItem(json: [JSON], shelfName: String) -> JSON? {
@@ -108,16 +114,22 @@ class YoutubeMusicAPI {
                     .array?
                     .first?["text"].string == shelfName
             }
-            .first
+            .first?["musicShelfRenderer"]
     }
 
-    private func verifyIsMusicArtist(json: JSON) -> Bool {
+    private func verifyTopIsType(json: JSON, type: YoutubeResultType) -> Bool {
         json["navigationEndpoint",
              "browseEndpoint",
              "browseEndpointContextSupportedConfigs",
              "browseEndpointContextMusicConfig",
              "pageType"
-        ].string == "MUSIC_PAGE_TYPE_ARTIST"
+        ].string == type.rawValue ||
+        json["navigationEndpoint",
+             "watchEndpoint",
+             "watchEndpointMusicSupportedConfigs",
+             "watchEndpointMusicConfig",
+             "musicVideoType"
+        ].string == type.rawValue
     }
 
     private func getBackgroundArtURL(json: JSON) -> String? {
@@ -127,7 +139,7 @@ class YoutubeMusicAPI {
             return nil
         }
 
-        return url.replacing(/w[0-9]+?-h[0-9]+?.+?rj/, with: "w2880-h1200-p-l90-rj")
+        return url.replacing(/w[0-9]+?-h[0-9]+?.+?rj(.+)?/, with: "w2880-h1200-p-l90-rj")
     }
 
     public func getBackgroundArt(artistId: String?,
@@ -152,17 +164,19 @@ class YoutubeMusicAPI {
             return nil
         }
 
+        let artistResults = getSearchShelfItem(json: apiContent, shelfName: "Artists")
+
         var backgroundImageURL: String?
 
-        if topSong == nil {
+        if topSong == nil || artistResults == nil {
             let topResult = getTopSearchItem(json: apiContent)
 
-            if let topResult = topResult?["musicCardShelfRenderer"] {
+            if let topResult = topResult {
                 let topText = topResult["title"]["runs"]
                     .array?
                     .filter {
-                        $0["text"].string?.lowercased() == artistName.lowercased() &&
-                        verifyIsMusicArtist(json: $0)
+                        $0["text"].string?.lowercased().unescapingUnicodeCharacters == artistName.lowercased() &&
+                        verifyTopIsType(json: $0, type: .artist)
                     }
 
                 if (topText?.count ?? 0) > 0 {
@@ -170,11 +184,9 @@ class YoutubeMusicAPI {
                 }
             }
         } else {
-            let artistResults = getSearchShelfItem(json: apiContent, shelfName: "Artists")
-
-            if let artists = artistResults?["musicShelfRenderer"]["contents"].array {
+            if let artists = artistResults?["contents"].array {
                 let matchingArtists = artists
-                    .filter { verifyIsMusicArtist(json: $0["musicResponsiveListItemRenderer"]) }
+                    .filter { verifyTopIsType(json: $0["musicResponsiveListItemRenderer"], type: .artist) }
                     .first
 
                 if let bestMatchArtist = matchingArtists?["musicResponsiveListItemRenderer"] {
@@ -211,15 +223,22 @@ class YoutubeMusicAPI {
             return nil
         }
 
-        guard let topResult = getTopSearchItem(json: apiContent)?["musicCardShelfRenderer"] else {
-            return nil
-        }
+        var musicId = ""
 
-        guard let musicId = topResult["title"]["runs"]
-            .array?
-            .first?["navigationEndpoint"]["watchEndpoint"]["videoId"]
-            .string else {
-            return nil
+        if let topResult = getTopSearchItem(json: apiContent),
+           let run = topResult["title"]["runs"].array?.first,
+           verifyTopIsType(json: run, type: .song),
+           let songId = run["navigationEndpoint"]["watchEndpoint"]["videoId"].string {
+            musicId = songId
+        } else {
+            let songResults = getSearchShelfItem(json: apiContent, shelfName: "Songs")?["contents"].array
+
+            guard let song = songResults?.first,
+                  let songId = song["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"].string else {
+                return await getArtistSongId(artistName: artistName, songName: songName, albumName: nil)
+            }
+
+            musicId = songId
         }
 
         musicIdCache[requestString] = musicId

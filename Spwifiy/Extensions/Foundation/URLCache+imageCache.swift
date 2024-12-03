@@ -8,5 +8,5 @@
 import Foundation
 
 extension URLCache {
-    static let imageCache = URLCache(memoryCapacity: 50_000_000, diskCapacity: 512_000_000)
+    static let spwifiyCache = URLCache(memoryCapacity: 50_000_000, diskCapacity: 512_000_000)
 }

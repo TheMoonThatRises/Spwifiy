@@ -13,6 +13,9 @@ struct PlaylistTopElement: View {
     @Binding var playlist: Playlist<PlaylistItems>?
     @Binding var album: Album?
 
+    @ObservedObject var avAudioPlayer: AVAudioPlayer
+    @Binding var tracks: [Track]
+
     @Binding var totalDuration: HumanFormat?
     @Binding var searchText: String
 
@@ -58,24 +61,21 @@ struct PlaylistTopElement: View {
 
         HStack {
             Button {
+                avAudioPlayer.removeAllSongs()
 
+                avAudioPlayer.addBulkSongs(
+                    tracks: avAudioPlayer.isShuffled ? tracks.shuffled() : tracks
+                )
             } label: {
-                Image("spwifiy.play.fill")
+                Image(avAudioPlayer.playingId == playlist?.id ? "spwifiy.pause.fill"  : "spwifiy.play.fill")
                     .resizable()
                     .frame(width: 40, height: 40)
             }
             .buttonStyle(.plain)
             .cursorHover(.pointingHand)
 
-            Button {
-
-            } label: {
-                Image("spwifiy.shuffle")
-                    .resizable()
-                    .frame(width: 40, height: 40)
-            }
-            .buttonStyle(.plain)
-            .cursorHover(.pointingHand)
+            DotButton(toggle: $avAudioPlayer.isShuffled,
+                      image: Image("spwifiy.shuffle"))
 
             Button {
 
@@ -88,7 +88,9 @@ struct PlaylistTopElement: View {
             .cursorHover(.pointingHand)
 
             Button {
-
+                avAudioPlayer.addBulkSongs(
+                    tracks: avAudioPlayer.isShuffled ? tracks.shuffled() : tracks
+                )
             } label: {
                 Image("spwifiy.add.queue")
                     .resizable()

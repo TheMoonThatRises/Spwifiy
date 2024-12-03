@@ -21,11 +21,14 @@ struct SelectedPlaylistView: View {
 
     @StateObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
 
+    @ObservedObject var avAudioPlayer: AVAudioPlayer
+
     @Binding var selectedArtist: Artist?
     @Binding var selectedAlbum: Album?
 
     init(showFlags: Int,
          spotifyCache: SpotifyCache,
+         avAudioPlayer: AVAudioPlayer,
          playlist: Playlist<PlaylistItemsReference>,
          selectedArtist: Binding<Artist?>,
          selectedAlbum: Binding<Album?>) {
@@ -35,6 +38,8 @@ struct SelectedPlaylistView: View {
             wrappedValue: SelectedPlaylistViewModel(spotifyCache: spotifyCache,
                                                     playlist: playlist)
         )
+
+        self.avAudioPlayer = avAudioPlayer
 
         self._selectedArtist = selectedArtist
         self._selectedAlbum = selectedAlbum
@@ -47,6 +52,8 @@ struct SelectedPlaylistView: View {
                     VStack(alignment: .leading) {
                         PlaylistTopElement(playlist: $selectedPlaylistViewModel.playlistDetails,
                                            album: .constant(nil),
+                                           avAudioPlayer: avAudioPlayer,
+                                           tracks: $selectedPlaylistViewModel.tracks,
                                            totalDuration: $selectedPlaylistViewModel.totalDuration,
                                            searchText: $selectedPlaylistViewModel.searchText)
 

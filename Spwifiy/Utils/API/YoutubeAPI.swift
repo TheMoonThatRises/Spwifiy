@@ -14,7 +14,7 @@ class YoutubeAPI {
     public static let shared = YoutubeAPI()
 
     // music id : youtube hls url
-    private var musicIdCache: [String: (Date, URL)] = [:]
+    private var musicIdCache = ThreadSafeDictionary<String, (Date, URL)>()
 
     let youtubeModel: YouTubeModel
 
@@ -22,13 +22,13 @@ class YoutubeAPI {
         self.youtubeModel = YouTubeModel()
     }
 
-    private func getHLSFromCache(musicId: String) -> URL? {
+    private func getHLSFromCache(musicId: String) -> (Date, URL)? {
         guard let (expiration, hls) = musicIdCache[musicId] else {
             return nil
         }
 
-        if expiration.timeIntervalSince1970 - Date().timeIntervalSince1970 > 0 {
-            return hls
+        if expiration.timeIntervalSince1970 > Date().timeIntervalSince1970 {
+            return (expiration, hls)
         } else {
             musicIdCache.removeValue(forKey: musicId)
 
@@ -43,10 +43,10 @@ class YoutubeAPI {
         )
     }
 
-    public func getSongHLS(artistName: String, songName: String) async -> URL? {
+    public func getSongHLS(artistName: String, songName: String, albumName: String?) async -> (Date, URL)? {
         guard let musicId = await YoutubeMusicAPI.shared.getArtistSongId(artistName: artistName,
                                                                          songName: songName,
-                                                                         albumName: nil) else {
+                                                                         albumName: albumName) else {
             return nil
         }
 
@@ -69,12 +69,12 @@ class YoutubeAPI {
                     .sorted(by: { (Int($0.groupId) ?? 0) > (Int($1.groupId) ?? 0) })
                     .first?.uri,
                   let url = URL(string: bestAudioURI) else {
-                    return nil
-                }
+                return nil
+            }
 
             setHLSCache(musicId: musicId, hls: url, expiration: streamingInfo.videoURLsExpireAt)
 
-            return streamingURL
+            return getHLSFromCache(musicId: musicId)
         } catch {
             print("unable to retrieve song: \(error)")
 

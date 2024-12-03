@@ -22,7 +22,7 @@ struct CroppedCachedAsyncImage<GenericShape: Shape>: View {
     var onLoadTask: ((Image) -> Void)?
 
     var body: some View {
-        CachedAsyncImage(url: url, urlCache: .imageCache) { phase in
+        CachedAsyncImage(url: url, urlCache: .spwifiyCache) { phase in
             switch phase {
             case .empty:
                 ProgressView()

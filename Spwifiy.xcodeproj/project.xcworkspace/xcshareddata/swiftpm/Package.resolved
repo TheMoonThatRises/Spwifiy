@@ -1,5 +1,5 @@
 {
-  "originHash" : "e6d81aa45bacdc56e673164ea612f27ec6fe250849be747f5ae5ad12f5fb6b7f",
+  "originHash" : "ea89191a49dae7f125867ed293e01b0be602d98b30b39c3a7cc2ac33f82ba266",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -56,6 +56,24 @@
       }
     },
     {
+      "identity" : "swift-atomics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-atomics.git",
+      "state" : {
+        "revision" : "cd142fd2f64be2100422d658e7411e39489da985",
+        "version" : "1.2.0"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections.git",
+      "state" : {
+        "revision" : "671108c96644956dddcd89dd59c203dcdb36cec7",
+        "version" : "1.1.4"
+      }
+    },
+    {
       "identity" : "swift-crypto",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
@@ -74,6 +92,24 @@
       }
     },
     {
+      "identity" : "swift-nio",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-nio",
+      "state" : {
+        "revision" : "dca6594f65308c761a9c409e09fbf35f48d50d34",
+        "version" : "2.77.0"
+      }
+    },
+    {
+      "identity" : "swift-system",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-system.git",
+      "state" : {
+        "revision" : "c8a44d836fe7913603e246acab7c528c2e780168",
+        "version" : "1.4.0"
+      }
+    },
+    {
       "identity" : "swiftui-cached-async-image",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lorenzofiamingo/swiftui-cached-async-image",
@@ -89,6 +125,15 @@
       "state" : {
         "revision" : "af76cf3ef710b6ca5f8c05f3a31307d44a3c5828",
         "version" : "5.0.2"
+      }
+    },
+    {
+      "identity" : "swordrpc",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/TheMoonThatRises/SwordRPC",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ed5360952ac1ebc935ae3ff698c45fbcad0f42f5"
       }
     },
     {

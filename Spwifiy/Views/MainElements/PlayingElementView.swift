@@ -10,26 +10,18 @@ import SpotifyWebAPI
 
 struct PlayingElementView: View {
 
-    @StateObject var playingViewModel: PlayingViewModel
+    @ObservedObject var avAudioPlayer: AVAudioPlayer
 
     @Binding var selectedArtist: Artist?
     @Binding var selectedAlbum: Album?
-
-    init(playingTrack: Binding<Track?>,
-         selectedArtist: Binding<Artist?>,
-         selectedAlbum: Binding<Album?>) {
-        self._playingViewModel = StateObject(wrappedValue: PlayingViewModel(playingTrack: playingTrack))
-        self._selectedArtist = selectedArtist
-        self._selectedAlbum = selectedAlbum
-    }
 
     var body: some View {
         HStack {
             Group {
                 Button {
-
+                    avAudioPlayer.togglePlay()
                 } label: {
-                    Image("spwifiy.pause.fill")
+                    Image(avAudioPlayer.isPlaying ? "spwifiy.pause.fill" : "spwifiy.play.fill")
                         .resizable()
                         .frame(width: 40, height: 40)
                 }
@@ -37,7 +29,7 @@ struct PlayingElementView: View {
                 .cursorHover(.pointingHand)
 
                 Button {
-
+                    avAudioPlayer.prevSong()
                 } label: {
                     Image("spwifiy.previous")
                         .resizable()
@@ -47,7 +39,7 @@ struct PlayingElementView: View {
                 .cursorHover(.pointingHand)
 
                 Button {
-
+                    avAudioPlayer.nextSong()
                 } label: {
                     Image("spwifiy.next")
                         .resizable()
@@ -56,18 +48,18 @@ struct PlayingElementView: View {
                 .buttonStyle(.plain)
                 .cursorHover(.pointingHand)
 
-                DotButton(toggle: $playingViewModel.isShuffled,
+                DotButton(toggle: $avAudioPlayer.isShuffled,
                           image: Image("spwifiy.shuffle"))
 
-                DotButton(toggle: $playingViewModel.isLooping,
+                DotButton(toggle: $avAudioPlayer.isLooping,
                           image: Image("spwifiy.loop"))
 
-                Text(playingViewModel.currentTime?.humanReadable.description ?? "-:-")
+                Text(Int(avAudioPlayer.currentPlayTime * 1000).humanReadable.description)
 
-                ProgressView(value: playingViewModel.progress ?? 0)
+                ProgressView(value: max(min(avAudioPlayer.playProgress, 1), 0))
                     .frame(minWidth: 100)
 
-                Text(playingViewModel.totalTime?.humanReadable.description ?? "-:-")
+                Text(Int(avAudioPlayer.totalRunTime * 1000).humanReadable.description)
 
                 Button {
 
@@ -81,7 +73,7 @@ struct PlayingElementView: View {
             }
 
             Group {
-                CroppedCachedAsyncImage(url: playingViewModel.playingTrack?.album?.images?.first?.url,
+                CroppedCachedAsyncImage(url: avAudioPlayer.currentPlayingTrack?.album?.images?.first?.url,
                                         width: 40,
                                         height: 40,
                                         alignment: .center,
@@ -89,21 +81,21 @@ struct PlayingElementView: View {
                     .foregroundStyle(.fgSecondary)
 
                 VStack(alignment: .leading) {
-                    Text(playingViewModel.playingTrack?.name ?? "Title")
+                    Text(avAudioPlayer.currentPlayingTrack?.name ?? "Title")
                         .foregroundStyle(.fgPrimary)
 
                     Button {
-                        selectedArtist = playingViewModel.playingTrack?.artists?.first
+                        selectedArtist = avAudioPlayer.currentPlayingTrack?.artists?.first
                     } label: {
-                        Text(playingViewModel.playingTrack?.artists?.description ?? "Artist")
+                        Text(avAudioPlayer.currentPlayingTrack?.artists?.description ?? "Artist")
                     }
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)
 
                     Button {
-                        selectedAlbum = playingViewModel.playingTrack?.album
+                        selectedAlbum = avAudioPlayer.currentPlayingTrack?.album
                     } label: {
-                        Text("Album")
+                        Text(avAudioPlayer.currentPlayingTrack?.album?.name ?? "Album")
                     }
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)

@@ -135,13 +135,12 @@ class ArtistViewModel: ObservableObject {
                     $0.artists?.count == 1 &&
                     $0.artists?.first?.id == artist.id
                 }
-                .first
 
             var imageURLString = await YoutubeMusicAPI.shared.getBackgroundArt(
                 artistId: artist.id,
                 artistName: artist.name,
-                topSong: track?.name,
-                topAlbum: track?.album?.name
+                topSong: track.first?.name,
+                topAlbum: track.first?.album?.name
             )
 
             if imageURLString == nil {

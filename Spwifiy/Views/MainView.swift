@@ -17,6 +17,8 @@ struct MainView: View {
 
     @ObservedObject var spotifyCache: SpotifyCache
 
+    @StateObject var avAudioPlayer: AVAudioPlayer = AVAudioPlayer()
+
     var body: some View {
         GeometryReader { geom in
             HStack {
@@ -54,6 +56,7 @@ struct MainView: View {
                                 SelectedPlaylistView(
                                     showFlags: PlaylistShowFlags.none,
                                     spotifyCache: spotifyCache,
+                                    avAudioPlayer: avAudioPlayer,
                                     playlist: selectedPlaylist,
                                     selectedArtist: $mainViewModel.selectedArtist,
                                     selectedAlbum: $mainViewModel.selectedAlbum
@@ -83,7 +86,7 @@ struct MainView: View {
                             .allowsHitTesting(false)
                     }
 
-                    PlayingElementView(playingTrack: $mainViewModel.playingTrack,
+                    PlayingElementView(avAudioPlayer: avAudioPlayer,
                                        selectedArtist: $mainViewModel.selectedArtist,
                                        selectedAlbum: $mainViewModel.selectedAlbum)
                 }

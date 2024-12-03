@@ -24,18 +24,37 @@ class APIRequest {
         ]
 
         self.session = URLSession(configuration: config)
+        self.session.configuration.urlCache = .spwifiyCache
+    }
+
+    public func request(url: URL, success: @escaping (Data?) -> Void) {
+        session.dataTask(with: URLRequest(url: url)) { data, _, error in
+            if error == nil, let data = data {
+                success(data)
+            } else {
+                success(nil)
+            }
+        }
+        .resume()
+    }
+
+    public func request(urlString: String, success: @escaping (Data?) -> Void) {
+        guard let url = URL(string: urlString) else {
+            return success(nil)
+        }
+
+        request(url: url, success: success)
     }
 
     public func request(url: URL) async -> String? {
         await withCheckedContinuation { continuation in
-            session.dataTask(with: URLRequest(url: url)) { data, _, error in
-                if error == nil, let data = data {
-                    continuation.resume(returning: String(data: data, encoding: .utf8))
-                } else {
-                    continuation.resume(returning: nil)
+            request(url: url) { result in
+                guard let result = result else {
+                    return continuation.resume(returning: nil)
                 }
+
+                continuation.resume(returning: String(data: result, encoding: .utf8))
             }
-            .resume()
         }
     }
 

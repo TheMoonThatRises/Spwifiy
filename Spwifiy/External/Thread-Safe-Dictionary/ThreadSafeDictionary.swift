@@ -40,14 +40,11 @@ class ThreadSafeDictionary<V: Hashable, T>: Collection {
         self.dictionary = dict
     }
 
-    // this is because it is an apple protocol method
-    // swiftlint:disable identifier_name
-    func index(after i: Dictionary<V, T>.Index) -> Dictionary<V, T>.Index {
+    func index(after idx: Dictionary<V, T>.Index) -> Dictionary<V, T>.Index {
         self.concurrentQueue.sync {
-            return self.dictionary.index(after: i)
+            return self.dictionary.index(after: idx)
         }
     }
-    // swiftlint:enable identifier_name
 
     subscript(key: V) -> T? {
         get {

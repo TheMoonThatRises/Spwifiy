@@ -14,12 +14,23 @@ struct HumanFormat {
     let days: Int
 
     var description: String {
-        [days, hours, minutes, seconds]
-            .map { String(format: "%02d", $0) }
-            .joined()
-            .replacingOccurrences(of: "^(00)+", with: "", options: .regularExpression)
-            .separate(every: 2, with: ":")
-            .replacingOccurrences(of: "^0+", with: "", options: .regularExpression)
+        let allItems = [days, hours, minutes, seconds]
+
+        if allItems.reduce(0, +) == 0 {
+            return "-:-"
+        } else {
+            var readable = allItems
+                .map { String(format: "%02d", $0) }
+                .joined()
+                .replacingOccurrences(of: "^(00)+", with: "", options: .regularExpression)
+                .separate(every: 2, with: ":")
+
+            if allItems.prefix(3).reduce(0, +) == 0 {
+                readable = "00:" + readable
+            }
+
+            return readable
+        }
     }
 }
 
