@@ -20,7 +20,7 @@ struct SponsorBlockItem: Decodable {
 
 struct SponsorBlockResponse {
     let items: [SponsorBlockItem]
-    let response: String?
+    let response: String
 
     init(response: String) {
         let decoder = JSONDecoder()
