@@ -56,15 +56,9 @@ struct PlayerSlider: View {
                                 .onChanged { gesture in
                                     isInteracting = true
 
-                                    let newValue = gesture.location.x / geometry.size.width
+                                    let newValue = gesture.location.x / geometry.size.width * range.upperBound
 
-                                    value = min(
-                                        max(
-                                            range.lowerBound,
-                                            Double(newValue) * (range.upperBound - range.lowerBound) + range.lowerBound
-                                        ),
-                                        range.upperBound
-                                    )
+                                    value = min(max(0, newValue), range.upperBound)
                                 }
                                 .onEnded { _ in
                                     isInteracting = false
