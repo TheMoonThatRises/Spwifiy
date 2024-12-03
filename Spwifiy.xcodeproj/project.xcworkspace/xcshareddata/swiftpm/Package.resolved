@@ -1,5 +1,5 @@
 {
-  "originHash" : "ea89191a49dae7f125867ed293e01b0be602d98b30b39c3a7cc2ac33f82ba266",
+  "originHash" : "5d5edb24c024117b5fab119498614665ddf4dd6cb60d72900d598701a099e7dd",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -132,8 +132,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/TheMoonThatRises/SwordRPC",
       "state" : {
-        "branch" : "main",
-        "revision" : "ed5360952ac1ebc935ae3ff698c45fbcad0f42f5"
+        "revision" : "ed5360952ac1ebc935ae3ff698c45fbcad0f42f5",
+        "version" : "1.1.1"
       }
     },
     {

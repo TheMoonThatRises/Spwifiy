@@ -468,8 +468,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TheMoonThatRises/SwordRPC";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
 			};
 		};
 		B6DAB6B22CF32B60000FAE96 /* XCRemoteSwiftPackageReference "SpotifyAPI" */ = {
