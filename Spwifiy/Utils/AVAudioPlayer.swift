@@ -57,7 +57,6 @@ class AVAudioPlayer: ObservableObject {
     @Published var totalRunTime: Double = 0 {
         didSet {
             currentPlayTime = 0
-            playProgress = 0
 
             nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = totalRunTime
 
@@ -66,18 +65,16 @@ class AVAudioPlayer: ObservableObject {
     }
     @Published var currentPlayTime: Double = 0 {
         didSet {
-            playProgress = max(min(currentPlayTime / max(totalRunTime, 1), 1), 0)
             nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentPlayTime
         }
     }
-    @Published var playProgress: Double = 0
 
     @Published var isScrubbing: Bool = false {
         didSet {
             if isScrubbing {
                 player.pause()
             } else {
-                seek(time: CMTime(seconds: playProgress * totalRunTime, preferredTimescale: 2))
+                seek(time: CMTime(seconds: currentPlayTime, preferredTimescale: 1))
                 player.play()
             }
         }
@@ -151,13 +148,14 @@ class AVAudioPlayer: ObservableObject {
                                                                        albumName: track.album?.name),
            let (expiration, m3u8) = await YoutubeAPI.shared.getSongHLS(musicId: musicId) {
             let sponsorBlock = await SponsorBlockAPI.shared.getSkipSegments(videoId: musicId)
+            let sponsorBlockSegments = sponsorBlock.items.map { ($0.segment[0], $0.segment[1]) }
 
             print(sponsorBlock)
 
             playerItems[trackId] = QueuePlayerItem(avPlayerItem: createPlayerItem(m3u8: m3u8),
                                                    track: track,
                                                    expiration: expiration,
-                                                   sponsorBlock: sponsorBlock)
+                                                   sponsorBlockSegments: sponsorBlockSegments)
 
             return true
         } else {
@@ -227,19 +225,91 @@ class AVAudioPlayer: ObservableObject {
 
     public func prevSong() {
         if currentPlayTime < 0.1 {
-            player.seek(to: CMTime(seconds: 0, preferredTimescale: 2))
+            player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
         } else {
             updateSong(incBy: -1)
         }
     }
 
+    func normalizeTotalRunTime(runTime: Double) -> Double {
+        guard let track = currentPlayingTrack,
+              let playingItem = playerItems[track.id ?? ""] else {
+            return runTime
+        }
+
+        var time = runTime
+
+        for segment in playingItem.sponsorBlockSegments {
+            time -= segment.1 - segment.0
+        }
+
+        return time
+    }
+
+    func normalizeCurrentTime(currentTime: Double) -> Double {
+        guard let track = currentPlayingTrack,
+              let playingItem = playerItems[track.id ?? ""] else {
+            return currentTime
+        }
+
+        var time = currentTime
+
+        for segment in playingItem.sponsorBlockSegments {
+            if currentTime >= segment.0 {
+                time -= segment.1 - segment.0
+            }
+        }
+
+        return time
+    }
+
+    private func normalizeSeekTime(time: CMTime) -> CMTime {
+        guard let track = currentPlayingTrack,
+              let playingItem = playerItems[track.id ?? ""] else {
+            return time
+        }
+
+        var seekTime = time.seconds
+
+        for segment in playingItem.sponsorBlockSegments {
+            if seekTime >= segment.0 {
+                seekTime += segment.1 - segment.0
+            }
+        }
+
+        return CMTime(seconds: seekTime, preferredTimescale: 1000)
+    }
+
+    func skipSponsorBlockSegment() {
+        guard let track = currentPlayingTrack,
+              let playingItem = playerItems[track.id ?? ""] else {
+            return
+        }
+
+        let currentPlayTime = player.currentTime().seconds
+
+        for segment in playingItem.sponsorBlockSegments {
+            if currentPlayTime > segment.0 && currentPlayTime < segment.1 {
+                if segment.1 >= (player.currentItem?.duration.seconds ?? 0) {
+                    nextSong()
+                } else {
+                    seek(time: CMTime(seconds: segment.1, preferredTimescale: 1000))
+                }
+
+                return
+            }
+        }
+    }
+
     func seek(time: CMTime) {
-        player.seek(to: time)
+        player.seek(to: normalizeSeekTime(time: time), toleranceBefore: .zero, toleranceAfter: .zero)
 
         setPresence(seekTime: time.seconds)
     }
 
     public func updatePlayer() {
+        player.pause()
+
         if playingIndex >= trackQueue.count || playingIndex < 0 {
             if isLooping {
                 if isShuffled {
@@ -257,18 +327,22 @@ class AVAudioPlayer: ObservableObject {
         if let playerItem = getPlayerItem(trackId: currentPlayingTrack?.id) {
             player.replaceCurrentItem(with: playerItem.avPlayerItem)
 
-            seek(time: CMTime(seconds: 0, preferredTimescale: 2))
+            seek(time: CMTime(seconds: 0, preferredTimescale: 1))
 
             setupNowPlaying()
 
             player.play()
 
             Task { @MainActor in
+                while totalRunTime == 0 {
+                    try? await Task.sleep(for: .seconds(3))
+                }
+
                 var updateIndex = playingIndex
 
                 repeat {
                     updateIndex += 1
-                } while !(await updateQueueItem(itemIndex: updateIndex))
+                } while !(await updateQueueItem(itemIndex: updateIndex)) && updateIndex < trackQueue.count
             }
         } else {
             Task { @MainActor in
