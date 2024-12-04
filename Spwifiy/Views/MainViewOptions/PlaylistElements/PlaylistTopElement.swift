@@ -69,16 +69,15 @@ struct PlaylistTopElement: View {
 
                 avAudioPlayer.playingId = playlist?.id
             } label: {
-                Group {
+                Image(
+                    avAudioPlayer.playingId == playlist?.id &&
+                    avAudioPlayer.isPlaying ? "spwifiy.pause.fill"  : "spwifiy.play.fill"
+                )
+                .resizable()
+                .overlay {
                     if tracks.isEmpty {
                         ProgressView()
                             .progressViewStyle(.circular)
-                    } else {
-                        Image(
-                            avAudioPlayer.playingId == playlist?.id &&
-                            avAudioPlayer.isPlaying ? "spwifiy.pause.fill"  : "spwifiy.play.fill"
-                        )
-                        .resizable()
                     }
                 }
                 .frame(width: 40, height: 40)
