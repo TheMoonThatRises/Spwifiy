@@ -151,6 +151,30 @@ class YoutubeMusicAPI {
 
             return accessibilityLabel.contains(artist.lowercased()) &&
                    accessibilityLabel.contains(title.lowercased())
+        }.sorted { one, two in
+            guard let oneViews = one[
+                "musicResponsiveListItemRenderer",
+                "flexColumns"
+            ].array?.last?[
+                "musicResponsiveListItemFlexColumnRenderer",
+                "text",
+                "runs"
+            ].array?.first?["text"].string,
+                  let twoViews = two[
+                "musicResponsiveListItemRenderer",
+                "flexColumns"
+            ].array?.last?[
+                "musicResponsiveListItemFlexColumnRenderer",
+                "text",
+                "runs"
+            ].array?.first?["text"].string else {
+                return true
+            }
+
+            return (
+                String(oneViews.split(separator: " ").first ?? "0").shorthandConvert >
+                String(twoViews.split(separator: " ").first ?? "0").shorthandConvert
+            )
         }.first
     }
 
