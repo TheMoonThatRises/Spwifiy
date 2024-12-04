@@ -135,7 +135,7 @@ class AVAudioPlayer: ObservableObject {
 
     private func updatePlayerItem(index: Int, success: @escaping (Bool) -> Void) async {
         for queueIndex in [index, index + 1, index - 1] {
-            if queueIndex < 0 || queueIndex > trackQueue.count {
+            if queueIndex < 0 || queueIndex >= trackQueue.count {
                 continue
             }
 
@@ -143,12 +143,16 @@ class AVAudioPlayer: ObservableObject {
 
             if let trackId = track.id,
                let artists = track.artists?.description,
-               let (expiration, m3u8) = await YoutubeAPI.shared.getSongHLS(artistName: artists,
-                                                                           songName: track.name,
-                                                                           albumName: track.album?.name) {
+               let musicId = await YoutubeMusicAPI.shared.getArtistSongId(artistName: artists,
+                                                                          songName: track.name,
+                                                                          albumName: track.album?.name),
+               let (expiration, m3u8) = await YoutubeAPI.shared.getSongHLS(musicId: musicId) {
+                let sponsorBlock = await SponsorBlockAPI.shared.getSkipSegments(videoId: musicId)
+
                 playerItems[trackId] = QueuePlayerItem(avPlayerItem: createPlayerItem(m3u8: m3u8),
                                                        track: track,
-                                                       expiration: expiration)
+                                                       expiration: expiration,
+                                                       sponsorBlock: sponsorBlock)
 
                 if queueIndex == index {
                     success(true)

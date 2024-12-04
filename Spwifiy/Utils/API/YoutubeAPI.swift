@@ -43,13 +43,7 @@ class YoutubeAPI {
         )
     }
 
-    public func getSongHLS(artistName: String, songName: String, albumName: String?) async -> (Date, URL)? {
-        guard let musicId = await YoutubeMusicAPI.shared.getArtistSongId(artistName: artistName,
-                                                                         songName: songName,
-                                                                         albumName: albumName) else {
-            return nil
-        }
-
+    public func getSongHLS(musicId: String) async -> (Date, URL)? {
         if let hlsLink = getHLSFromCache(musicId: musicId) {
             return hlsLink
         }

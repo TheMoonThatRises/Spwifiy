@@ -13,4 +13,5 @@ struct QueuePlayerItem {
     let avPlayerItem: AVPlayerItem
     let track: Track
     let expiration: Date
+    let sponsorBlock: SponsorBlockResponse
 }
