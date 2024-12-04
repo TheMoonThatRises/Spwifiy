@@ -37,8 +37,6 @@ class SpotifyViewModel: ObservableObject {
 
     public let spotify: SpotifyAPI<AuthorizationCodeFlowPKCEManager>
 
-    private var cancellables: Set<AnyCancellable> = []
-
     private let keychain: Keychain
 
     @Published var userProfile: SpotifyUser?
@@ -51,16 +49,6 @@ class SpotifyViewModel: ObservableObject {
         self.spotify = SpotifyAPI(
             authorizationManager: AuthorizationCodeFlowPKCEManager(clientId: "")
         )
-
-        self.spotify.authorizationManagerDidChange
-            .receive(on: RunLoop.main)
-            .sink(receiveValue: self.authorizationManagerDidChange)
-            .store(in: &cancellables)
-
-        self.spotify.authorizationManagerDidDeauthorize
-            .receive(on: RunLoop.main)
-            .sink(receiveValue: self.authorizationManagerDidDeauthorize)
-            .store(in: &cancellables)
     }
 
     public func attemptSpotifyAuthToken() async {
@@ -136,21 +124,9 @@ class SpotifyViewModel: ObservableObject {
             Task { @MainActor in
                 self.removeCookies()
 
-                self.isAuthorized = .none
+                self.isAuthorized = .failed
             }
         }
-    }
-
-    private func authorizationManagerDidChange() {
-        Task(priority: .utility) {
-            await attemptSpotifyAuthToken()
-        }
-    }
-
-    private func authorizationManagerDidDeauthorize() {
-        isAuthorized = .failed
-
-        removeCookies()
     }
 
     private func removeCookies() {
