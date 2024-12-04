@@ -206,7 +206,7 @@ class YoutubeMusicAPI {
         backgroundImageCache[artistId]
     }
 
-    public func getArtistSongId(artistName: String, songName: String, albumName: String?) async -> String? {
+    public func getYoutubeSongId(artistName: String, songName: String, albumName: String?) async -> String? {
         guard let requestString = requestURLString(artistName, songName, albumName) else {
             return nil
         }
@@ -230,12 +230,14 @@ class YoutubeMusicAPI {
            verifyTopIsType(json: run, type: .song),
            let songId = run["navigationEndpoint"]["watchEndpoint"]["videoId"].string {
             musicId = songId
+        } else if albumName != nil {
+            return await getYoutubeSongId(artistName: artistName, songName: songName, albumName: nil)
         } else {
             let songResults = getSearchShelfItem(json: apiContent, shelfName: "Songs")?["contents"].array
 
             guard let song = songResults?.first,
                   let songId = song["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"].string else {
-                return await getArtistSongId(artistName: artistName, songName: songName, albumName: nil)
+                return nil
             }
 
             musicId = songId

@@ -143,7 +143,7 @@ class AVAudioPlayer: ObservableObject {
 
             if let trackId = track.id,
                let artists = track.artists?.description,
-               let musicId = await YoutubeMusicAPI.shared.getArtistSongId(artistName: artists,
+               let musicId = await YoutubeMusicAPI.shared.getYoutubeSongId(artistName: artists,
                                                                           songName: track.name,
                                                                           albumName: track.album?.name),
                let (expiration, m3u8) = await YoutubeAPI.shared.getSongHLS(musicId: musicId) {
