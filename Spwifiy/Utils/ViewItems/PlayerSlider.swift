@@ -16,7 +16,7 @@ struct PlayerSlider: View {
     @State var isHovering: Bool = false
 
     var range: ClosedRange<Double> {
-        0...maxValue
+        0...(maxValue > 0 ? maxValue: 1)
     }
 
     init(value: Binding<Double>, maxValue: Binding<Double>, isInteracting: Binding<Bool>) {
