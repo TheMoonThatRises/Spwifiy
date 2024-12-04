@@ -222,23 +222,24 @@ class SpotifyViewModel: ObservableObject {
         }
     }
 
-    func loadUserProfile() {
+    @MainActor
+    func loadUserProfile() async {
         guard !isLoadingUserProfile else {
             return
         }
 
         isLoadingUserProfile = true
 
-        spotifyRequest {
-            spotify.currentUserProfile()
-        } receiveValue: { user in
-            Task { @MainActor in
-                defer {
-                    self.isLoadingUserProfile = false
-                }
+        defer {
+            self.isLoadingUserProfile = false
+        }
 
-                self.userProfile = user
+        do {
+            self.userProfile = try await spotifyRequest {
+                spotify.currentUserProfile()
             }
+        } catch {
+            print("unable to load spotify profile: \(error)")
         }
     }
 }

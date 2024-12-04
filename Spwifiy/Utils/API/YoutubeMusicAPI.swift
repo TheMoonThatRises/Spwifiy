@@ -8,13 +8,13 @@
 import Foundation
 import SwiftyJSON
 
-enum YoutubeResultType: String {
-    case artist = "MUSIC_PAGE_TYPE_ARTIST"
-    case song = "MUSIC_VIDEO_TYPE_ATV"
-    case album = "MUSIC_PAGE_TYPE_ALBUM"
-}
-
 class YoutubeMusicAPI {
+
+    private enum YoutubeResultType: String {
+        case artist = "MUSIC_PAGE_TYPE_ARTIST"
+        case song = "MUSIC_VIDEO_TYPE_ATV"
+        case album = "MUSIC_PAGE_TYPE_ALBUM"
+    }
 
     public static let shared = YoutubeMusicAPI()
 

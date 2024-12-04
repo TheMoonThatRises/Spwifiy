@@ -65,6 +65,9 @@
     "Home" : {
       "extractionState" : "manual"
     },
+    "If you believe this is incorrect, please double check your internet connection." : {
+
+    },
     "Liked songs" : {
 
     },
@@ -80,6 +83,9 @@
     "Playlists" : {
 
     },
+    "Quit app" : {
+
+    },
     "Recent" : {
 
     },
@@ -88,6 +94,9 @@
     },
     "Search" : {
       "extractionState" : "manual"
+    },
+    "Spwifiy is currently in closed beta. Only invited people may particpate." : {
+
     },
     "Title" : {
 

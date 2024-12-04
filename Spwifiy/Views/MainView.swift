@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SpotifyWebAPI
+import AlertToast
 
 struct MainView: View {
 
@@ -18,6 +19,15 @@ struct MainView: View {
     @ObservedObject var spotifyCache: SpotifyCache
 
     @StateObject var avAudioPlayer: AVAudioPlayer = AVAudioPlayer()
+
+    @State var showIsVerifyingUser: Bool = true
+    @State var showVerificationFailed: Bool = false
+    @State var isVerifiedBetaTester: Bool? {
+        didSet {
+            showIsVerifyingUser = false
+            showVerificationFailed = !(isVerifiedBetaTester ?? false)
+        }
+    }
 
     var body: some View {
         GeometryReader { geom in
@@ -93,8 +103,34 @@ struct MainView: View {
             }
             .padding()
         }
-        .onAppear {
-            spotifyViewModel.loadUserProfile()
+        .disabled(!(isVerifiedBetaTester ?? false))
+        .toast(isPresenting: $showIsVerifyingUser, tapToDismiss: false) {
+            AlertToast(type: .loading, title: "Verifying User")
+        }
+        .sheet(isPresented: $showVerificationFailed) {
+            VStack {
+                Text("Spwifiy is currently in closed beta. Only invited people may particpate.")
+
+                Text("If you believe this is incorrect, please double check your internet connection.")
+
+                HStack {
+                    Spacer()
+
+                    Button {
+                        exit(1)
+                    } label: {
+                        Text("Quit app")
+                    }
+                }
+            }
+            .padding()
+        }
+        .task {
+            await spotifyViewModel.loadUserProfile()
+
+            VerifyClosedBeta.shared.verifyUser(spotifyId: spotifyViewModel.userProfile?.id ?? "") { result in
+                isVerifiedBetaTester = result
+            }
         }
     }
 }

@@ -149,6 +149,8 @@ class AVAudioPlayer: ObservableObject {
                let (expiration, m3u8) = await YoutubeAPI.shared.getSongHLS(musicId: musicId) {
                 let sponsorBlock = await SponsorBlockAPI.shared.getSkipSegments(videoId: musicId)
 
+                print(sponsorBlock)
+
                 playerItems[trackId] = QueuePlayerItem(avPlayerItem: createPlayerItem(m3u8: m3u8),
                                                        track: track,
                                                        expiration: expiration,

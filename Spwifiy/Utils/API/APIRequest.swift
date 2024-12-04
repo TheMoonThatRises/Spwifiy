@@ -15,6 +15,7 @@ class APIRequest {
     public static let shared = APIRequest()
 
     private let session: URLSession
+    private let noCacheSession: URLSession
 
     init() {
         let config = URLSessionConfiguration.default
@@ -24,11 +25,14 @@ class APIRequest {
         ]
 
         self.session = URLSession(configuration: config)
+        self.noCacheSession = URLSession(configuration: config)
+
         self.session.configuration.urlCache = .spwifiyCache
+        self.noCacheSession.configuration.urlCache = nil
     }
 
-    public func request(url: URL, success: @escaping (Data?) -> Void) {
-        session.dataTask(with: URLRequest(url: url)) { data, _, error in
+    public func request(url: URL, noCache: Bool = false, success: @escaping (Data?) -> Void) {
+        (noCache ? noCacheSession : session).dataTask(with: URLRequest(url: url)) { data, _, error in
             if error == nil, let data = data {
                 success(data)
             } else {
@@ -38,17 +42,17 @@ class APIRequest {
         .resume()
     }
 
-    public func request(urlString: String, success: @escaping (Data?) -> Void) {
+    public func request(urlString: String, noCache: Bool = false, success: @escaping (Data?) -> Void) {
         guard let url = URL(string: urlString) else {
             return success(nil)
         }
 
-        request(url: url, success: success)
+        request(url: url, noCache: noCache, success: success)
     }
 
-    public func request(url: URL) async -> String? {
+    public func request(url: URL, noCache: Bool = false) async -> String? {
         await withCheckedContinuation { continuation in
-            request(url: url) { result in
+            request(url: url, noCache: noCache) { result in
                 guard let result = result else {
                     return continuation.resume(returning: nil)
                 }
@@ -58,12 +62,12 @@ class APIRequest {
         }
     }
 
-    public func request(urlString: String) async -> String? {
+    public func request(urlString: String, noCache: Bool = false) async -> String? {
         guard let url = URL(string: urlString) else {
             return nil
         }
 
-        return await request(url: url)
+        return await request(url: url, noCache: noCache)
     }
 
 }

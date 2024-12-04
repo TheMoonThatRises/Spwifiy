@@ -8,10 +8,6 @@
 import SwiftUI
 import SpotifyWebAPI
 
-enum DisplayType {
-    case list, grid
-}
-
 struct LikedSongsView: View {
 
     @StateObject var likedSongsViewModel: LikedSongsViewModel
