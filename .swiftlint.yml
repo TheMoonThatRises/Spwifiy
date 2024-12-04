@@ -1,0 +1,8 @@
+analyzer_rules:
+  - all
+
+included:
+  - Spwifiy
+
+excluded:
+  - Spwifiy/External
