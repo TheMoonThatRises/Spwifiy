@@ -133,41 +133,37 @@ class AVAudioPlayer: ObservableObject {
         return item
     }
 
-    private func updatePlayerItem(index: Int, success: @escaping (Bool) -> Void) async {
-        for queueIndex in [index, index + 1, index - 1] {
-            if queueIndex < 0 || queueIndex >= trackQueue.count {
-                continue
-            }
+    private func updateQueueItem(itemIndex: Int) async -> Bool {
+        if itemIndex < 0 || itemIndex >= trackQueue.count {
+            return false
+        }
 
-            let track = trackQueue[queueIndex]
+        let track = trackQueue[itemIndex]
 
-            if let trackId = track.id,
-               let artists = track.artists?.description,
-               let musicId = await YoutubeMusicAPI.shared.getYoutubeSongId(artistName: artists,
-                                                                          songName: track.name,
-                                                                          albumName: track.album?.name),
-               let (expiration, m3u8) = await YoutubeAPI.shared.getSongHLS(musicId: musicId) {
-                let sponsorBlock = await SponsorBlockAPI.shared.getSkipSegments(videoId: musicId)
+        if playerItems[track.id ?? ""] != nil {
+            return true
+        }
 
-                print(sponsorBlock)
+        if let trackId = track.id,
+           let artists = track.artists?.description,
+           let musicId = await YoutubeMusicAPI.shared.getYoutubeSongId(artistName: artists,
+                                                                       songName: track.name,
+                                                                       albumName: track.album?.name),
+           let (expiration, m3u8) = await YoutubeAPI.shared.getSongHLS(musicId: musicId) {
+            let sponsorBlock = await SponsorBlockAPI.shared.getSkipSegments(videoId: musicId)
 
-                playerItems[trackId] = QueuePlayerItem(avPlayerItem: createPlayerItem(m3u8: m3u8),
-                                                       track: track,
-                                                       expiration: expiration,
-                                                       sponsorBlock: sponsorBlock)
+            print(sponsorBlock)
 
-                if queueIndex == index {
-                    success(true)
-                }
-            } else {
-                print("unable to add track: \(track.name) - \(track.artists?.description ?? "Unknown")")
+            playerItems[trackId] = QueuePlayerItem(avPlayerItem: createPlayerItem(m3u8: m3u8),
+                                                   track: track,
+                                                   expiration: expiration,
+                                                   sponsorBlock: sponsorBlock)
 
-                if queueIndex == index {
-                    success(false)
+            return true
+        } else {
+            print("unable to add track: \(track.name) - \(track.artists?.description ?? "Unknown")")
 
-                    return
-                }
-            }
+            return false
         }
     }
 
@@ -266,15 +262,23 @@ class AVAudioPlayer: ObservableObject {
             setupNowPlaying()
 
             player.play()
+
+            Task { @MainActor in
+                var updateIndex = playingIndex
+
+                repeat {
+                    updateIndex += 1
+                } while !(await updateQueueItem(itemIndex: updateIndex))
+            }
         } else {
             Task { @MainActor in
-                await updatePlayerItem(index: playingIndex) { success in
-                    if !success {
-                        self.playingIndex += 1
-                    }
+                let success = await updateQueueItem(itemIndex: playingIndex)
 
-                    self.updatePlayer()
+                if !success {
+                    self.playingIndex += 1
                 }
+
+                self.updatePlayer()
             }
         }
     }
