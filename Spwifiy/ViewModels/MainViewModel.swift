@@ -10,6 +10,8 @@ import SpotifyWebAPI
 
 class MainViewModel: ObservableObject {
 
+    @Published var authStatus: SpotifyAuthManager.AuthStatus = .cookieSet
+
     @Published var currentView: MainViewOptions = .home {
         willSet {
             withAnimation(.defaultAnimation) {

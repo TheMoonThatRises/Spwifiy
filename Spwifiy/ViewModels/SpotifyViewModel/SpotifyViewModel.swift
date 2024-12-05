@@ -12,11 +12,15 @@ import KeychainAccess
 
 class SpotifyViewModel: ObservableObject {
 
-    public static let loginCallback = "spotify-login-callback"
+    public enum AuthorizationStatus {
+        case none, valid, failed
+    }
 
     private var isLoadingUserProfile: Bool = false
 
-    private static let authorizationManagerKey = "authorizationManager"
+    private var spotifyAccessTokenURL: String {
+        "https://open.spotify.com/get_access_token?reason=transport&productType=web_player"
+    }
 
     private static let authScopes: Set<Scope> = [
         .playlistReadPrivate,
@@ -29,18 +33,9 @@ class SpotifyViewModel: ObservableObject {
         .userTopRead
     ]
 
-    @Published var isAuthorized: Bool = false
-    @Published var useURLAuth: Bool = false
-
-    private let clientId: String
-
-    private let codeVerifier: String
-    private let codeChallenge: String
-    private let state: String
+    @Published var isAuthorized: AuthorizationStatus = .none
 
     public let spotify: SpotifyAPI<AuthorizationCodeFlowPKCEManager>
-
-    public let authorizationURL: URL
 
     private var cancellables: Set<AnyCancellable> = []
 
@@ -49,27 +44,11 @@ class SpotifyViewModel: ObservableObject {
     @Published var userProfile: SpotifyUser?
 
     init() {
-        self.clientId = Bundle.main.infoDictionary?["SpotifyClientId"] as? String ?? ""
-
         self.keychain = Keychain(service: SpwifiyApp.service)
 
         self.spotify = SpotifyAPI(
-            authorizationManager: AuthorizationCodeFlowPKCEManager(clientId: clientId)
+            authorizationManager: AuthorizationCodeFlowPKCEManager(clientId: "")
         )
-
-        self.isAuthorized = self.spotify.authorizationManager.isAuthorized()
-
-        self.codeVerifier = String.randomURLSafe(length: 128)
-        self.codeChallenge = String.makeCodeChallenge(codeVerifier: self.codeVerifier)
-
-        self.state = String.randomURLSafe(length: 128)
-
-        self.authorizationURL = spotify.authorizationManager.makeAuthorizationURL(
-            redirectURI: URL(string: SpwifiyApp.redirectURI + SpotifyViewModel.loginCallback)!,
-            codeChallenge: self.codeChallenge,
-            state: self.state,
-            scopes: SpotifyViewModel.authScopes
-        )!
 
         self.spotify.authorizationManagerDidChange
             .receive(on: RunLoop.main)
@@ -80,65 +59,85 @@ class SpotifyViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink(receiveValue: self.authorizationManagerDidDeauthorize)
             .store(in: &cancellables)
+    }
 
-        if let authData = self.keychain[data: SpotifyViewModel.authorizationManagerKey],
-           let pckeAuthManager = try? JSONDecoder()
-                .decode(AuthorizationCodeFlowPKCEManager.self, from: authData) {
-            self.spotify.authorizationManager = pckeAuthManager
-        }
+    public func attemptSpotifyAuthToken() async {
+        let decoder = JSONDecoder()
 
-        if self.spotify.authorizationManager.refreshToken != nil {
-            self.spotifyRequest {
-                self.spotify.authorizationManager.refreshTokens(onlyIfExpired: false)
-            } sink: { completion in
-                do {
-                    try self.authorizeCallback(completion: completion)
-                } catch {
-                    print(error)
+        if let spDcCookieData = await keychain[data: SpotifyAuthManager.spDcCookieKey],
+           let spTCookieData = await keychain[data: SpotifyAuthManager.spTCookieKey],
+           let spDcCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spDcCookieData).httpCookie,
+           let spTCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spTCookieData).httpCookie {
 
-                    Task { @MainActor in
-                        self.isAuthorized = false
-                        self.useURLAuth = true
+            APIRequest.shared.setCookie(cookie: spDcCookie, noCache: true)
+            APIRequest.shared.setCookie(cookie: spTCookie, noCache: true)
+
+            APIRequest.shared.request(url: URL(string: spotifyAccessTokenURL)!, noCache: true) { data in
+                Task { @MainActor in
+                    APIRequest.shared.removeCookie(cookie: spDcCookie, noCache: true)
+                    APIRequest.shared.removeCookie(cookie: spTCookie, noCache: true)
+
+                    guard let data = data,
+                          let authResponse = try? decoder.decode(SpotifyAuthResponse.self, from: data) else {
+                        self.isAuthorized = .failed
+
+                        return
                     }
+
+                    if authResponse.isAnonymous {
+                        self.isAuthorized = .failed
+
+                        return
+                    }
+
+                    self.spotify.authorizationManager = AuthorizationCodeFlowPKCEManager(
+                        clientId: authResponse.clientId,
+                        accessToken: authResponse.accessToken,
+                        expirationDate: Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs),
+                        refreshToken: nil,
+                        scopes: SpotifyViewModel.authScopes
+                    )
+
+                    self.isAuthorized = .valid
                 }
             }
         } else {
-            self.useURLAuth = true
+            Task { @MainActor in
+                self.isAuthorized = .failed
+            }
         }
     }
 
-    private func authorizeCallback(completion: Subscribers.Completion<any Error>) throws {
-        switch completion {
-        case .finished:
-            print("user successfully authorized")
-        case .failure(let error):
-            if let authError = error as? SpotifyAuthorizationError, authError.accessWasDenied {
-                print("the user denied the authorization request")
-                throw SpwifiyErrors.authAccessDenied
-            } else {
-                print("couldn't authorize application: \(error)")
-                throw SpwifiyErrors.unknownError(error.localizedDescription)
+    public func logout() {
+        var request = URLRequest(url: URL(string: "https://open.spotify.com/logout")!)
+
+        request.setValue("Bearer \(spotify.authorizationManager.accessToken!)", forHTTPHeaderField: "Authorization")
+
+        APIRequest.shared.request(request: request, noCache: true) { _ in
+            Task { @MainActor in
+                self.removeCookies()
+
+                self.isAuthorized = .none
             }
         }
     }
 
     private func authorizationManagerDidChange() {
-        isAuthorized = spotify.authorizationManager.isAuthorized()
-
-        do {
-            let authManagerData = try JSONEncoder().encode(spotify.authorizationManager)
-
-            keychain[data: SpotifyViewModel.authorizationManagerKey] = authManagerData
-        } catch {
-            print("unable to store auth manager state")
+        Task(priority: .utility) {
+            await attemptSpotifyAuthToken()
         }
     }
 
     private func authorizationManagerDidDeauthorize() {
-        isAuthorized = false
+        isAuthorized = .failed
 
+        removeCookies()
+    }
+
+    private func removeCookies() {
         do {
-            try keychain.remove(SpotifyViewModel.authorizationManagerKey)
+            try keychain.remove(SpotifyAuthManager.spDcCookieKey)
+            try keychain.remove(SpotifyAuthManager.spTCookieKey)
         } catch {
             print("unable to remove unauthorized manager")
         }
@@ -207,18 +206,6 @@ class SpotifyViewModel: ObservableObject {
                     continuation.resume(throwing: error)
                 }
             }
-        }
-    }
-
-    func spotifyRequestAccess(redirectURL: URL) async throws {
-        try await spotifyRequest {
-            spotify.authorizationManager.requestAccessAndRefreshTokens(
-                redirectURIWithQuery: redirectURL,
-                codeVerifier: codeVerifier,
-                state: state
-            )
-        } sink: { result in
-            try self.authorizeCallback(completion: result)
         }
     }
 

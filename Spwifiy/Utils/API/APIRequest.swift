@@ -31,8 +31,16 @@ class APIRequest {
         self.noCacheSession.configuration.urlCache = nil
     }
 
-    public func request(url: URL, noCache: Bool = false, success: @escaping (Data?) -> Void) {
-        (noCache ? noCacheSession : session).dataTask(with: URLRequest(url: url)) { data, _, error in
+    public func setCookie(cookie: HTTPCookie, noCache: Bool = false) {
+        (noCache ? noCacheSession : session).configuration.httpCookieStorage?.setCookie(cookie)
+    }
+
+    public func removeCookie(cookie: HTTPCookie, noCache: Bool = false) {
+        (noCache ? noCacheSession : session).configuration.httpCookieStorage?.deleteCookie(cookie)
+    }
+
+    public func request(request: URLRequest, noCache: Bool = false, success: @escaping (Data?) -> Void) {
+        (noCache ? noCacheSession : session).dataTask(with: request) { data, _, error in
             if error == nil, let data = data {
                 success(data)
             } else {
@@ -40,6 +48,10 @@ class APIRequest {
             }
         }
         .resume()
+    }
+
+    public func request(url: URL, noCache: Bool = false, success: @escaping (Data?) -> Void) {
+        request(request: URLRequest(url: url), noCache: noCache, success: success)
     }
 
     public func request(urlString: String, noCache: Bool = false, success: @escaping (Data?) -> Void) {

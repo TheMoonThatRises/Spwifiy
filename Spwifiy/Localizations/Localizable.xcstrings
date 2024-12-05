@@ -32,13 +32,10 @@
     "Artists" : {
 
     },
-    "Attempting to authorize..." : {
+    "attempting authorization" : {
 
     },
     "By" : {
-
-    },
-    "Click the URL below if an authorization window does not appear" : {
 
     },
     "Discover" : {
@@ -69,6 +66,9 @@
 
     },
     "Liked songs" : {
+
+    },
+    "Login with Spotify" : {
 
     },
     "My Library" : {
