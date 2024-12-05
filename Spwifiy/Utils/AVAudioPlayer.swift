@@ -190,6 +190,8 @@ class AVAudioPlayer: ObservableObject {
     }
 
     public func removeAllSongs() {
+        player.pause()
+
         trackQueue.removeAll()
     }
 

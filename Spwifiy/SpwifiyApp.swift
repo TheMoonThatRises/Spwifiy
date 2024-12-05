@@ -19,6 +19,8 @@ struct SpwifiyApp: App {
     @StateObject var spotifyDataViewModel: SpotifyDataViewModel = SpotifyDataViewModel()
     @StateObject var mainViewModel: MainViewModel = MainViewModel()
 
+    @StateObject var avAudioPlayer: AVAudioPlayer = AVAudioPlayer()
+
     @StateObject var spotifyCache: SpotifyCache = SpotifyCache()
 
     var body: some Scene {
@@ -29,9 +31,13 @@ struct SpwifiyApp: App {
                     MainView(spotifyViewModel: spotifyViewModel,
                              spotifyDataViewModel: spotifyDataViewModel,
                              mainViewModel: mainViewModel,
-                             spotifyCache: spotifyCache)
+                             spotifyCache: spotifyCache,
+                             avAudioPlayer: avAudioPlayer)
                         .onAppear {
                             mainViewModel.currentView = .home
+                        }
+                        .onDisappear {
+                            avAudioPlayer.removeAllSongs()
                         }
                 case .inProcess, .failed:
                     LoginView(authStatus: $mainViewModel.authStatus)

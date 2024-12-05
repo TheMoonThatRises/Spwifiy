@@ -18,7 +18,7 @@ struct MainView: View {
 
     @ObservedObject var spotifyCache: SpotifyCache
 
-    @StateObject var avAudioPlayer: AVAudioPlayer = AVAudioPlayer()
+    @ObservedObject var avAudioPlayer: AVAudioPlayer
 
     @State var showIsVerifyingUser: Bool = true
     @State var showVerificationFailed: Bool = false
