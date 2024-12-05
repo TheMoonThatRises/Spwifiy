@@ -43,6 +43,8 @@ class SpotifyViewModel: ObservableObject {
 
     @Published var userProfile: SpotifyUser?
 
+    private var reauthTask: Task<Void, Never>?
+
     init() {
         self.keychain = Keychain(service: SpwifiyApp.service)
 
@@ -99,6 +101,23 @@ class SpotifyViewModel: ObservableObject {
                     )
 
                     self.isAuthorized = .valid
+
+                    if self.reauthTask == nil {
+                        self.reauthTask = Task(priority: .background) {
+                            do {
+                                let date = Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs)
+
+                                // reauth 7 seconds before token expires
+                                try await Task.sleep(
+                                    for: .seconds(date.timeIntervalSinceNow - 7.0)
+                                )
+
+                                await self.attemptSpotifyAuthToken()
+                            } catch {
+                                print("failed to wait for reauth time: \(error)")
+                            }
+                        }
+                    }
                 }
             }
         } else {
