@@ -66,13 +66,26 @@ struct PlaylistTopElement: View {
                 avAudioPlayer.addBulkSongs(
                     tracks: avAudioPlayer.isShuffled ? tracks.shuffled() : tracks
                 )
+
+                avAudioPlayer.playingId = playlist?.id
             } label: {
-                Image(avAudioPlayer.playingId == playlist?.id ? "spwifiy.pause.fill"  : "spwifiy.play.fill")
-                    .resizable()
-                    .frame(width: 40, height: 40)
+                Group {
+                    if tracks.isEmpty {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                    } else {
+                        Image(
+                            avAudioPlayer.playingId == playlist?.id &&
+                            avAudioPlayer.isPlaying ? "spwifiy.pause.fill"  : "spwifiy.play.fill"
+                        )
+                        .resizable()
+                    }
+                }
+                .frame(width: 40, height: 40)
             }
             .buttonStyle(.plain)
             .cursorHover(.pointingHand)
+            .disabled(tracks.isEmpty)
 
             DotButton(toggle: $avAudioPlayer.isShuffled,
                       image: Image("spwifiy.shuffle"))
@@ -98,6 +111,7 @@ struct PlaylistTopElement: View {
             }
             .buttonStyle(.plain)
             .cursorHover(.pointingHand)
+            .disabled(tracks.isEmpty)
 
             Button {
 
