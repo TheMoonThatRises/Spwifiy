@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		34170B2C2D02A188005276B6 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 34170B2B2D02A188005276B6 /* SQLite */; };
 		346630062CFACCA900B5D8D9 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 346630052CFACCA900B5D8D9 /* SwiftyJSON */; };
 		346630322CFD24DC00B5D8D9 /* YouTubeKit in Frameworks */ = {isa = PBXBuildFile; productRef = 346630312CFD24DC00B5D8D9 /* YouTubeKit */; };
 		346630482CFD75C400B5D8D9 /* M3U8Decoder in Frameworks */ = {isa = PBXBuildFile; productRef = 346630472CFD75C400B5D8D9 /* M3U8Decoder */; };
@@ -75,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				34170B2C2D02A188005276B6 /* SQLite in Frameworks */,
 				346630682CFED6A600B5D8D9 /* SwordRPC in Frameworks */,
 				B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */,
 				346630482CFD75C400B5D8D9 /* M3U8Decoder in Frameworks */,
@@ -137,6 +139,7 @@
 				346630472CFD75C400B5D8D9 /* M3U8Decoder */,
 				346630642CFED5B700B5D8D9 /* SwordRPC */,
 				346630672CFED6A600B5D8D9 /* SwordRPC */,
+				34170B2B2D02A188005276B6 /* SQLite */,
 			);
 			productName = Spwifiy;
 			productReference = B6EDE45D2CF2923B004666B1 /* Spwifiy.app */;
@@ -175,6 +178,7 @@
 				346630302CFD24DC00B5D8D9 /* XCRemoteSwiftPackageReference "YouTubeKit" */,
 				346630462CFD75C400B5D8D9 /* XCRemoteSwiftPackageReference "M3U8Decoder" */,
 				346630662CFED6A600B5D8D9 /* XCRemoteSwiftPackageReference "SwordRPC" */,
+				34170B2A2D02A188005276B6 /* XCRemoteSwiftPackageReference "SQLite" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B6EDE45E2CF2923B004666B1 /* Products */;
@@ -444,6 +448,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		34170B2A2D02A188005276B6 /* XCRemoteSwiftPackageReference "SQLite" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.3;
+			};
+		};
 		346630042CFACCA900B5D8D9 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
@@ -511,6 +523,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		34170B2B2D02A188005276B6 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34170B2A2D02A188005276B6 /* XCRemoteSwiftPackageReference "SQLite" */;
+			productName = SQLite;
+		};
 		346630052CFACCA900B5D8D9 /* SwiftyJSON */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 346630042CFACCA900B5D8D9 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
