@@ -39,6 +39,11 @@ struct SpwifiyApp: App {
                         .onDisappear {
                             avAudioPlayer.removeAllSongs()
                         }
+                        .onReceive(
+                            NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
+                        ) { _ in
+                            spotifyViewModel.checkSpotifyTokenExpire()
+                        }
                 case .inProcess, .failed:
                     LoginView(authStatus: $mainViewModel.authStatus)
                 case .cookieSet:
