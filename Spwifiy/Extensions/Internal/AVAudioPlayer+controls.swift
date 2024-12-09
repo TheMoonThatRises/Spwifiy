@@ -177,7 +177,7 @@ extension AVAudioPlayer {
 
         commandCenter.changePlaybackPositionCommand.addTarget { event in
             let seconds = (event as? MPChangePlaybackPositionCommandEvent)?.positionTime ?? 0
-            let time = CMTime(seconds: seconds, preferredTimescale: 1)
+            let time = CMTime(seconds: seconds, preferredTimescale: 100)
             self.seek(time: time)
 
             return .success

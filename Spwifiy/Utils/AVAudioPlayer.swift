@@ -74,7 +74,7 @@ class AVAudioPlayer: ObservableObject {
             if isScrubbing {
                 player.pause()
             } else {
-                seek(time: CMTime(seconds: currentPlayTime, preferredTimescale: 1))
+                seek(time: CMTime(seconds: currentPlayTime, preferredTimescale: 100))
                 player.play()
             }
         }

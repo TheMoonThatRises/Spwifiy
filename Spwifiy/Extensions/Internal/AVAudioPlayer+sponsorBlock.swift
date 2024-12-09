@@ -51,7 +51,7 @@ extension AVAudioPlayer {
             seekTime += segment.1 - segment.0
         }
 
-        return CMTime(seconds: seekTime, preferredTimescale: 1000)
+        return CMTime(seconds: seekTime, preferredTimescale: 100)
     }
 
     func skipSponsorBlockSegment() {
@@ -67,7 +67,7 @@ extension AVAudioPlayer {
                 if segment.1 >= (player.currentItem?.duration.seconds ?? 0) {
                     nextSong()
                 } else {
-                    seek(time: CMTime(seconds: segment.1, preferredTimescale: 1000))
+                    seek(time: CMTime(seconds: segment.1, preferredTimescale: 100))
                 }
 
                 return
