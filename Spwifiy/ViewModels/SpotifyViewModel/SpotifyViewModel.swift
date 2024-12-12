@@ -41,8 +41,8 @@ class SpotifyViewModel: ObservableObject {
 
     @Published var userProfile: SpotifyUser?
 
+    @Published var isAuthenticating: Bool = false
     private var reauthTask: Task<Void, Never>?
-    private var tokenExpireTime: Double?
 
     init() {
         self.keychain = Keychain(service: SpwifiyApp.service)
@@ -59,14 +59,19 @@ class SpotifyViewModel: ObservableObject {
            let spTCookieData = await keychain[data: SpotifyAuthManager.spTCookieKey],
            let spDcCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spDcCookieData).httpCookie,
            let spTCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spTCookieData).httpCookie {
+            Task { @MainActor in
+                isAuthenticating = true
+            }
 
-            APIRequest.shared.setCookie(cookie: spDcCookie, noCache: true)
-            APIRequest.shared.setCookie(cookie: spTCookie, noCache: true)
+            APIRequest.shared.setCookies(cookies: [spDcCookie, spTCookie], noCache: true)
 
             APIRequest.shared.request(url: URL(string: spotifyAccessTokenURL)!, noCache: true) { data in
                 Task { @MainActor in
-                    APIRequest.shared.removeCookie(cookie: spDcCookie, noCache: true)
-                    APIRequest.shared.removeCookie(cookie: spTCookie, noCache: true)
+                    defer {
+                        self.isAuthenticating = false
+                    }
+
+                    APIRequest.shared.removeCookies(cookies: [spDcCookie, spTCookie], noCache: true)
 
                     guard let data = data,
                           let authResponse = try? decoder.decode(SpotifyAuthResponse.self, from: data) else {
@@ -92,15 +97,12 @@ class SpotifyViewModel: ObservableObject {
                     self.isAuthorized = .valid
 
                     if self.reauthTask == nil {
-                        let date = Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs)
-
-                        self.tokenExpireTime = date.timeIntervalSinceNow - 7.0
-
                         self.reauthTask = Task(priority: .background) {
                             do {
+                                let date = Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs)
                                 // reauth 7 seconds before token expires
                                 try await Task.sleep(
-                                    for: .seconds(self.tokenExpireTime!)
+                                    for: .seconds(date.timeIntervalSinceNow - 7.0)
                                 )
 
                                 await self.attemptSpotifyAuthToken()
@@ -132,17 +134,6 @@ class SpotifyViewModel: ObservableObject {
         }
     }
 
-    public func checkSpotifyTokenExpire() {
-        if let tokenExpireTime = tokenExpireTime,
-           tokenExpireTime < Date().timeIntervalSince1970 {
-            reauthTask?.cancel()
-
-            Task {
-                await self.attemptSpotifyAuthToken()
-            }
-        }
-    }
-
     private func removeCookies() {
         do {
             try keychain.remove(SpotifyAuthManager.spDcCookieKey)
@@ -155,7 +146,15 @@ class SpotifyViewModel: ObservableObject {
     public func spotifyRequest<T>(accessPoint: () -> AnyPublisher<T, Error>,
                                   sink: ((Subscribers.Completion<any Error>) -> Void)? = nil,
                                   receiveValue: ((T) -> Void)? = nil) {
-        CombineHandler.handler(result: accessPoint(), sink: sink, receiveValue: receiveValue)
+        CombineHandler.handler(result: accessPoint(), sink: {
+            sink?($0)
+
+            if case .failure = $0 {
+                Task {
+                    await self.attemptSpotifyAuthToken()
+                }
+            }
+        }, receiveValue: receiveValue)
     }
 
     public func spotifyRequest<T>(accessPoint: () -> AnyPublisher<T, Error>,

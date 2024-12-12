@@ -35,11 +35,17 @@
     "attempting authorization" : {
 
     },
+    "Attempting to reauthorize Spwifiy client (spotify token unauthorized)." : {
+
+    },
     "By" : {
 
     },
     "Discover" : {
       "extractionState" : "manual"
+    },
+    "Double check to make sure your system clock has not drifted." : {
+
     },
     "Duration" : {
 
@@ -54,6 +60,9 @@
 
     },
     "Follow" : {
+
+    },
+    "Force quit" : {
 
     },
     "Hide this Section" : {
