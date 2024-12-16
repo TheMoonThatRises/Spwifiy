@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct NavButton<Label: View, Option>: View where Option: Equatable {
+public struct NavButton<Label: View, Option: Equatable>: View {
 
     @Binding var currentView: Option
 
