@@ -10,7 +10,17 @@ import SpotifyWebAPI
 
 struct ArtistView: View {
 
+    enum CurrentView: String, CaseIterable {
+        case homeView = "Home"
+        case albumView = "Albums"
+        case singlesEpView = "Singles and EPs"
+        case merchView = "Merch"
+        case aboutView = "About"
+    }
+
     @StateObject var artistViewModel: ArtistViewModel
+
+    @State var currentView: CurrentView = .homeView
 
     init(spotifyCache: SpotifyCache, artist: Artist) {
         self._artistViewModel = StateObject(
@@ -28,7 +38,8 @@ struct ArtistView: View {
 
                 VStack {
                     HStack {
-                        Text("Home")
+                        UnderlinedViewMenu(types: CurrentView.allCases,
+                                           currentOption: $currentView)
 
                         ExpandSearch(searchText: $artistViewModel.searchText)
 
@@ -37,7 +48,17 @@ struct ArtistView: View {
                     .font(.title3)
                     .padding(5)
 
-                    Divider()
+                    Group {
+                        switch currentView {
+//                        case .homeView:
+//                        case .albumView:
+//                        case .singlesEpView:
+//                        case .merchView:
+//                        case .aboutView:
+                        default:
+                            Text("Unknown error")
+                        }
+                    }
 
                     Rectangle()
                         .frame(height: 600)
