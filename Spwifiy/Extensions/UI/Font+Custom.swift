@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension Font {
-    public static var sotashiCustom: (String?, CGFloat) -> Font {
+    public static var satoshiCustom: (String?, CGFloat) -> Font {
         { type, size in
             var fontBase = "Satoshi"
 
@@ -20,17 +20,17 @@ extension Font {
         }
     }
 
-    public static let satoshi: Font = .sotashiCustom(nil, 12)
+    public static let satoshi: Font = .satoshiCustom(nil, 12)
 
     public static var satoshiLight: (CGFloat) -> Font {
         { size in
-            .sotashiCustom("Light", size)
+            .satoshiCustom("Light", size)
         }
     }
 
     public static var satoshiBlack: (CGFloat) -> Font {
         { size in
-            .sotashiCustom("Black", size)
+            .satoshiCustom("Black", size)
         }
     }
 }
