@@ -156,12 +156,12 @@ extension AVAudioPlayer {
         let commandCenter = MPRemoteCommandCenter.shared()
 
         commandCenter.playCommand.addTarget { _ in
-            self.togglePlay()
+            self.playAudio()
             return .success
         }
 
         commandCenter.pauseCommand.addTarget { _ in
-            self.togglePlay()
+            self.pauseAudio()
             return .success
         }
 

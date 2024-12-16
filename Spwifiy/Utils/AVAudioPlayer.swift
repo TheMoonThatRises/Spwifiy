@@ -196,7 +196,7 @@ class AVAudioPlayer: ObservableObject {
     }
 
     private func updateSong(incBy: Int) {
-        togglePlay()
+        pauseAudio()
 
         playingIndex += incBy
 
@@ -303,12 +303,22 @@ class AVAudioPlayer: ObservableObject {
 
     public func togglePlay() {
         if isPlaying {
-            player.pause()
+            pauseAudio()
         } else if player.status == .readyToPlay {
-            player.play()
+            playAudio()
         } else {
             print("player is not ready to play")
         }
+    }
+
+    public func playAudio() {
+        player.play()
+
+        updateNowPlaying()
+    }
+
+    public func pauseAudio() {
+        player.pause()
 
         updateNowPlaying()
     }
