@@ -46,7 +46,7 @@ struct SelectedPlaylistView: View {
     }
 
     var body: some View {
-        Group {
+        GeometryReader { geom in
             if let playlist = selectedPlaylistViewModel.playlistDetails {
                 HStack {
                     VStack(alignment: .leading) {
@@ -72,13 +72,15 @@ struct SelectedPlaylistView: View {
 
                     Spacer()
 
-                    PlaylistSidebarElement(showFlags: showFlags,
-                                           imageURL: playlist.images.first?.url,
-                                           uri: playlist.uri,
-                                           dominantColor: $selectedPlaylistViewModel.dominantColor,
-                                           genreList: $selectedPlaylistViewModel.genreList,
-                                           artists: $selectedPlaylistViewModel.artists,
-                                           selectedArtist: $selectedArtist)
+                    if geom.size.width > 800 {
+                        PlaylistSidebarElement(showFlags: showFlags,
+                                               imageURL: playlist.images.first?.url,
+                                               uri: playlist.uri,
+                                               dominantColor: $selectedPlaylistViewModel.dominantColor,
+                                               genreList: $selectedPlaylistViewModel.genreList,
+                                               artists: $selectedPlaylistViewModel.artists,
+                                               selectedArtist: $selectedArtist)
+                    }
                 }
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
