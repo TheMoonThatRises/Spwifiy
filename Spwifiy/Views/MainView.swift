@@ -47,58 +47,72 @@ struct MainView: View {
 
                     Spacer()
 
-                    Group {
-                        switch mainViewModel.currentViewAnimated {
-                        // default view
-                        case .home:
-                            HomeView(spotifyDataViewModel: spotifyDataViewModel,
-                                     mainViewModel: mainViewModel)
+                    HStack {
+                        Group {
+                            switch mainViewModel.currentViewAnimated {
+                                // default view
+                            case .home:
+                                HomeView(spotifyDataViewModel: spotifyDataViewModel,
+                                         mainViewModel: mainViewModel)
 
-                        // sidebar views
-                        case .likedSongs:
-                            LikedSongsView(spotifyCache: spotifyCache,
-                                           selectedArtist: $mainViewModel.selectedArtist,
-                                           selectedAlbum: $mainViewModel.selectedAlbum)
+                                // sidebar views
+                            case .likedSongs:
+                                LikedSongsView(spotifyCache: spotifyCache,
+                                               selectedArtist: $mainViewModel.selectedArtist,
+                                               selectedAlbum: $mainViewModel.selectedAlbum)
 
-                        // layers deep abstracted view
-                        case .selectedPlaylist:
-                            if let selectedPlaylist = mainViewModel.selectedPlaylist {
-                                SelectedPlaylistView(
-                                    showFlags: PlaylistShowFlags.none,
-                                    spotifyCache: spotifyCache,
-                                    avAudioPlayer: avAudioPlayer,
-                                    playlist: selectedPlaylist,
-                                    selectedArtist: $mainViewModel.selectedArtist,
-                                    selectedAlbum: $mainViewModel.selectedAlbum
-                                )
-                            } else {
-                                Text("Unable to get selected playlist")
+                                // layers deep abstracted view
+                            case .selectedPlaylist:
+                                if let selectedPlaylist = mainViewModel.selectedPlaylist {
+                                    SelectedPlaylistView(
+                                        showFlags: PlaylistShowFlags.none,
+                                        spotifyCache: spotifyCache,
+                                        avAudioPlayer: avAudioPlayer,
+                                        playlist: selectedPlaylist,
+                                        selectedArtist: $mainViewModel.selectedArtist,
+                                        selectedAlbum: $mainViewModel.selectedAlbum
+                                    )
+                                } else {
+                                    Text("Unable to get selected playlist")
+                                        .font(.title)
+                                }
+                            case .selectedArtist:
+                                if let artist = mainViewModel.selectedArtist {
+                                    ArtistView(spotifyCache: spotifyCache, artist: artist)
+                                } else {
+                                    Text("Unable to get selected artist")
+                                        .font(.title)
+                                }
+
+                                // unimplemented views
+                            default:
+                                Text("Unknown error")
                                     .font(.title)
                             }
-                        case .selectedArtist:
-                            if let artist = mainViewModel.selectedArtist {
-                                ArtistView(spotifyCache: spotifyCache, artist: artist)
-                            } else {
-                                Text("Unable to get selected artist")
-                                    .font(.title)
-                            }
-
-                        // unimplemented views
-                        default:
-                            Text("Unknown error")
-                                .font(.title)
                         }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(.fgTertiary, lineWidth: 0.5)
-                            .allowsHitTesting(false)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(.fgTertiary, lineWidth: 0.5)
+                                .allowsHitTesting(false)
+                        }
+
+                        if mainViewModel.showQueueView {
+                            QueueElementView(avAudioPlayer: avAudioPlayer,
+                                             selectedArtist: $mainViewModel.selectedArtist)
+                                .frame(maxHeight: .infinity)
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(.fgTertiary, lineWidth: 0.5)
+                                        .allowsHitTesting(false)
+                                }
+                        }
                     }
 
                     PlayingElementView(avAudioPlayer: avAudioPlayer,
                                        selectedArtist: $mainViewModel.selectedArtist,
-                                       selectedAlbum: $mainViewModel.selectedAlbum)
+                                       selectedAlbum: $mainViewModel.selectedAlbum,
+                                       showQueueView: $mainViewModel.showQueueView)
                 }
             }
             .padding()

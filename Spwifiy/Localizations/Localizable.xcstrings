@@ -83,10 +83,16 @@
     "My Library" : {
       "extractionState" : "manual"
     },
+    "Next up:" : {
+
+    },
     "Pin to Home" : {
 
     },
     "Pins" : {
+
+    },
+    "Play some songs to populate the queue" : {
 
     },
     "Playlists" : {
