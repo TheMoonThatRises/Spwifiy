@@ -55,7 +55,8 @@ class SpotifyViewModel: ObservableObject {
     public func attemptSpotifyAuthToken() async {
         let decoder = JSONDecoder()
 
-        if let spDcCookieData = await keychain[data: SpotifyAuthManager.spDcCookieKey],
+        if !isAuthenticating,
+           let spDcCookieData = await keychain[data: SpotifyAuthManager.spDcCookieKey],
            let spTCookieData = await keychain[data: SpotifyAuthManager.spTCookieKey],
            let spDcCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spDcCookieData).httpCookie,
            let spTCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spTCookieData).httpCookie {
@@ -74,13 +75,8 @@ class SpotifyViewModel: ObservableObject {
                     APIRequest.shared.removeCookies(cookies: [spDcCookie, spTCookie], noCache: true)
 
                     guard let data = data,
-                          let authResponse = try? decoder.decode(SpotifyAuthResponse.self, from: data) else {
-                        self.isAuthorized = .failed
-
-                        return
-                    }
-
-                    if authResponse.isAnonymous {
+                          let authResponse = try? decoder.decode(SpotifyAuthResponse.self, from: data),
+                          !authResponse.isAnonymous else {
                         self.isAuthorized = .failed
 
                         return
@@ -101,9 +97,7 @@ class SpotifyViewModel: ObservableObject {
                             do {
                                 let date = Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs)
                                 // reauth 7 seconds before token expires
-                                try await Task.sleep(
-                                    for: .seconds(date.timeIntervalSinceNow - 7.0)
-                                )
+                                try await Task.sleep(for: .seconds(date.timeIntervalSinceNow - 7.0))
 
                                 await self.attemptSpotifyAuthToken()
                             } catch {
