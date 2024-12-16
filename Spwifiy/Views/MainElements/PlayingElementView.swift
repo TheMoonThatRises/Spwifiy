@@ -15,6 +15,10 @@ struct PlayingElementView: View {
     @Binding var selectedArtist: Artist?
     @Binding var selectedAlbum: Album?
 
+    @Binding var showQueueView: Bool
+
+    @State var showVolumeSlider: Bool = false
+
     var body: some View {
         HStack {
             Group {
@@ -137,11 +141,14 @@ struct PlayingElementView: View {
                 .cursorHover(.pointingHand)
 
                 Button {
-
+                    withAnimation(.defaultAnimation) {
+                        showQueueView.toggle()
+                    }
                 } label: {
                     Image("spwifiy.queue")
                         .resizable()
                         .frame(width: 40, height: 40)
+                        .foregroundStyle(showQueueView ? .fgPrimary : .fgSecondary)
                 }
                 .buttonStyle(.plain)
                 .cursorHover(.pointingHand)
