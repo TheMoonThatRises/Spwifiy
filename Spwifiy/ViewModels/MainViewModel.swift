@@ -10,6 +10,8 @@ import SpotifyWebAPI
 
 class MainViewModel: ObservableObject {
 
+    @AppStorage("settings.view.showQueueView") var showQueueView: Bool = false
+
     @Published var authStatus: SpotifyAuthManager.AuthStatus = .cookieSet
 
     @Published var currentView: MainViewOptions = .home {
