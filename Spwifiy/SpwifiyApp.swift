@@ -51,7 +51,7 @@ struct SpwifiyApp: App {
                 }
             }
             .onChange(of: spotifyViewModel.isAuthorized) { newValue in
-                mainViewModel.authStatus = newValue == .valid ? .success : .failed
+                mainViewModel.authStatus = [.valid, .none].contains(newValue) ? .success : .failed
             }
             .frame(minWidth: 950, minHeight: 550)
             .background(.bgMain)
