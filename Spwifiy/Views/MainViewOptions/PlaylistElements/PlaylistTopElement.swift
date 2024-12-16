@@ -61,13 +61,17 @@ struct PlaylistTopElement: View {
 
         HStack {
             Button {
-                avAudioPlayer.removeAllSongs()
+                if avAudioPlayer.playingId == playlist?.id {
+                    avAudioPlayer.togglePlay()
+                } else {
+                    avAudioPlayer.removeAllSongs()
 
-                avAudioPlayer.addBulkSongs(
-                    tracks: avAudioPlayer.isShuffled ? tracks.shuffled() : tracks
-                )
+                    avAudioPlayer.addBulkSongs(
+                        tracks: avAudioPlayer.isShuffled ? tracks.shuffled() : tracks
+                    )
 
-                avAudioPlayer.playingId = playlist?.id
+                    avAudioPlayer.playingId = playlist?.id
+                }
             } label: {
                 Image(
                     avAudioPlayer.playingId == playlist?.id &&
