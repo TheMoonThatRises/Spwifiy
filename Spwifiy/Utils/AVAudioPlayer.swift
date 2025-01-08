@@ -193,6 +193,8 @@ class AVAudioPlayer: ObservableObject {
         player.pause()
 
         trackQueue.removeAll()
+
+        playingIndex = 0
     }
 
     private func updateSong(incBy: Int) {
