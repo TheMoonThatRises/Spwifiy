@@ -102,6 +102,7 @@ struct LikedSongsView: View {
                 .frame(height: 20)
 
             PlaylistSongListElement(showFlags: 0,
+                                    selectedSong: selectedSong(_:),
                                     tracks: $likedSongsViewModel.tracks,
                                     savedTracks: .constant([]),
                                     selectedArtist: $selectedArtist,
@@ -111,6 +112,10 @@ struct LikedSongsView: View {
         .task {
             await likedSongsViewModel.updatePlaylistInfo()
         }
+    }
+
+    func selectedSong(_ track: Track) {
+
     }
 
 }

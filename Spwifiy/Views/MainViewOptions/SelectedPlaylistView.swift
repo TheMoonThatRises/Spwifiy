@@ -61,6 +61,7 @@ struct SelectedPlaylistView: View {
                             .frame(height: 20)
 
                         PlaylistSongListElement(showFlags: showFlags,
+                                                selectedSong: selectedSong,
                                                 tracks: $selectedPlaylistViewModel.tracks,
                                                 savedTracks: $selectedPlaylistViewModel.savedTracks,
                                                 selectedArtist: $selectedArtist,
@@ -93,6 +94,20 @@ struct SelectedPlaylistView: View {
         }
         .task {
             await selectedPlaylistViewModel.updatePlaylistInfo()
+        }
+    }
+
+    func selectedSong(track: Track) {
+        avAudioPlayer.addSong(track: track)
+        avAudioPlayer.playingIndex = avAudioPlayer.trackQueue.count - 1
+        avAudioPlayer.updatePlayer()
+
+        if avAudioPlayer.playingId == selectedPlaylistViewModel.playlistDetails?.id {
+
+        } else {
+            avAudioPlayer.removeAllSongs()
+
+            var queue = selectedPlaylistViewModel.tracks
         }
     }
 }

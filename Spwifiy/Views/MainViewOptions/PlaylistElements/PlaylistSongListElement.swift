@@ -12,11 +12,31 @@ struct PlaylistSongListElement: View {
 
     var showFlags: Int
 
+    var selectedSong: (Track) -> Void
+
     @Binding var tracks: [Track]
     @Binding var savedTracks: [Bool]
 
     @Binding var selectedArtist: Artist?
     @Binding var selectedAlbum: Album?
+
+    @State var isHoveringPlay: [Bool]
+
+    init(showFlags: Int,
+         selectedSong: @escaping (Track) -> Void,
+         tracks: Binding<[Track]>,
+         savedTracks: Binding<[Bool]>,
+         selectedArtist: Binding<Artist?>,
+         selectedAlbum: Binding<Album?>) {
+        self.showFlags = showFlags
+        self.selectedSong = selectedSong
+        self._tracks = tracks
+        self._savedTracks = savedTracks
+        self._selectedArtist = selectedArtist
+        self._selectedAlbum = selectedAlbum
+
+        self.isHoveringPlay = [Bool](repeating: false, count: tracks.count)
+    }
 
     private var columnFormat: [GridItem] {
         var defaultColumn: [GridItem] = [
@@ -56,7 +76,27 @@ struct PlaylistSongListElement: View {
             LazyVGrid(columns: columnFormat, alignment: .leading) {
                 ForEach(Array(tracks.enumerated()), id: \.offset) { index, track in
 //                ForEach(Array(zip(tracks, savedTracks).enumerated()), id: \.offset) { index, item in
-                    Text(String(index + 1))
+                    VStack(alignment: .center) {
+                        if index < isHoveringPlay.count && isHoveringPlay[index] {
+                            Button {
+                                selectedSong(track)
+                            } label: {
+                                Image("spwifiy.play.simple")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .cursorHover(.pointingHand)
+                        } else {
+                            Text(String(index + 1))
+                        }
+                    }
+                    .onHover { hover in
+                        if index < isHoveringPlay.count {
+                            isHoveringPlay[index] = hover
+                        }
+                    }
 
                     HStack {
                         CroppedCachedAsyncImage(url: track.album?.images?.first?.url,
@@ -110,6 +150,9 @@ struct PlaylistSongListElement: View {
             }
             .font(.callout)
             .foregroundStyle(.fgSecondary)
+        }
+        .onChange(of: tracks) { newValue in
+            isHoveringPlay = [Bool](repeating: false, count: newValue.count)
         }
     }
 
