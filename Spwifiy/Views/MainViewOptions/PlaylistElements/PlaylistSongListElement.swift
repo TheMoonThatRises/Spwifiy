@@ -20,10 +20,10 @@ struct PlaylistSongListElement: View {
 
     private var columnFormat: [GridItem] {
         var defaultColumn: [GridItem] = [
-            .init(.flexible(maximum: 40)),        // index
-            .init(.flexible(maximum: .infinity)), // title and artist
-            .init(.flexible(maximum: 80)),        // duration
-            .init(.flexible(maximum: 40))         // like
+            .init(.fixed(40)),                              // index
+            .init(.flexible()),                             // title and artist
+            .init(.fixed(80)),                              // duration
+            .init(.fixed(30))                               // like
         ]
 
         if (showFlags & PlaylistShowFlags.album) == 0 {
