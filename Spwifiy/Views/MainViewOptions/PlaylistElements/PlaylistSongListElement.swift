@@ -77,8 +77,21 @@ struct PlaylistSongListElement: View {
                             Button {
                                 selectedArtist = track.artists?.first
                             } label: {
-                                Text(track.artists?.description ?? "Unknown artists")
-                                    .lineLimit(1)
+                                HStack {
+                                    if track.isExplicit {
+                                        RoundedRectangle(cornerRadius: 2)
+                                            .foregroundStyle(.fgSecondary)
+                                            .frame(width: 13, height: 13)
+                                            .overlay {
+                                                Text("E")
+                                                    .foregroundStyle(.fgTertiary)
+                                                    .font(.satoshiBlack(8))
+                                            }
+                                    }
+
+                                    Text(track.artists?.description ?? "Unknown artists")
+                                        .lineLimit(1)
+                                }
                             }
                             .buttonStyle(.plain)
                             .cursorHover(.pointingHand)
