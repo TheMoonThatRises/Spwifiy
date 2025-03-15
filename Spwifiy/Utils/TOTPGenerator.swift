@@ -35,7 +35,7 @@ class Base32 {
                 bytes.append(byte)
             }
         }
-        
+
         return Data(bytes)
     }
 }
@@ -89,4 +89,3 @@ class TOTPGenerator {
         return extractOTP(from: hash)
     }
 }
-
