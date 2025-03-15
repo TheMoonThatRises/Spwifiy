@@ -28,6 +28,7 @@ struct QueueElementView: View {
 
             if avAudioPlayer.trackQueue.count > 0 {
                 TrackQueueView(track: avAudioPlayer.trackQueue[avAudioPlayer.playingIndex],
+                               removeSong: nil,
                                selectedArtist: $selectedArtist)
 
                 Spacer()
@@ -46,6 +47,7 @@ struct QueueElementView: View {
                             : avAudioPlayer.previousQueue,
                             id: \.uri) { track in
                         TrackQueueView(track: track,
+                                       removeSong: avAudioPlayer.removeSong(track:),
                                        selectedArtist: $selectedArtist)
                     }
                     .onMove { indices, newOffset in
@@ -75,6 +77,7 @@ struct QueueElementView: View {
 struct TrackQueueView: View {
 
     let track: Track
+    let removeSong: ((Track) -> Void)?
 
     @Binding var selectedArtist: Artist?
 
@@ -105,15 +108,17 @@ struct TrackQueueView: View {
 
             Spacer()
 
-            Button {
-
-            } label: {
-                Image("spwifiy.close")
-                    .resizable()
-                    .frame(width: 40, height: 40)
+            if let removeSong = removeSong {
+                Button {
+                    removeSong(track)
+                } label: {
+                    Image("spwifiy.close")
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                }
+                .buttonStyle(.plain)
+                .cursorHover(.pointingHand)
             }
-            .buttonStyle(.plain)
-            .cursorHover(.pointingHand)
         }
     }
 

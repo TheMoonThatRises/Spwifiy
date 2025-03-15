@@ -193,6 +193,12 @@ class AVAudioPlayer: ObservableObject {
         }
     }
 
+    public func removeSong(track: Track) {
+        if let index = trackQueue.firstIndex(of: track) {
+            removeSong(index: index)
+        }
+    }
+
     public func removeAllSongs() {
         player.pause()
 
