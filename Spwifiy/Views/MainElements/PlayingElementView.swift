@@ -82,14 +82,27 @@ struct PlayingElementView: View {
                                         clipShape: RoundedRectangle(cornerRadius: 5))
                     .foregroundStyle(.fgSecondary)
 
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 0) {
                     Text(avAudioPlayer.currentPlayingTrack?.name ?? "Title")
                         .foregroundStyle(.fgPrimary)
 
                     Button {
                         selectedArtist = avAudioPlayer.currentPlayingTrack?.artists?.first
                     } label: {
-                        Text(avAudioPlayer.currentPlayingTrack?.artists?.description ?? "Artist")
+                        HStack {
+                            if avAudioPlayer.currentPlayingTrack?.isExplicit ?? false {
+                                RoundedRectangle(cornerRadius: 2)
+                                    .foregroundStyle(.fgSecondary)
+                                    .frame(width: 13, height: 13)
+                                    .overlay {
+                                        Text("E")
+                                            .foregroundStyle(.fgTertiary)
+                                            .font(.satoshiBlack(8))
+                                    }
+                            }
+
+                            Text(avAudioPlayer.currentPlayingTrack?.artists?.description ?? "Artist")
+                        }
                     }
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)
