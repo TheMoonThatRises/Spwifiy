@@ -43,29 +43,29 @@ class YoutubeAPI {
         )
     }
 
+    public func retrieveVisitorData() async {
+        let result = await SearchResponse.sendNonThrowingRequest(
+            youtubeModel: self.youtubeModel,
+            data: [.query: "never gonna give you up"]
+        )
+
+        switch result {
+        case .success(let response):
+            youtubeModel.visitorData = response.visitorData ?? ""
+        case .failure(let error):
+            /// If there is no result you should obtain an error explaining why there is none.
+            print(error)
+        }
+    }
+
     public func getSongHLS(musicId: String) async -> (Date, URL)? {
         if let hlsLink = getHLSFromCache(musicId: musicId) {
             return hlsLink
         }
 
-        if youtubeModel.visitorData.isEmpty {
-            let result = await SearchResponse.sendNonThrowingRequest(
-                youtubeModel: self.youtubeModel,
-                data: [.query: "never gonna give you up"]
-            )
-
-            switch result {
-            case .success(let response):
-                youtubeModel.visitorData = response.visitorData ?? ""
-            case .failure(let error):
-                /// If there is no result you should obtain an error explaining why there is none.
-                print(error)
-            }
-
-            return await getSongHLS(musicId: musicId)
-        }
-
         let video = YTVideo(videoId: musicId)
+
+        await retrieveVisitorData()
 
         do {
             let streamingInfo = try await video.fetchStreamingInfosThrowing(youtubeModel: youtubeModel)

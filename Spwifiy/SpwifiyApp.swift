@@ -66,6 +66,9 @@ struct SpwifiyApp: App {
                     spotifyCache.setSpotifyViewModel(spotifyViewModel: spotifyViewModel)
                 }
             }
+//            .task {
+//                await YoutubeAPI.shared.retrieveVisitorData()
+//            }
         }
     }
 }
