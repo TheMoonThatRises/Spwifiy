@@ -206,7 +206,7 @@ class YoutubeMusicAPI {
             return backgroundURL
         }
 
-        let response = await APIRequest.shared.request(urlString: requestString)
+        let response: String? = await APIRequest.shared.request(urlString: requestString)
         let json = parseSearchResult(html: response)
 
         guard let json = json,
@@ -267,7 +267,7 @@ class YoutubeMusicAPI {
             return musicId
         }
 
-        let response = await APIRequest.shared.request(urlString: requestString)
+        let response: String? = await APIRequest.shared.request(urlString: requestString)
         let json = parseSearchResult(html: response)
 
         guard let json = json,

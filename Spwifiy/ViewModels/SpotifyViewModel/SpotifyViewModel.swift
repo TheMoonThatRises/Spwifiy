@@ -18,8 +18,11 @@ class SpotifyViewModel: ObservableObject {
 
     private var isLoadingUserProfile: Bool = false
 
-    private var spotifyAccessTokenURL: String {
-        "https://open.spotify.com/get_access_token?reason=transport&productType=web_player"
+    private var spotifyAccessTokenURL: (String, Int) -> String {
+        { totp, timestamp in
+            "https://open.spotify.com/get_access_token?reason=transport&productType=web_player" +
+            "&totp=\(totp)&totpVer=5&ts=\(timestamp)"
+        }
     }
 
     private static let authScopes: Set<Scope> = [
@@ -66,7 +69,10 @@ class SpotifyViewModel: ObservableObject {
 
             APIRequest.shared.setCookies(cookies: [spDcCookie, spTCookie], noCache: true)
 
-            APIRequest.shared.request(url: URL(string: spotifyAccessTokenURL)!, noCache: true) { data in
+            let totp = await SpotifyOTP.shared.generateOTP()
+            let timestamp = Int(Date().timeIntervalSince1970) * 1000
+
+            APIRequest.shared.request(urlString: spotifyAccessTokenURL(totp, timestamp), noCache: true) { data in
                 Task { @MainActor in
                     defer {
                         self.isAuthenticating = false
@@ -82,10 +88,12 @@ class SpotifyViewModel: ObservableObject {
                         return
                     }
 
+                    let expirationDate = Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs)
+
                     self.spotify.authorizationManager = AuthorizationCodeFlowPKCEManager(
                         clientId: authResponse.clientId,
                         accessToken: authResponse.accessToken,
-                        expirationDate: Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs),
+                        expirationDate: expirationDate,
                         refreshToken: nil,
                         scopes: SpotifyViewModel.authScopes
                     )
@@ -95,9 +103,8 @@ class SpotifyViewModel: ObservableObject {
                     if self.reauthTask == nil {
                         self.reauthTask = Task(priority: .background) {
                             do {
-                                let date = Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs)
                                 // reauth 7 seconds before token expires
-                                try await Task.sleep(for: .seconds(date.timeIntervalSinceNow - 7.0))
+                                try await Task.sleep(for: .seconds(expirationDate.timeIntervalSinceNow - 7.0))
 
                                 await self.attemptSpotifyAuthToken()
                             } catch {

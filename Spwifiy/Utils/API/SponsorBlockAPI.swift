@@ -41,7 +41,7 @@ class SponsorBlockAPI {
             return cacheResponse
         }
 
-        let response = await APIRequest.shared.request(url: requestURL(videoId))
+        let response: String? = await APIRequest.shared.request(url: requestURL(videoId))
 
         return SponsorBlockResponse(response: response ?? "No response")
     }

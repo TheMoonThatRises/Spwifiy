@@ -66,16 +66,28 @@ class APIRequest {
         request(url: url, noCache: noCache, success: success)
     }
 
-    public func request(url: URL, noCache: Bool = false) async -> String? {
+    public func request(url: URL, noCache: Bool = false) async -> Data? {
         await withCheckedContinuation { continuation in
             request(url: url, noCache: noCache) { result in
-                guard let result = result else {
-                    return continuation.resume(returning: nil)
-                }
-
-                continuation.resume(returning: String(data: result, encoding: .utf8))
+                continuation.resume(returning: result)
             }
         }
+    }
+
+    public func request(urlString: String, noCache: Bool = false) async -> Data? {
+        guard let url = URL(string: urlString) else {
+            return nil
+        }
+
+        return await request(url: url, noCache: noCache)
+    }
+
+    public func request(url: URL, noCache: Bool = false) async -> String? {
+        guard let data: Data = await request(url: url, noCache: noCache) else {
+            return nil
+        }
+
+        return String(data: data, encoding: .utf8)
     }
 
     public func request(urlString: String, noCache: Bool = false) async -> String? {
