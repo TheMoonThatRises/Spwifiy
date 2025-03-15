@@ -42,16 +42,20 @@ struct QueueElementView: View {
 
                 List {
                     ForEach(currentView == .queueView
-                            ? avAudioPlayer.trackQueue
-                        .suffix(avAudioPlayer.trackQueue.count - avAudioPlayer.playingIndex - 1)
+                            ? Array(avAudioPlayer.trackQueue.dropFirst(avAudioPlayer.playingIndex + 1))
                             : avAudioPlayer.previousQueue,
                             id: \.uri) { track in
                         TrackQueueView(track: track,
                                        selectedArtist: $selectedArtist)
                     }
                     .onMove { indices, newOffset in
-                        avAudioPlayer.trackQueue.move(fromOffsets: indices,
-                                                      toOffset: newOffset)
+                        if currentView == .queueView {
+                            let adjustedIndices = IndexSet(indices.map { $0 + avAudioPlayer.playingIndex + 1 })
+                            let adjustedNewOffset = newOffset + avAudioPlayer.playingIndex + 1
+
+                            avAudioPlayer.trackQueue.move(fromOffsets: adjustedIndices,
+                                                          toOffset: adjustedNewOffset)
+                        }
                     }
                 }
             } else {
