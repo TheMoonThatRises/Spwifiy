@@ -19,12 +19,7 @@ class SpotifyOTP {
 
     init() {
         self.secret = SpotifyOTP.generateSecret()
-
-        if let totp = TOTPGenerator(secret: secret) {
-            self.totp = totp
-        } else {
-            self.totp = nil
-        }
+        self.totp = TOTPGenerator(secret: secret)
     }
 
     private static func cleanBuffer(_ input: String) -> [UInt8] {
