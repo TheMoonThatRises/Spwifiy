@@ -89,22 +89,25 @@ struct TrackQueueView: View {
                                     alignment: .center,
                                     clipShape: RoundedRectangle(cornerRadius: 5))
 
-            VStack(alignment: .leading) {
-                Text(track.name)
-                    .foregroundStyle(.fgPrimary)
-                    .font(.satoshiCustom(nil, 14))
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(track.name)
+                        .foregroundStyle(.fgPrimary)
+                        .font(.satoshiCustom(nil, 14))
 
-                Button {
-                    selectedArtist = track.artists?.first
-                } label: {
-                    Text(track.artists?.description ?? "Artist")
+                    Button {
+                        selectedArtist = track.artists?.first
+                    } label: {
+                        Text(track.artists?.description ?? "Artist")
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
                 }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
+                .lineLimit(1)
+
+                Spacer()
             }
-            .lineLimit(1)
-            .frame(maxWidth: 150)
-            .fixedSize()
+            .frame(width: 130)
 
             Spacer()
 
