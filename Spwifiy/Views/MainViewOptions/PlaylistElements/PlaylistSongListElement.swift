@@ -73,7 +73,7 @@ struct PlaylistSongListElement: View {
                                 Button {
                                     if avAudioPlayer.currentPlayingTrack?.id == hoverTrackId {
                                         if avAudioPlayer.playerReady {
-                                            avAudioPlayer.isPlaying.toggle()
+                                            avAudioPlayer.togglePlay()
                                         }
                                     } else {
                                         if playingId == avAudioPlayer.playingId {
