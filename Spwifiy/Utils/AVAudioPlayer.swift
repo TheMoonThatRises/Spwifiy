@@ -91,6 +91,10 @@ class AVAudioPlayer: ObservableObject {
 
     private var isQueueingItem: Bool = false
 
+    var playerReady: Bool {
+        player.status == .readyToPlay
+    }
+
     init() {
         self.initNotifiers()
         self.setupRemoteCommandCenter()
@@ -306,7 +310,7 @@ class AVAudioPlayer: ObservableObject {
     public func togglePlay() {
         if isPlaying {
             pauseAudio()
-        } else if player.status == .readyToPlay {
+        } else if playerReady {
             playAudio()
         } else {
             print("player is not ready to play")
@@ -323,6 +327,34 @@ class AVAudioPlayer: ObservableObject {
         player.pause()
 
         updateNowPlaying()
+    }
+
+    public func updatePlayingList(newPlayingId: String?, tracks: [Track], starting: Track? = nil) {
+        removeAllSongs()
+
+        let addTracks = starting == nil ? tracks : tracks.filter { $0 != starting }
+
+        if let starting = starting {
+            addSong(track: starting)
+        }
+
+        addBulkSongs(
+            tracks: isShuffled ? addTracks.shuffled() : addTracks
+        )
+
+        playingId = newPlayingId
+    }
+
+    public func goToQueueTrack(track: Track, newQueue: [Track]) {
+        let removeIndex = trackQueue.firstIndex(of: track)
+
+        if let removeIndex = removeIndex {
+            trackQueue.removeSubrange(0...(removeIndex - 1))
+
+            updatePlayer()
+        } else {
+            updatePlayingList(newPlayingId: playingId, tracks: newQueue, starting: track)
+        }
     }
 
 }

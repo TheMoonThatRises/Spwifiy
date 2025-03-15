@@ -11,6 +11,11 @@ import SpotifyWebAPI
 struct PlaylistSongListElement: View {
 
     var showFlags: Int
+    var playingId: String?
+
+    @ObservedObject var avAudioPlayer: AVAudioPlayer
+
+    @Binding var playingTrack: Track?
 
     @Binding var tracks: [Track]
     @Binding var savedTracks: [Bool]
@@ -18,9 +23,11 @@ struct PlaylistSongListElement: View {
     @Binding var selectedArtist: Artist?
     @Binding var selectedAlbum: Album?
 
+    @State var hoverTrackId: String?
+
     private var columnFormat: [GridItem] {
         var defaultColumn: [GridItem] = [
-            .init(.fixed(40)),                              // index
+            .init(.fixed(30)),                              // index
             .init(.flexible()),                             // title and artist
             .init(.fixed(80)),                              // duration
             .init(.fixed(30))                               // like
@@ -56,7 +63,59 @@ struct PlaylistSongListElement: View {
             LazyVGrid(columns: columnFormat, alignment: .leading) {
                 ForEach(Array(tracks.enumerated()), id: \.offset) { index, track in
 //                ForEach(Array(zip(tracks, savedTracks).enumerated()), id: \.offset) { index, item in
-                    Text(String(index + 1))
+                    Group {
+                        ZStack {
+                            Rectangle()
+                                .fill(Color.clear)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                            if hoverTrackId != nil && hoverTrackId == track.id {
+                                Button {
+                                    if avAudioPlayer.currentPlayingTrack?.id == hoverTrackId {
+                                        if avAudioPlayer.playerReady {
+                                            avAudioPlayer.isPlaying.toggle()
+                                        }
+                                    } else {
+                                        if playingId == avAudioPlayer.playingId {
+                                            avAudioPlayer.goToQueueTrack(track: track, newQueue: tracks)
+                                        } else {
+                                            avAudioPlayer.updatePlayingList(newPlayingId: playingId,
+                                                                            tracks: tracks,
+                                                                            starting: track)
+                                        }
+                                    }
+                                } label: {
+                                    Image(
+                                        avAudioPlayer.isPlaying &&
+                                        avAudioPlayer.currentPlayingTrack?.id == hoverTrackId
+                                        ? "spwifiy.pause"
+                                        : "spwifiy.play.simple"
+                                    )
+                                    .resizable()
+                                    .frame(width: 25, height: 25)
+                                }
+                                .buttonStyle(.plain)
+                                .cursorHover(.pointingHand)
+                            } else {
+                                if playingTrack?.id == track.id {
+                                    Image("spwifiy.playing")
+                                        .resizable()
+                                        .frame(width: 25, height: 25)
+                                        .foregroundStyle(avAudioPlayer.isPlaying ? .sPrimary : .fgSecondary)
+                                } else {
+                                    Text(String(index + 1))
+                                }
+                            }
+                        }
+                    }
+                    .contentShape(.rect)
+                    .onHover { isHover in
+                        if isHover {
+                            hoverTrackId = track.id
+                        } else if hoverTrackId == track.id {
+                            hoverTrackId = nil
+                        }
+                    }
 
                     HStack {
                         CroppedCachedAsyncImage(url: track.album?.images?.first?.url,

@@ -26,6 +26,11 @@ struct SelectedPlaylistView: View {
     @Binding var selectedArtist: Artist?
     @Binding var selectedAlbum: Album?
 
+    var playingId: String? {
+        selectedPlaylistViewModel.playlistDetails?.id
+        // ?? selectedAlbumViewModel.albumDetails?.id
+    }
+
     init(showFlags: Int,
          spotifyCache: SpotifyCache,
          avAudioPlayer: AVAudioPlayer,
@@ -50,7 +55,8 @@ struct SelectedPlaylistView: View {
             if let playlist = selectedPlaylistViewModel.playlistDetails {
                 HStack {
                     VStack(alignment: .leading) {
-                        PlaylistTopElement(playlist: $selectedPlaylistViewModel.playlistDetails,
+                        PlaylistTopElement(playingId: playingId,
+                                           playlist: $selectedPlaylistViewModel.playlistDetails,
                                            album: .constant(nil),
                                            avAudioPlayer: avAudioPlayer,
                                            tracks: $selectedPlaylistViewModel.tracks,
@@ -61,6 +67,9 @@ struct SelectedPlaylistView: View {
                             .frame(height: 20)
 
                         PlaylistSongListElement(showFlags: showFlags,
+                                                playingId: playingId,
+                                                avAudioPlayer: avAudioPlayer,
+                                                playingTrack: $avAudioPlayer.currentPlayingTrack,
                                                 tracks: $selectedPlaylistViewModel.tracks,
                                                 savedTracks: $selectedPlaylistViewModel.savedTracks,
                                                 selectedArtist: $selectedArtist,

@@ -12,16 +12,20 @@ struct LikedSongsView: View {
 
     @StateObject var likedSongsViewModel: LikedSongsViewModel
 
+    @ObservedObject var avAudioPlayer: AVAudioPlayer
+
     @Binding var selectedArtist: Artist?
     @Binding var selectedAlbum: Album?
 
     init(spotifyCache: SpotifyCache,
+         avAudioPlayer: AVAudioPlayer,
          selectedArtist: Binding<Artist?>,
          selectedAlbum: Binding<Album?>) {
         self._likedSongsViewModel = StateObject(
             wrappedValue: LikedSongsViewModel(spotifyCache: spotifyCache)
         )
 
+        self.avAudioPlayer = avAudioPlayer
         self._selectedArtist = selectedArtist
         self._selectedAlbum = selectedAlbum
     }
@@ -102,6 +106,8 @@ struct LikedSongsView: View {
                 .frame(height: 20)
 
             PlaylistSongListElement(showFlags: 0,
+                                    avAudioPlayer: avAudioPlayer,
+                                    playingTrack: $avAudioPlayer.currentPlayingTrack,
                                     tracks: $likedSongsViewModel.tracks,
                                     savedTracks: .constant([]),
                                     selectedArtist: $selectedArtist,

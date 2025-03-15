@@ -10,6 +10,8 @@ import SpotifyWebAPI
 
 struct PlaylistTopElement: View {
 
+    var playingId: String?
+
     @Binding var playlist: Playlist<PlaylistItems>?
     @Binding var album: Album?
 
@@ -61,20 +63,14 @@ struct PlaylistTopElement: View {
 
         HStack {
             Button {
-                if avAudioPlayer.playingId == playlist?.id {
+                if avAudioPlayer.playingId == playingId {
                     avAudioPlayer.togglePlay()
                 } else {
-                    avAudioPlayer.removeAllSongs()
-
-                    avAudioPlayer.addBulkSongs(
-                        tracks: avAudioPlayer.isShuffled ? tracks.shuffled() : tracks
-                    )
-
-                    avAudioPlayer.playingId = playlist?.id
+                    avAudioPlayer.updatePlayingList(newPlayingId: playingId, tracks: tracks)
                 }
             } label: {
                 Image(
-                    avAudioPlayer.playingId == playlist?.id &&
+                    avAudioPlayer.playingId == playingId &&
                     avAudioPlayer.isPlaying ? "spwifiy.pause.fill"  : "spwifiy.play.fill"
                 )
                 .resizable()

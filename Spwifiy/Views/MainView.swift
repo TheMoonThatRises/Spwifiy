@@ -49,6 +49,7 @@ struct MainView: View {
                                 // sidebar views
                             case .likedSongs:
                                 LikedSongsView(spotifyCache: spotifyCache,
+                                               avAudioPlayer: avAudioPlayer,
                                                selectedArtist: $mainViewModel.selectedArtist,
                                                selectedAlbum: $mainViewModel.selectedAlbum)
 
