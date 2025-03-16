@@ -171,88 +171,6 @@ class AVAudioPlayer: ObservableObject {
         }
     }
 
-    public func addSong(track: Track) {
-        trackQueue.append(track)
-
-        if trackQueue.count == 1 {
-            updatePlayer()
-        }
-    }
-
-    public func addBulkSongs(tracks: [Track]) {
-        for track in tracks {
-            addSong(track: track)
-        }
-    }
-
-    public func removeSong(index: Int) {
-        trackQueue.remove(at: index)
-
-        if index == playingIndex {
-            updatePlayer()
-        }
-    }
-
-    public func removeSong(track: Track) {
-        if let index = trackQueue.firstIndex(of: track) {
-            removeSong(index: index)
-        }
-    }
-
-    public func removeAllSongs() {
-        player.pause()
-
-        trackQueue.removeAll()
-
-        playingIndex = 0
-    }
-
-    private func updateSong(incBy: Int) {
-        pauseAudio()
-
-        playingIndex += incBy
-
-        if playingIndex < trackQueue.count && playingIndex >= 0 {
-            previousQueue.append(trackQueue[playingIndex])
-        }
-
-        updatePlayer()
-    }
-
-    public func nextSong() {
-        updateSong(incBy: 1)
-    }
-
-//    public func nextSong(track: Track) {
-//        guard let trackIndex = trackQueue.firstIndex(of: track) else {
-//            print("unable to jump to track: \(track.name) - \(track.artists?.description ?? "Unknown")")
-//
-//            return
-//        }
-//
-//        let incIndex = trackIndex - playingIndex
-//
-//        if incIndex >= 0 {
-//            updateSong(incBy: incIndex)
-//        } else {
-//
-//        }
-//    }
-
-    public func prevSong() {
-        if currentPlayTime < 0.1 {
-            player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
-        } else {
-            updateSong(incBy: -1)
-        }
-    }
-
-    func seek(time: CMTime) {
-        player.seek(to: normalizeSeekTime(time: time), toleranceBefore: .zero, toleranceAfter: .zero)
-
-        setPresence(seekTime: time.seconds)
-    }
-
     public func updatePlayer() {
         player.pause()
 
@@ -335,32 +253,10 @@ class AVAudioPlayer: ObservableObject {
         updateNowPlaying()
     }
 
-    public func updatePlayingList(newPlayingId: String?, tracks: [Track], starting: Track? = nil) {
-        removeAllSongs()
+    func seek(time: CMTime) {
+        player.seek(to: normalizeSeekTime(time: time), toleranceBefore: .zero, toleranceAfter: .zero)
 
-        let addTracks = starting == nil ? tracks : tracks.filter { $0 != starting }
-
-        if let starting = starting {
-            addSong(track: starting)
-        }
-
-        addBulkSongs(
-            tracks: isShuffled ? addTracks.shuffled() : addTracks
-        )
-
-        playingId = newPlayingId
-    }
-
-    public func goToQueueTrack(track: Track, newQueue: [Track]) {
-        let removeIndex = trackQueue.firstIndex(of: track)
-
-        if let removeIndex = removeIndex {
-            trackQueue.removeSubrange(0...(removeIndex - 1))
-
-            updatePlayer()
-        } else {
-            updatePlayingList(newPlayingId: playingId, tracks: newQueue, starting: track)
-        }
+        setPresence(seekTime: time.seconds)
     }
 
 }
