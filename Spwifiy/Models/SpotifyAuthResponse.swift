@@ -10,7 +10,7 @@ struct SpotifyAuthResponse: Decodable {
     let accessToken: String
     let accessTokenExpirationTimestampMs: Double
     let isAnonymous: Bool
-    let totpValidity: Int
+    let totpValidity: Bool
     let notes: String
 
     enum CodingKeys: String, CodingKey {
