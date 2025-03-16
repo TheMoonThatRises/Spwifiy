@@ -157,12 +157,15 @@ class SpotifyViewModel: ObservableObject {
                 self.isAuthorized = .failed
             }
         }
+
+        spotify.authorizationManager.deauthorize()
     }
 
     private func removeCookies() {
         do {
             try keychain.remove(SpotifyAuthManager.spDcCookieKey)
             try keychain.remove(SpotifyAuthManager.spTCookieKey)
+            try keychain.remove(SpotifyAuthManager.authAccessResponse)
         } catch {
             print("unable to remove unauthorized manager")
         }

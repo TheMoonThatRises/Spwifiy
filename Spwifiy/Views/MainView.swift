@@ -76,7 +76,7 @@ struct MainView: View {
                                         .font(.title)
                                 }
 
-                                // unimplemented views
+                            // unimplemented views
                             default:
                                 Text("Unknown error")
                                     .font(.title)
@@ -112,6 +112,10 @@ struct MainView: View {
         .sheet(isPresented: $spotifyViewModel.isAuthenticating) {
             AttemptingReauthSheet()
         }
+        .sheet(isPresented: $mainViewModel.showLogoutSheet) {
+            LogoutConfirmSheet(logout: spotifyViewModel.logout,
+                              showLogoutSheet: $mainViewModel.showLogoutSheet)
+        }
         .task {
             await spotifyViewModel.loadUserProfile()
         }
@@ -137,4 +141,36 @@ struct AttemptingReauthSheet: View {
         }
         .padding()
     }
+}
+
+struct LogoutConfirmSheet: View {
+
+    let logout: () -> Void
+
+    @Binding var showLogoutSheet: Bool
+
+    var body: some View {
+        VStack {
+            Text("Do you want to logout?")
+
+            HStack {
+                Spacer()
+
+                Button {
+                    showLogoutSheet.toggle()
+                } label: {
+                    Text("Cancel")
+                }
+
+                Button {
+                    logout()
+                    showLogoutSheet.toggle()
+                } label: {
+                    Text("Logout")
+                }
+            }
+        }
+        .padding()
+    }
+
 }

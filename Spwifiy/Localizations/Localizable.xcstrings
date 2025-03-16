@@ -41,8 +41,14 @@
     "By" : {
 
     },
+    "Cancel" : {
+
+    },
     "Discover" : {
       "extractionState" : "manual"
+    },
+    "Do you want to logout?" : {
+
     },
     "Double check to make sure your system clock has not drifted." : {
 
@@ -78,6 +84,9 @@
 
     },
     "Login with Spotify" : {
+
+    },
+    "Logout" : {
 
     },
     "My Library" : {

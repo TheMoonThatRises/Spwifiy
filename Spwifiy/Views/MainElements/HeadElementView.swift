@@ -153,8 +153,7 @@ public struct HeadElementView: View {
 
                 NavButton(currentButton: .profile,
                           currentView: $mainViewModel.currentView) {
-                    spotifyViewModel.logout()
-                    spotifyViewModel.spotify.authorizationManager.deauthorize()
+                    mainViewModel.showLogoutSheet.toggle()
                 } label: {
                     CroppedCachedAsyncImage(url: userProfile?.images?.first?.url,
                                             width: 40,
