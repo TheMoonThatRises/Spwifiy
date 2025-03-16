@@ -53,7 +53,6 @@ class YoutubeAPI {
         case .success(let response):
             youtubeModel.visitorData = response.visitorData ?? ""
         case .failure(let error):
-            /// If there is no result you should obtain an error explaining why there is none.
             print(error)
         }
     }
