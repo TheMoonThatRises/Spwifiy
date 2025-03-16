@@ -5,7 +5,7 @@
 //  Created by Peter Duanmu on 12/4/24.
 //
 
-struct SpotifyAuthResponse: Decodable {
+struct SpotifyAuthResponse: Codable {
     let clientId: String
     let accessToken: String
     let accessTokenExpirationTimestampMs: Double

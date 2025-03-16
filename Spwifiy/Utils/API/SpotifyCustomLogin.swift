@@ -17,6 +17,7 @@ class SpotifyAuthManager: NSObject, WKHTTPCookieStoreObserver {
 
     public static let spDcCookieKey = "sp_dc_cookie"
     public static let spTCookieKey = "sp_t_cookie"
+    public static let authAccessResponse = "auth_access_resp"
 
     @Binding var authStatus: AuthStatus
 
