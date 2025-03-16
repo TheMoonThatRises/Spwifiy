@@ -69,7 +69,7 @@ class SpotifyViewModel: ObservableObject {
 
         if let authResponseData = await keychain[data: SpotifyAuthManager.authAccessResponse],
            let authResponse = try? decoder.decode(SpotifyAuthResponse.self, from: authResponseData),
-           Date().millisecondsSince1970 < authResponse.accessTokenExpirationTimestampMs - 30 * 60 * 1000 {
+           Date().millisecondsSince1970 < authResponse.accessTokenExpirationTimestampMs - 30 * 1000 {
             Task { @MainActor in
                 defer {
                     self.isAuthenticating = false
