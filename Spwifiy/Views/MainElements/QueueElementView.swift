@@ -27,6 +27,13 @@ struct QueueElementView: View {
                                currentOption: $currentView)
 
             if avAudioPlayer.trackQueue.count > 0 {
+                Text("Now playing:")
+                    .foregroundStyle(.fgPrimary)
+                    .font(.satoshiBlack(16))
+
+                Spacer()
+                    .frame(height: 20)
+
                 TrackQueueView(track: avAudioPlayer.trackQueue[avAudioPlayer.playingIndex],
                                removeSong: nil,
                                selectedArtist: $selectedArtist)
@@ -35,7 +42,7 @@ struct QueueElementView: View {
                     .frame(height: 40)
 
                 HStack {
-                    Text(currentView == .queueView ? "Next up:" : "Previously Played:")
+                    Text(currentView == .queueView ? "Next up:" : "Previously played:")
                         .foregroundStyle(.fgPrimary)
                         .font(.satoshiBlack(16))
 
@@ -79,6 +86,7 @@ struct QueueElementView: View {
                         }
                     }
                 }
+                .scrollContentBackground(.hidden)
             } else {
                 Text("Play some songs to populate the queue")
                     .padding()
