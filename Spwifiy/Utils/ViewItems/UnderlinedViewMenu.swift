@@ -25,7 +25,7 @@ struct UnderlinedViewMenu<Option: Equatable & RawRepresentable>: View where Opti
                         Text(type.rawValue)
                             .foregroundStyle(.fgSecondary)
                             .padding(7)
-                            .contentShape(Rectangle())
+                            .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)

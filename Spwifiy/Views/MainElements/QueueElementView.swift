@@ -34,9 +34,28 @@ struct QueueElementView: View {
                 Spacer()
                     .frame(height: 40)
 
-                Text("Next up:")
-                    .foregroundStyle(.fgPrimary)
-                    .font(.satoshiBlack(16))
+                HStack {
+                    Text(currentView == .queueView ? "Next up:" : "Previously Played:")
+                        .foregroundStyle(.fgPrimary)
+                        .font(.satoshiBlack(16))
+
+                    Spacer()
+
+                    Button {
+                        if currentView == .queueView {
+                            avAudioPlayer.clearQueue()
+                        } else {
+                            avAudioPlayer.clearPrevQueue()
+                        }
+                    } label: {
+                        Text("Clear")
+                            .foregroundStyle(.fgPrimary)
+                            .font(.satoshiLight(14))
+                            .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
+                }
 
                 Spacer()
                     .frame(height: 20)

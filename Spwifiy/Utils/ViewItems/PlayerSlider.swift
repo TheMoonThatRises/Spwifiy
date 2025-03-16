@@ -49,7 +49,7 @@ struct PlayerSlider: View {
 
                     Rectangle()
                         .fill(Color.clear)
-                        .contentShape(Rectangle())
+                        .contentShape(.rect)
                         .cursorHover(.pointingHand)
                         .gesture(
                             DragGesture()

@@ -46,14 +46,22 @@ extension AVAudioPlayer {
         playingIndex = 0
     }
 
+    public func clearQueue() {
+        trackQueue.removeSubrange((playingIndex + 1)...)
+    }
+
+    public func clearPrevQueue() {
+        previousQueue.removeAll()
+    }
+
     private func updateSong(incBy: Int) {
         pauseAudio()
-
-        playingIndex += incBy
 
         if playingIndex < trackQueue.count && playingIndex >= 0 {
             previousQueue.append(trackQueue[playingIndex])
         }
+
+        playingIndex += incBy
 
         updatePlayer()
     }
