@@ -25,16 +25,7 @@ class SpotifyViewModel: ObservableObject {
         }
     }
 
-    private static let authScopes: Set<Scope> = [
-        .playlistReadPrivate,
-        .playlistReadCollaborative,
-        .userFollowRead,
-        .userLibraryRead,
-        .userReadEmail,
-        .userReadPrivate,
-        .userReadRecentlyPlayed,
-        .userTopRead
-    ]
+    private static let authScopes: Set<Scope> = Scope.allCases
 
     @Published var isAuthorized: AuthorizationStatus = .none
 
