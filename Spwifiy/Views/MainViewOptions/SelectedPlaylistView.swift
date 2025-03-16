@@ -98,6 +98,7 @@ struct SelectedPlaylistView: View {
             } else {
                 Text("Fetching playlist...")
                     .font(.title)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
         }
         .task {
