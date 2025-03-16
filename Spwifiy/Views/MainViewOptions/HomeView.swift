@@ -139,27 +139,31 @@ struct HomeViewRow: View {
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)
                     .popover(isPresented: $showMoreOption, arrowEdge: .leading) {
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Image("spwifiy.pin")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                                    .foregroundStyle(.fgSecondary)
+                        ZStack {
+                            Color.bgPrimary
+                                .scaleEffect(1.5)
 
-                                Text("Pin to Home")
+                            VStack(alignment: .leading) {
+                                HStack {
+                                    Image("spwifiy.pin")
+                                        .resizable()
+                                        .frame(width: 40, height: 40)
+                                        .foregroundStyle(.fgSecondary)
+
+                                    Text("Pin to Home")
+                                }
+
+                                HStack {
+                                    Image("spwifiy.hide")
+                                        .resizable()
+                                        .frame(width: 40, height: 40)
+                                        .foregroundStyle(.fgSecondary)
+
+                                    Text("Hide this Section")
+                                }
                             }
-
-                            HStack {
-                                Image("spwifiy.hide")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                                    .foregroundStyle(.fgSecondary)
-
-                                Text("Hide this Section")
-                            }
+                            .padding()
                         }
-                        .padding()
-                        .presentationBackground(.bgPrimary)
                     }
                 }
 
