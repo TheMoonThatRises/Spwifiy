@@ -53,7 +53,7 @@ class YoutubeAPI {
         case .success(let response):
             youtubeModel.visitorData = response.visitorData ?? ""
         case .failure(let error):
-            print(error)
+            print("failed to retrieve visitor data: \(error)")
         }
     }
 
