@@ -79,7 +79,9 @@ extension AVAudioPlayer {
     }
 
     public func updatePlayingList(newPlayingId: String?, tracks: [Track], starting: Track? = nil) {
-        previousQueue.append(trackQueue[playingIndex])
+        if isPlaying {
+            previousQueue.append(trackQueue[playingIndex])
+        }
 
         removeAllSongs()
 
@@ -97,7 +99,9 @@ extension AVAudioPlayer {
     }
 
     public func goToQueueTrack(track: Track, newQueue: [Track]) {
-        previousQueue.append(trackQueue[playingIndex])
+        if isPlaying {
+            previousQueue.append(trackQueue[playingIndex])
+        }
 
         let removeIndex = trackQueue.firstIndex(of: track)
 
