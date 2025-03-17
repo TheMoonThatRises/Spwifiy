@@ -82,7 +82,11 @@ class AVAudioPlayer: ObservableObject {
 
     @AppStorage("setting.playing.shuffled") var isShuffled: Bool = false
     @AppStorage("setting.playing.looping") var isLooping: Bool = false
-    @AppStorage("setting.playing.volume") var volume: Double = 1.0
+    @AppStorage("setting.playing.volume") var volume: Double = 1.0 {
+        didSet {
+            player.volume = Float(pow(volume, 2.5))
+        }
+    }
 
     var statusObserveToken: NSKeyValueObservation?
     var timeControlObserveToken: NSKeyValueObservation?
