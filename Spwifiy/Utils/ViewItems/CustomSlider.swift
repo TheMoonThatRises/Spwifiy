@@ -7,7 +7,10 @@
 
 import SwiftUI
 
-struct PlayerSlider: View {
+struct CustomSlider<Content: View>: View {
+
+    typealias SliderLabel = (Double) -> Content
+
     @Binding var value: Double
     @Binding var maxValue: Double
     @Binding var isInteracting: Bool
@@ -15,20 +18,38 @@ struct PlayerSlider: View {
     @State var sliderDistance: Double = 0
     @State var isHovering: Bool = false
 
+    @ViewBuilder let valueLabel: SliderLabel?
+    @ViewBuilder let maxLabel: SliderLabel?
+
     var range: ClosedRange<Double> {
         0...max(maxValue, 0)
     }
 
-    init(value: Binding<Double>, maxValue: Binding<Double>, isInteracting: Binding<Bool>) {
+    init(value: Binding<Double>,
+         maxValue: Binding<Double>,
+         isInteracting: Binding<Bool>,
+         valueLabel: @escaping SliderLabel,
+         maxLabel: @escaping SliderLabel) {
         self._value = value
         self._maxValue = maxValue
         self._isInteracting = isInteracting
+        self.valueLabel = valueLabel
+        self.maxLabel = maxLabel
+    }
+
+    init(value: Binding<Double>,
+         maxValue: Binding<Double>,
+         isInteracting: Binding<Bool>) {
+        self._value = value
+        self._maxValue = maxValue
+        self._isInteracting = isInteracting
+        self.valueLabel = nil
+        self.maxLabel = nil
     }
 
     var body: some View {
         HStack {
-            Text(Int(value * 1000).humanReadable.description)
-                .frame(width: 50)
+            valueLabel?(value)
 
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
@@ -52,7 +73,7 @@ struct PlayerSlider: View {
                         .contentShape(.rect)
                         .cursorHover(.pointingHand)
                         .gesture(
-                            DragGesture()
+                            DragGesture(minimumDistance: 0, coordinateSpace: .local)
                                 .onChanged { gesture in
                                     isInteracting = true
 
@@ -69,13 +90,19 @@ struct PlayerSlider: View {
                         }
                 }
                 .onChange(of: value) { _ in
-                    sliderDistance = value / max(range.upperBound, 1) * geometry.size.width
+                    setSliderDistance(geometry)
+                }
+                .onAppear {
+                    setSliderDistance(geometry)
                 }
             }
             .frame(height: 30)
 
-            Text(Int(maxValue * 1000).humanReadable.description)
-                .frame(width: 50)
+            maxLabel?(maxValue)
         }
+    }
+
+    private func setSliderDistance(_ geometry: GeometryProxy) {
+        sliderDistance = value / max(range.upperBound, 1) * geometry.size.width
     }
 }

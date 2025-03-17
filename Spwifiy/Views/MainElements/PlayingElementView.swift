@@ -18,6 +18,7 @@ struct PlayingElementView: View {
     @Binding var showQueueView: Bool
 
     @State var showVolumeSlider: Bool = false
+    @State var isInteractingVolume: Bool = false
 
     var body: some View {
         HStack {
@@ -58,13 +59,19 @@ struct PlayingElementView: View {
                 DotButton(toggle: $avAudioPlayer.isLooping,
                           image: Image("spwifiy.loop"))
 
-                PlayerSlider(value: $avAudioPlayer.currentPlayTime,
+                CustomSlider(value: $avAudioPlayer.currentPlayTime,
                              maxValue: $avAudioPlayer.totalRunTime,
-                             isInteracting: $avAudioPlayer.isScrubbing)
-                    .frame(minWidth: 100)
+                             isInteracting: $avAudioPlayer.isScrubbing) { value in
+                    Text(Int(value * 1000).humanReadable.description)
+                        .frame(width: 50)
+                } maxLabel: { maxValue in
+                    Text(Int(maxValue * 1000).humanReadable.description)
+                        .frame(width: 50)
+                }
+                .frame(minWidth: 100)
 
                 Button {
-
+                    showVolumeSlider.toggle()
                 } label: {
                     Image("spwifiy.volume")
                         .resizable()
@@ -72,6 +79,23 @@ struct PlayingElementView: View {
                 }
                 .buttonStyle(.plain)
                 .cursorHover(.pointingHand)
+                .popover(isPresented: $showVolumeSlider) {
+                    ZStack {
+                        Color.bgPrimary
+                            .scaleEffect(1.5)
+
+                        VStack {
+                            Text("Volume: \(Int(avAudioPlayer.volume * 100))%")
+                                .font(.satoshiBlack(14))
+
+                            CustomSlider<Text>(value: $avAudioPlayer.volume,
+                                               maxValue: .constant(1.0),
+                                               isInteracting: $isInteractingVolume)
+                        }
+                        .frame(width: 150)
+                        .padding(20)
+                    }
+                }
             }
 
             Group {
