@@ -91,19 +91,40 @@ class SpotifyOTP {
         return secret
     }
 
+    private func retrieveServerTime() async -> Int? {
+        let decoder = JSONDecoder()
+
+        guard let url = URL(string: SpotifyOTP.serverTimeUrl) else {
+            return nil
+        }
+
+        var request = URLRequest(url: url)
+        request.setValue(RandomUserAgent.generate(), forHTTPHeaderField: "User-Agent")
+        request.setValue("open.spotify.com", forHTTPHeaderField: "Host")
+        request.setValue("*/*", forHTTPHeaderField: "Accept")
+
+        return await withCheckedContinuation { continuation in
+            APIRequest.shared.request(request: request, noCache: true) { data in
+                guard let serverTimeResponse = data,
+                      let serverTime = try? decoder.decode(SpotifyServerTime.self, from: serverTimeResponse) else {
+                    continuation.resume(returning: nil)
+
+                    return
+                }
+
+                continuation.resume(returning: serverTime.serverTime)
+            }
+        }
+    }
+
     private func generateOTP(serverTime: Int) -> String {
         return totp?.generateOTP(Double(serverTime)) ?? ""
     }
 
-    public func generateOTP() async -> String {
-        let decoder = JSONDecoder()
+    public func generateOTP() async -> (String, Int) {
+        let serverTime = await retrieveServerTime() ?? Int(Date().timeIntervalSince1970)
 
-        guard let serverTimeResponse: Data = await APIRequest.shared.request(urlString: SpotifyOTP.serverTimeUrl),
-              let serverTime = try? decoder.decode(SpotifyServerTime.self, from: serverTimeResponse) else {
-            return ""
-        }
-
-        return generateOTP(serverTime: serverTime.serverTime)
+        return (generateOTP(serverTime: serverTime), serverTime)
     }
 
 }

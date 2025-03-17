@@ -18,10 +18,12 @@ class SpotifyViewModel: ObservableObject {
 
     private var isLoadingUserProfile: Bool = false
 
-    private var spotifyAccessTokenURL: (String, Int) -> String {
-        { totp, timestamp in
-            "https://open.spotify.com/get_access_token?reason=transport&productType=web_player" +
-            "&totp=\(totp)&totpVer=5&ts=\(timestamp)"
+    private var spotifyAccessTokenURL: (String, Int, Int) -> String {
+        { totp, sTime, cTime in
+            "https://open.spotify.com/get_access_token" +
+            "?reason=init&productType=web_player" +
+            "&totp=\(totp)&totpServer=\(totp)&totpVer=5" +
+            "&sTime=\(sTime)&cTime=\(cTime)"
         }
     }
 
@@ -74,10 +76,11 @@ class SpotifyViewModel: ObservableObject {
                   let spTCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spTCookieData).httpCookie {
             APIRequest.shared.setCookies(cookies: [spDcCookie, spTCookie], noCache: true)
 
-            let totp = await SpotifyOTP.shared.generateOTP()
-            let timestamp = Int(Date().timeIntervalSince1970) * 1000
+            let (totp, sTime) = await SpotifyOTP.shared.generateOTP()
+            let cTime = Int(floor(Date().millisecondsSince1970))
+            let authUrl = spotifyAccessTokenURL(totp, sTime, cTime)
 
-            APIRequest.shared.request(urlString: spotifyAccessTokenURL(totp, timestamp), noCache: true) { data in
+            APIRequest.shared.request(urlString: authUrl, noCache: true) { data in
                 Task { @MainActor in
                     defer {
                         self.isAuthenticating = false
@@ -110,6 +113,16 @@ class SpotifyViewModel: ObservableObject {
 
     @MainActor
     private func authClient(authResponse: SpotifyAuthResponse) {
+        if authResponse.accessToken.count != 376 {
+            Task {
+                try? keychain.remove(SpotifyAuthManager.authAccessResponse)
+
+                await attemptSpotifyAuthToken()
+            }
+
+            return
+        }
+
         let expirationDate = Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs)
 
         self.spotify.authorizationManager = AuthorizationCodeFlowPKCEManager(
@@ -170,6 +183,8 @@ class SpotifyViewModel: ObservableObject {
 
             if case .failure = $0 {
                 Task {
+                    try? await self.keychain.remove(SpotifyAuthManager.authAccessResponse)
+
                     await self.attemptSpotifyAuthToken()
                 }
             }
