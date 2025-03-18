@@ -20,12 +20,15 @@ struct ArtistView: View {
 
     @StateObject var artistViewModel: ArtistViewModel
 
+    @ObservedObject var avAudioPlayer: AVAudioPlayer
+
     @State var currentView: CurrentView = .homeView
 
-    init(spotifyCache: SpotifyCache, artist: Artist) {
+    init(spotifyCache: SpotifyCache, artist: Artist, avAudioPlayer: AVAudioPlayer) {
         self._artistViewModel = StateObject(
             wrappedValue: ArtistViewModel(spotifyCache: spotifyCache, artist: artist)
         )
+        self.avAudioPlayer = avAudioPlayer
     }
 
     var body: some View {
@@ -50,7 +53,9 @@ struct ArtistView: View {
 
                     Group {
                         switch currentView {
-//                        case .homeView:
+                        case .homeView:
+                            ArtistHomeView(artistViewModel: artistViewModel,
+                                           avAudioPlayer: avAudioPlayer)
 //                        case .albumView:
 //                        case .singlesEpView:
 //                        case .merchView:
@@ -59,10 +64,8 @@ struct ArtistView: View {
                             Text("Unknown error")
                         }
                     }
-
-                    Rectangle()
-                        .frame(height: 600)
-                        .foregroundStyle(.clear)
+                    .padding()
+                    .frame(maxWidth: .infinity)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(.bgMain)
