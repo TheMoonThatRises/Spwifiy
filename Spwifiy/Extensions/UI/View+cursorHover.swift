@@ -17,10 +17,10 @@ extension View {
             if isHovered {
                 switch cursor {
                 default:
-                    NSCursor.pointingHand.push()
+                    NSCursor.pointingHand.set()
                 }
             } else {
-                NSCursor.pop()
+                NSCursor.arrow.set()
             }
         }
     }
