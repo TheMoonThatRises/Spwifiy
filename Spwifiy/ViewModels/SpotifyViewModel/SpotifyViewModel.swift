@@ -16,12 +16,16 @@ class SpotifyViewModel: ObservableObject {
         case none, valid, failed
     }
 
+    public enum AuthenticationMethod: String {
+        case transport, `init`
+    }
+
     private var isLoadingUserProfile: Bool = false
 
-    private var spotifyAccessTokenURL: (String, Int, Int) -> String {
-        { totp, sTime, cTime in
+    private var spotifyAccessTokenURL: (AuthenticationMethod, String, Int, Int) -> String {
+        { method, totp, sTime, cTime in
             "https://open.spotify.com/get_access_token" +
-            "?reason=init&productType=web_player" +
+            "?reason=\(method)&productType=web_player" +
             "&totp=\(totp)&totpServer=\(totp)&totpVer=5" +
             "&sTime=\(sTime)&cTime=\(cTime)"
         }
@@ -48,7 +52,7 @@ class SpotifyViewModel: ObservableObject {
         )
     }
 
-    public func attemptSpotifyAuthToken() async {
+    public func attemptSpotifyAuthToken(method: AuthenticationMethod) async {
         if isAuthenticating {
             return
         }
@@ -78,7 +82,7 @@ class SpotifyViewModel: ObservableObject {
 
             let (totp, sTime) = await SpotifyOTP.shared.generateOTP()
             let cTime = Int(floor(Date().millisecondsSince1970))
-            let authUrl = spotifyAccessTokenURL(totp, sTime, cTime)
+            let authUrl = spotifyAccessTokenURL(method, totp, sTime, cTime)
 
             APIRequest.shared.request(urlString: authUrl, noCache: true) { data in
                 Task { @MainActor in
@@ -117,7 +121,7 @@ class SpotifyViewModel: ObservableObject {
             Task {
                 try? keychain.remove(SpotifyAuthManager.authAccessResponse)
 
-                await attemptSpotifyAuthToken()
+                await attemptSpotifyAuthToken(method: .`init`)
             }
 
             return
@@ -141,7 +145,7 @@ class SpotifyViewModel: ObservableObject {
                     // reauth 7 seconds before token expires
                     try await Task.sleep(for: .seconds(expirationDate.timeIntervalSinceNow - 7.0))
 
-                    await self.attemptSpotifyAuthToken()
+                    await self.attemptSpotifyAuthToken(method: .transport)
                 } catch {
                     print("failed to wait for reauth time: \(error)")
                 }
@@ -185,7 +189,7 @@ class SpotifyViewModel: ObservableObject {
                 Task {
                     try? await self.keychain.remove(SpotifyAuthManager.authAccessResponse)
 
-                    await self.attemptSpotifyAuthToken()
+                    await self.attemptSpotifyAuthToken(method: .`init`)
                 }
             }
         }, receiveValue: receiveValue)

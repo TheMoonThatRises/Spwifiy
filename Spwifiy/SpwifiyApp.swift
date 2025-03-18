@@ -14,6 +14,7 @@ struct SpwifiyApp: App {
 
     public static let redirectURI: String = "spwifiy://"
     public static let service = "io.github.themoonthatrises.spwifiy"
+    public static let bundleIdentifier = Bundle.main.bundleIdentifier ?? service
 
     @StateObject var spotifyViewModel: SpotifyViewModel = SpotifyViewModel()
     @StateObject var spotifyDataViewModel: SpotifyDataViewModel = SpotifyDataViewModel()
@@ -46,7 +47,7 @@ struct SpwifiyApp: App {
                         .font(.satoshiBlack(24))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .task(priority: .utility) {
-                            await spotifyViewModel.attemptSpotifyAuthToken()
+                            await spotifyViewModel.attemptSpotifyAuthToken(method: .transport)
                         }
                 }
             }
