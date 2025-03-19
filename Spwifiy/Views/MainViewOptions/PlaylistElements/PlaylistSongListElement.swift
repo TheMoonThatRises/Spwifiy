@@ -138,14 +138,7 @@ struct PlaylistSongListElement: View {
                                 } label: {
                                     HStack {
                                         if track.isExplicit {
-                                            RoundedRectangle(cornerRadius: 2)
-                                                .foregroundStyle(.fgSecondary)
-                                                .frame(width: 13, height: 13)
-                                                .overlay {
-                                                    Text("E")
-                                                        .foregroundStyle(.fgTertiary)
-                                                        .font(.satoshiBlack(8))
-                                                }
+                                            ExplicitSymbol()
                                         }
 
                                         Text(track.artists?.description ?? "Unknown artists")
@@ -183,6 +176,7 @@ struct PlaylistSongListElement: View {
                     .onHover { isHovering in
                         hoverTrackId = isHovering ? track.id : nil
                     }
+                    .disabled(track.isExplicit && !avAudioPlayer.playExplicit)
                 }
             }
             .font(.callout)

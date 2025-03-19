@@ -115,14 +115,7 @@ struct PlayingElementView: View {
                     } label: {
                         HStack {
                             if avAudioPlayer.currentPlayingTrack?.isExplicit ?? false {
-                                RoundedRectangle(cornerRadius: 2)
-                                    .foregroundStyle(.fgSecondary)
-                                    .frame(width: 13, height: 13)
-                                    .overlay {
-                                        Text("E")
-                                            .foregroundStyle(.fgTertiary)
-                                            .font(.satoshiBlack(8))
-                                    }
+                                ExplicitSymbol()
                             }
 
                             Text(avAudioPlayer.currentPlayingTrack?.artists?.description ?? "Artist")

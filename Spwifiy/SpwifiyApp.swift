@@ -19,6 +19,7 @@ struct SpwifiyApp: App {
     @StateObject var spotifyViewModel: SpotifyViewModel = SpotifyViewModel()
     @StateObject var spotifyDataViewModel: SpotifyDataViewModel = SpotifyDataViewModel()
     @StateObject var mainViewModel: MainViewModel = MainViewModel()
+    @StateObject var settingsViewModel: SettingsViewModel = SettingsViewModel()
 
     @StateObject var avAudioPlayer: AVAudioPlayer = AVAudioPlayer()
 
@@ -32,6 +33,7 @@ struct SpwifiyApp: App {
                     MainView(spotifyViewModel: spotifyViewModel,
                              spotifyDataViewModel: spotifyDataViewModel,
                              mainViewModel: mainViewModel,
+                             settingsViewModel: settingsViewModel,
                              spotifyCache: spotifyCache,
                              avAudioPlayer: avAudioPlayer)
                         .onAppear {

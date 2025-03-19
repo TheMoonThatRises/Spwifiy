@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
+    ") content" : {
+
+    },
     "#" : {
 
     },
@@ -27,6 +33,12 @@
 
     },
     "All" : {
+
+    },
+    "Allow Discord Activity Presence" : {
+
+    },
+    "Allow explicit (" : {
 
     },
     "Artists" : {
@@ -62,6 +74,9 @@
     "E" : {
 
     },
+    "Explicit Content" : {
+
+    },
     "Fetching playlist..." : {
 
     },
@@ -90,6 +105,9 @@
 
     },
     "Logout" : {
+
+    },
+    "Miscellaneous" : {
 
     },
     "My Library" : {
@@ -127,6 +145,9 @@
     },
     "Search" : {
       "extractionState" : "manual"
+    },
+    "Settings" : {
+
     },
     "Show less" : {
 

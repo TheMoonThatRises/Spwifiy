@@ -38,6 +38,11 @@ class AVAudioPlayer: ObservableObject {
     @Published var currentPlayingTrack: Track? {
         didSet {
             totalRunTime = 0
+
+            if let track = currentPlayingTrack,
+               !playExplicit && track.isExplicit {
+                nextSong()
+            }
         }
     }
 
@@ -97,6 +102,14 @@ class AVAudioPlayer: ObservableObject {
 
     var playerReady: Bool {
         player.status == .readyToPlay
+    }
+
+    var playExplicit: Bool {
+        UserDefaults.standard.bool(forKey: "settings.playback.explicit")
+    }
+
+    var displayDiscordRPC: Bool {
+        UserDefaults.standard.bool(forKey: "settings.misc.discordrpc")
     }
 
     init() {

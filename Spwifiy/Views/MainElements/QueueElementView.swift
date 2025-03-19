@@ -95,7 +95,6 @@ struct QueueElementView: View {
             Spacer()
         }
         .padding()
-        .frame(width: 300)
         .foregroundStyle(.fgSecondary)
     }
 
@@ -125,7 +124,13 @@ struct TrackQueueView: View {
                     Button {
                         selectedArtist = track.artists?.first
                     } label: {
-                        Text(track.artists?.description ?? "Artist")
+                        HStack {
+                            if track.isExplicit {
+                                ExplicitSymbol()
+                            }
+
+                            Text(track.artists?.description ?? "Artist")
+                        }
                     }
                     .buttonStyle(.plain)
                     .cursorHover(.pointingHand)

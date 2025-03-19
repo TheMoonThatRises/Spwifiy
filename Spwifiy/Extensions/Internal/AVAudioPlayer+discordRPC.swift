@@ -7,12 +7,13 @@
 
 import Foundation
 import SwordRPC
-import os.log
 
 extension AVAudioPlayer {
 
     func discordRPCInit() {
-        self.discordRPC.connect()
+        if displayDiscordRPC {
+            self.discordRPC.connect()
+        }
     }
 
     private func constructPresence(seekTime: Double? = nil) -> RichPresence {
@@ -38,7 +39,9 @@ extension AVAudioPlayer {
     }
 
     func setPresence(seekTime: Double? = nil) {
-        discordRPC.setPresence(constructPresence(seekTime: seekTime))
+        if displayDiscordRPC {
+            discordRPC.setPresence(constructPresence(seekTime: seekTime))
+        }
     }
 
 }
