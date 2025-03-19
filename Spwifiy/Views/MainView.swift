@@ -15,6 +15,7 @@ struct MainView: View {
     @ObservedObject var spotifyDataViewModel: SpotifyDataViewModel
 
     @ObservedObject var mainViewModel: MainViewModel
+    @ObservedObject var settingsViewModel: SettingsViewModel
 
     @ObservedObject var spotifyCache: SpotifyCache
 
@@ -77,6 +78,9 @@ struct MainView: View {
                                     Text("Unable to get selected artist")
                                         .font(.title)
                                 }
+                            case .settings:
+                                SettingsView(settingsViewModel: settingsViewModel,
+                                             avAudioPlayer: avAudioPlayer)
 
                             // unimplemented views
                             default:
@@ -92,14 +96,28 @@ struct MainView: View {
                         }
 
                         if mainViewModel.showQueueView {
-                            QueueElementView(avAudioPlayer: avAudioPlayer,
-                                             selectedArtist: $mainViewModel.selectedArtist)
+                            ZStack(alignment: .leading) {
+                                Color.clear
+                                    .frame(width: 5)
+                                    .cursorHover(.resizeLeftRight)
+                                    .gesture(
+                                        DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                                            .onChanged { gesture in
+                                                let newValue = mainViewModel.queueViewWidth - gesture.translation.width
+                                                mainViewModel.queueViewWidth = max(min(newValue, 600), 200)
+                                            }
+                                    )
+
+                                QueueElementView(avAudioPlayer: avAudioPlayer,
+                                                 selectedArtist: $mainViewModel.selectedArtist)
+                                .frame(width: mainViewModel.queueViewWidth)
                                 .frame(maxHeight: .infinity)
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 5)
                                         .stroke(.fgTertiary, lineWidth: 0.5)
                                         .allowsHitTesting(false)
                                 }
+                            }
                         }
                     }
 

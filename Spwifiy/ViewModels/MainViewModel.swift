@@ -11,6 +11,7 @@ import SpotifyWebAPI
 class MainViewModel: ObservableObject {
 
     @AppStorage("settings.view.showQueueView") var showQueueView: Bool = false
+    @AppStorage("settings.view.queueViewWidth") var queueViewWidth: Double = 300
 
     @Published var authStatus: SpotifyAuthManager.AuthStatus = .cookieSet
 

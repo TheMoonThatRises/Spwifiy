@@ -9,6 +9,7 @@ import SwiftUI
 
 enum Cursors {
     case pointingHand
+    case resizeLeftRight
 }
 
 extension View {
@@ -16,8 +17,10 @@ extension View {
         self.onHover { isHovered in
             if isHovered {
                 switch cursor {
-                default:
+                case .pointingHand:
                     NSCursor.pointingHand.set()
+                case .resizeLeftRight:
+                    NSCursor.resizeLeftRight.set()
                 }
             } else {
                 NSCursor.arrow.set()
