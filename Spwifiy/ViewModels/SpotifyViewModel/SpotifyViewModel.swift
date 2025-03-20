@@ -27,7 +27,8 @@ class SpotifyViewModel: ObservableObject {
             "https://open.spotify.com/get_access_token" +
             "?reason=\(method)&productType=web_player" +
             "&totp=\(totp)&totpServer=\(totp)&totpVer=5" +
-            "&sTime=\(sTime)&cTime=\(cTime)"
+            "&sTime=\(sTime)&cTime=\(cTime)" +
+            "&buildVer=web-player_2025-03-19_1742428681498_c0e980b&buildDate=2025-03-19"
         }
     }
 
