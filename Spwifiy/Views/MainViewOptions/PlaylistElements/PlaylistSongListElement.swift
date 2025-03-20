@@ -176,6 +176,9 @@ struct PlaylistSongListElement: View {
                     .onHover { isHovering in
                         hoverTrackId = isHovering ? track.id : nil
                     }
+                    .contextMenu {
+                        ContextView(track: track)
+                    }
                     .disabled(track.isExplicit && !avAudioPlayer.playExplicit)
                 }
             }
