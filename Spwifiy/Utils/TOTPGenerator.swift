@@ -79,7 +79,7 @@ class TOTPGenerator {
     }
 
     public func generateOTP(_ time: TimeInterval) -> String? {
-        let counter = UInt64(time / period).bigEndian
+        let counter = UInt64(time / 1000 / period).bigEndian
         let counterData = withUnsafeBytes(of: counter) { Data($0) }
 
         guard let hash = hmac(data: counterData) else {

@@ -91,7 +91,7 @@ class SpotifyOTP {
         return secret
     }
 
-    private func retrieveServerTime() async -> Int? {
+    public func retrieveServerTime() async -> Int? {
         let decoder = JSONDecoder()
 
         guard let url = URL(string: SpotifyOTP.serverTimeUrl) else {
@@ -117,14 +117,8 @@ class SpotifyOTP {
         }
     }
 
-    private func generateOTP(serverTime: Int) -> String {
-        return totp?.generateOTP(Double(serverTime)) ?? ""
-    }
-
-    public func generateOTP() async -> (String, Int) {
-        let serverTime = await retrieveServerTime() ?? Int(Date().timeIntervalSince1970)
-
-        return (generateOTP(serverTime: serverTime), serverTime)
+    public func generateOTP(time: Int) -> String {
+        return totp?.generateOTP(Double(time)) ?? ""
     }
 
 }
