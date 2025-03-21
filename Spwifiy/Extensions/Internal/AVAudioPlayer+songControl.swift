@@ -71,7 +71,7 @@ extension AVAudioPlayer {
     }
 
     public func prevSong() {
-        if currentPlayTime < 0.1 {
+        if currentPlayTime > 0.1 {
             player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
         } else {
             updateSong(incBy: -1)
