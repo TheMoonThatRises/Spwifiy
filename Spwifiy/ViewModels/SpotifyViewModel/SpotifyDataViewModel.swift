@@ -15,6 +15,7 @@ class SpotifyDataViewModel: ObservableObject {
     var isRetrievingPersonalizedPlaylist: Bool = false
     var isRetrievingTopArtists: Bool = false
     var isRetrievingFollowingPlaylist: Bool = false
+    var isRetrievingSavedAlbums: Bool = false
 
     @Published public var dailyMixes: [Playlist<PlaylistItemsReference>] = []
     @Published public var typeMixes: [Playlist<PlaylistItemsReference>] = []
@@ -26,6 +27,8 @@ class SpotifyDataViewModel: ObservableObject {
 
     @Published public var topArtists: [Artist] = []
     @Published public var followedArtists: [Artist] = []
+
+    @Published public var savedAlbums: [Album] = []
 
     public func setSpotifyViewModel(spotifyViewModel: SpotifyViewModel) {
         self.spotifyViewModel = spotifyViewModel

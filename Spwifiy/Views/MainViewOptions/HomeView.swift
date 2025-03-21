@@ -59,14 +59,26 @@ struct HomeView: View {
                 HomeViewRow(title: "Following Playlists",
                             selectedPlaylist: $mainViewModel.selectedPlaylist,
                             selectedArtist: $mainViewModel.selectedArtist,
+                            selectedAlbum: $mainViewModel.selectedAlbum,
                             playlists: $spotifyDataViewModel.followingPlaylists,
-                            artists: .constant([]))
+                            artists: .constant([]),
+                            albums: .constant([]))
+
+                HomeViewRow(title: "Saved Albums",
+                            selectedPlaylist: $mainViewModel.selectedPlaylist,
+                            selectedArtist: $mainViewModel.selectedArtist,
+                            selectedAlbum: $mainViewModel.selectedAlbum,
+                            playlists: .constant([]),
+                            artists: .constant([]),
+                            albums: $spotifyDataViewModel.savedAlbums)
 
                 HomeViewRow(title: "Your Favorite Artists",
                             selectedPlaylist: $mainViewModel.selectedPlaylist,
                             selectedArtist: $mainViewModel.selectedArtist,
+                            selectedAlbum: $mainViewModel.selectedAlbum,
                             playlists: .constant([]),
-                            artists: $spotifyDataViewModel.topArtists)
+                            artists: $spotifyDataViewModel.topArtists,
+                            albums: .constant([]))
 
                 Spacer()
             }
@@ -76,6 +88,9 @@ struct HomeView: View {
         }
         .task {
             await spotifyDataViewModel.populateTopArtists()
+        }
+        .task {
+            await spotifyDataViewModel.populateSavedAlbums()
         }
 //        .task {
 //            await spotifyDataViewModel.populatePersonalizedPlaylists()
@@ -89,14 +104,16 @@ struct HomeViewRow: View {
 
     @Binding var selectedPlaylist: Playlist<PlaylistItemsReference>?
     @Binding var selectedArtist: Artist?
+    @Binding var selectedAlbum: Album?
 
     @Binding var playlists: [Playlist<PlaylistItemsReference>]
     @Binding var artists: [Artist]
+    @Binding var albums: [Album]
 
     @State var showMoreOption: Bool = false
 
     var body: some View {
-        if playlists.count > 0 || artists.count > 0 {
+        if playlists.count > 0 || artists.count > 0 || albums.count > 0 {
             VStack {
                 HStack {
                     Text(title)
@@ -171,9 +188,14 @@ struct HomeViewRow: View {
                     .frame(height: 10)
 
                 if artists.count > 0 {
-                    HorizontalArtistScroll(artists: $artists, selectedArtist: $selectedArtist)
+                    HorizontalArtistScroll(artists: $artists,
+                                           selectedArtist: $selectedArtist)
                 } else if playlists.count > 0 {
-                    HorizontalPlaylistScroll(playlists: $playlists, selectedPlaylist: $selectedPlaylist)
+                    HorizontalPlaylistScroll(playlists: $playlists,
+                                             selectedPlaylist: $selectedPlaylist)
+                } else if albums.count > 0 {
+                    HorizontalAlbumScroll(albums: $albums,
+                                          selectedAlbum: $selectedAlbum)
                 }
             }
             .padding()

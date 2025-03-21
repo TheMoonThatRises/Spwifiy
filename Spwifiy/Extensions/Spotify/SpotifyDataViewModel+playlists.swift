@@ -68,6 +68,8 @@ extension SpotifyDataViewModel {
             return
         }
 
+        isRetrievingFollowingPlaylist = true
+
         do {
             let playlists = try await spotifyViewModel.spotifyRequest {
                 spotifyViewModel.spotify.currentUserPlaylists()
@@ -76,6 +78,10 @@ extension SpotifyDataViewModel {
             }
 
             Task { @MainActor in
+                defer {
+                    isRetrievingFollowingPlaylist = false
+                }
+
                 followingPlaylists = playlists
             }
         } catch {
