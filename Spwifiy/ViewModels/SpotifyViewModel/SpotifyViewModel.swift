@@ -22,13 +22,18 @@ class SpotifyViewModel: ObservableObject {
 
     private var isLoadingUserProfile: Bool = false
 
-    private var spotifyAccessTokenURL: (AuthenticationMethod, String, String, Int, Int) -> String {
-        { method, sTotp, cTotp, sTime, cTime in
-            "https://open.spotify.com/get_access_token" +
-            "?reason=\(method)&productType=web_player" +
-            "&totp=\(cTotp)&totpServer=\(sTotp)&totpVer=5" +
-            "&sTime=\(sTime)&cTime=\(cTime)" +
-            "&buildVer=web-player_2025-03-19_1742428681498_c0e980b&buildDate=2025-03-19"
+    private var spotifyAccessTokenURL: (AuthenticationMethod, String, String, Int, Int, String?, String?) -> String {
+        { method, sTotp, cTotp, sTime, cTime, buildVer, buildDate in
+            var baseToken = "https://open.spotify.com/get_access_token" +
+                            "?reason=\(method)&productType=web_player" +
+                            "&totp=\(cTotp)&totpServer=\(sTotp)&totpVer=5" +
+                            "&sTime=\(sTime)&cTime=\(cTime)"
+
+            if let buildVer = buildVer, let buildDate = buildDate {
+                baseToken += "&buildVer=\(buildVer)&buildDate=\(buildDate)"
+            }
+
+            return baseToken
         }
     }
 
@@ -79,15 +84,17 @@ class SpotifyViewModel: ObservableObject {
                   let spTCookieData = await keychain[data: SpotifyAuthManager.spTCookieKey],
                   let spDcCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spDcCookieData).httpCookie,
                   let spTCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spTCookieData).httpCookie {
-            await APIRequest.shared.setCookies(cookies: [spDcCookie, spTCookie], noCache: true)
+            APIRequest.shared.setCookies(cookies: [spDcCookie, spTCookie], noCache: true)
+
+            async let (buildVer, buildDate) = SpotifyScraper.shared.getBuildInfo() ?? (nil, nil)
 
             let cTime = Int(floor(Date().millisecondsSince1970))
-            let sTime = await SpotifyOTP.shared.retrieveServerTime() ?? Int(cTime / 1000)
+            async let sTime = SpotifyOTP.shared.retrieveServerTime() ?? Int(cTime / 1000)
 
             let cTotp = SpotifyOTP.shared.generateOTP(time: cTime)
-            let sTotp = SpotifyOTP.shared.generateOTP(time: sTime * 1000)
+            let sTotp = await SpotifyOTP.shared.generateOTP(time: sTime * 1000)
 
-            let authUrl = spotifyAccessTokenURL(method, sTotp, cTotp, sTime, cTime)
+            let authUrl = await spotifyAccessTokenURL(method, sTotp, cTotp, sTime, cTime, buildVer, buildDate)
 
             APIRequest.shared.request(urlString: authUrl, noCache: true) { data in
                 Task { @MainActor in

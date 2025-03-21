@@ -11,11 +11,15 @@ class SpotifyScraper {
 
     public static let shared = SpotifyScraper()
 
+    private static var baseScrapeURL: String {
+        "https://open.spotify.com"
+    }
+
     private var monthlyListenersCache: [String: Int] = [:]
 
     private var artistString: (String) -> String {
         { artistId in
-            "https://open.spotify.com/artist/\(artistId)"
+            "\(SpotifyScraper.baseScrapeURL)/artist/\(artistId)"
         }
     }
 
@@ -60,6 +64,46 @@ class SpotifyScraper {
         }
 
         return monthlyListeners
+    }
+
+    public func getBuildInfo() async -> (String, String)? {
+        guard let spotifyHTML: String = await APIRequest.shared.request(
+            urlString: SpotifyScraper.baseScrapeURL
+        ) else {
+            return nil
+        }
+
+        let scriptPattern = #"<script src="https://open.spotifycdn.com/cdn/build/web-player/web-player(.+?)js">"#
+
+        guard let scriptRange = spotifyHTML.range(of: scriptPattern, options: .regularExpression) else {
+            return nil
+        }
+
+        let scriptComponents = spotifyHTML[scriptRange].split(separator: "\"")
+
+        guard scriptComponents.count == 3 else {
+            return nil
+        }
+
+        guard let scriptHTML: String = await APIRequest.shared.request(
+            urlString: String(scriptComponents[1])
+        ) else {
+            return nil
+        }
+
+        let buildPattern = #"buildVer:"(.+?)",buildDate:"(.+?)""#
+
+        guard let buildRange = scriptHTML.range(of: buildPattern, options: .regularExpression) else {
+            return nil
+        }
+
+        let buildComponents = scriptHTML[buildRange].split(separator: "\"")
+
+        guard buildComponents.count == 4 else {
+            return nil
+        }
+
+        return (String(buildComponents[1]), String(buildComponents[3]))
     }
 
 }
