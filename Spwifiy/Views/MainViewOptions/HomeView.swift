@@ -170,46 +170,10 @@ struct HomeViewRow: View {
                 Spacer()
                     .frame(height: 10)
 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack {
-                        if playlists.count > 0 {
-                            ForEach(playlists, id: \.uri) { playlist in
-                                Button {
-                                    withAnimation(.defaultAnimation) {
-                                        selectedPlaylist = playlist
-                                    }
-                                } label: {
-                                    HomeViewPlaylistItem(playlist: playlist)
-                                        .contentShape(.rect)
-                                }
-                                .buttonStyle(.plain)
-                                .cursorHover(.pointingHand)
-                                .id(playlist.id)
-
-                                if playlist != playlists.last {
-                                    Spacer()
-                                        .frame(width: 20)
-                                }
-                            }
-                        } else if artists.count > 0 {
-                            ForEach(artists, id: \.uri) { artist in
-                                Button {
-                                    selectedArtist = artist
-                                } label: {
-                                    HomeViewArtistItem(artist: artist)
-                                        .contentShape(.rect)
-                                }
-                                .buttonStyle(.plain)
-                                .cursorHover(.pointingHand)
-                                .id(artist.id)
-
-                                if artist != artists.last {
-                                    Spacer()
-                                        .frame(width: 20)
-                                }
-                            }
-                        }
-                    }
+                if artists.count > 0 {
+                    HorizontalArtistScroll(artists: $artists, selectedArtist: $selectedArtist)
+                } else if playlists.count > 0 {
+                    HorizontalPlaylistScroll(playlists: $playlists, selectedPlaylist: $selectedPlaylist)
                 }
             }
             .padding()
@@ -268,32 +232,6 @@ struct HomeViewPlaylistItem: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(2)
             }
-
-            Spacer()
-        }
-        .frame(width: 170)
-    }
-
-}
-
-struct HomeViewArtistItem: View {
-
-    var artist: Artist
-
-    var body: some View {
-        VStack(alignment: .center) {
-            CroppedCachedAsyncImage(url: artist.images?.first?.url,
-                                    width: 170,
-                                    height: 170,
-                                    alignment: .center,
-                                    clipShape: Circle())
-
-            Spacer()
-                .frame(height: 20)
-
-            Text(artist.name)
-                .foregroundStyle(.fgPrimary)
-                .font(.callout)
 
             Spacer()
         }
