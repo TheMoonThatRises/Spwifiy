@@ -25,7 +25,7 @@ struct ArtistHomeView: View {
     }
     @State var topTracks: [Track] = []
 
-    private var showFlags: Int  {
+    private var showFlags: Int {
         CollectionShowFlags.noSongListTitle | CollectionShowFlags.showAlbum
     }
 
