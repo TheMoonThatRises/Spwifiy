@@ -22,7 +22,7 @@ struct SongCollectionSidebarElement: View {
     @Binding var selectedArtist: Artist?
 
     var sidebarSize: CGFloat {
-        (showFlags & CollectionShowFlags.largerSide) != 0 ? 300 : 260
+        (showFlags & CollectionShowFlags.largerSide) > 0 ? 300 : 260
     }
 
     var body: some View {
