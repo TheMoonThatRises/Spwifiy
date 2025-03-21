@@ -21,20 +21,20 @@ struct SongCollectionTopElement: View {
     @Binding var totalDuration: HumanFormat?
     @Binding var searchText: String
 
-    private var name: String? {
-        playlist?.name ?? album?.name
+    private var name: String {
+        playlist?.name ?? album?.name ?? "Unknown"
     }
 
-    private var owner: String? {
-        playlist?.owner?.displayName ?? album?.artists?.first?.name
+    private var owner: String {
+        playlist?.owner?.displayName ?? album?.artists?.first?.name ?? "Unknown"
     }
 
-    private var totalSongs: Int? {
-        playlist?.items.total ?? album?.totalTracks
+    private var totalSongs: Int {
+        playlist?.items.total ?? album?.totalTracks ?? 0
     }
 
     var body: some View {
-        Text(name ?? "Unknown")
+        Text(name)
             .font(.satoshiBlack(40))
             .fontWeight(.black)
             .foregroundStyle(.fgPrimary)
@@ -47,7 +47,7 @@ struct SongCollectionTopElement: View {
                 .font(.callout)
                 .foregroundStyle(.fgSecondary)
 
-            Text(owner ?? "Unknown")
+            Text(owner)
                 .font(.callout)
                 .foregroundStyle(.fgPrimary)
 
@@ -55,7 +55,7 @@ struct SongCollectionTopElement: View {
                 .frame(width: 3, height: 3)
                 .foregroundStyle(.fgSecondary)
 
-            Text("\(totalSongs ?? 0) songs")
+            Text("\(totalSongs) songs")
                 .font(.callout)
                 .foregroundStyle(.fgSecondary)
 
