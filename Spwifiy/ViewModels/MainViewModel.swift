@@ -17,8 +17,10 @@ class MainViewModel: ObservableObject {
 
     @Published var currentView: MainViewOptions = .home {
         willSet {
-            withAnimation(.defaultAnimation) {
-                currentViewAnimated = newValue
+            Task { @MainActor in
+                withAnimation(.defaultAnimation) {
+                    currentViewAnimated = newValue
+                }
             }
         }
     }
@@ -43,5 +45,7 @@ class MainViewModel: ObservableObject {
     @Published var playingTrack: Track?
 
     @Published var showLogoutSheet: Bool = false
+
+    @Published var searchText: String = ""
 
 }

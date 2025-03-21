@@ -46,8 +46,10 @@ public struct NavButton<Label: View, Option: Equatable>: View {
         Button {
             action()
 
-            withAnimation(.defaultAnimation) {
-                self.currentView = self.currentButton
+            Task { @MainActor in
+                withAnimation(.defaultAnimation) {
+                    self.currentView = self.currentButton
+                }
             }
         } label: {
             body
