@@ -62,7 +62,6 @@ struct SelectedPlaylistView: View {
                         PlaylistSongListElement(showFlags: showFlags,
                                                 playingId: playingId,
                                                 avAudioPlayer: avAudioPlayer,
-                                                playingTrack: $avAudioPlayer.currentPlayingTrack,
                                                 tracks: $selectedPlaylistViewModel.tracks,
                                                 savedTracks: $selectedPlaylistViewModel.savedTracks,
                                                 selectedArtist: $selectedArtist,

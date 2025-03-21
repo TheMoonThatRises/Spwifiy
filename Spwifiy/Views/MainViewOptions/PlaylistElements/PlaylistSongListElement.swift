@@ -22,8 +22,6 @@ struct PlaylistSongListElement: View {
 
     @ObservedObject var avAudioPlayer: AVAudioPlayer
 
-    @Binding var playingTrack: Track?
-
     @Binding var tracks: [Track]
     @Binding var savedTracks: [Bool]
 
@@ -105,7 +103,7 @@ struct PlaylistSongListElement: View {
                                     .buttonStyle(.plain)
                                     .cursorHover(.pointingHand)
                                 } else {
-                                    if playingTrack?.id == track.id {
+                                    if avAudioPlayer.currentPlayingTrack?.id == track.id {
                                         Image("spwifiy.playing")
                                             .resizable()
                                             .frame(width: 25, height: 25)

@@ -38,7 +38,6 @@ struct ArtistHomeView: View {
 
                 PlaylistSongListElement(showFlags: PlaylistShowFlags.noSongListTitle,
                                         avAudioPlayer: avAudioPlayer,
-                                        playingTrack: $avAudioPlayer.currentPlayingTrack,
                                         tracks: $topTracks,
                                         savedTracks: .constant([]),
                                         selectedArtist: .constant(nil),

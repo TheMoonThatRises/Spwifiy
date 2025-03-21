@@ -107,7 +107,6 @@ struct LikedSongsView: View {
 
             PlaylistSongListElement(showFlags: 0,
                                     avAudioPlayer: avAudioPlayer,
-                                    playingTrack: $avAudioPlayer.currentPlayingTrack,
                                     tracks: $likedSongsViewModel.tracks,
                                     savedTracks: .constant([]),
                                     selectedArtist: $selectedArtist,
