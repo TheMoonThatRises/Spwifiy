@@ -79,7 +79,7 @@ class SpotifyViewModel: ObservableObject {
                   let spTCookieData = await keychain[data: SpotifyAuthManager.spTCookieKey],
                   let spDcCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spDcCookieData).httpCookie,
                   let spTCookie = try? decoder.decode(SpotifyAuthCookie.self, from: spTCookieData).httpCookie {
-            APIRequest.shared.setCookies(cookies: [spDcCookie, spTCookie], noCache: true)
+            await APIRequest.shared.setCookies(cookies: [spDcCookie, spTCookie], noCache: true)
 
             let cTime = Int(floor(Date().millisecondsSince1970))
             let sTime = await SpotifyOTP.shared.retrieveServerTime() ?? Int(cTime / 1000)

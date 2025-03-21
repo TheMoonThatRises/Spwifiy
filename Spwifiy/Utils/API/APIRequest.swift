@@ -31,12 +31,14 @@ class APIRequest {
         self.noCacheSession.configuration.urlCache = nil
     }
 
+    @MainActor
     public func setCookies(cookies: [HTTPCookie], noCache: Bool = false) {
         for cookie in cookies {
             (noCache ? noCacheSession : session).configuration.httpCookieStorage?.setCookie(cookie)
         }
     }
 
+    @MainActor
     public func removeCookies(cookies: [HTTPCookie], noCache: Bool = false) {
         for cookie in cookies {
             (noCache ? noCacheSession : session).configuration.httpCookieStorage?.deleteCookie(cookie)
