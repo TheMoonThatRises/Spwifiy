@@ -10,10 +10,6 @@ import SpotifyWebAPI
 
 class LikedSongsViewModel: GenericSongCollectionViewModel {
 
-    public enum DisplayType {
-        case list, grid
-    }
-
     @Published var displayType: DisplayType = .list
 
     override init(spotifyCache: SpotifyCache) {
