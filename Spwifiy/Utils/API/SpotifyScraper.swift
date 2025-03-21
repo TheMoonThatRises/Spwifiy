@@ -23,6 +23,24 @@ class SpotifyScraper {
         }
     }
 
+    private var cacheBuildVer: String {
+        get {
+            UserDefaults.standard.string(forKey: "spwifiy.cache.buildVer") ?? ""
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "spwifiy.cache.buildVer")
+        }
+    }
+
+    private var cacheBuildDate: String {
+        get {
+            UserDefaults.standard.string(forKey: "spwifiy.cache.buildDate") ?? ""
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "spwifiy.cache.buildDate")
+        }
+    }
+
     private func getArtistHTML(artistId: String) async -> String? {
         guard let artistURL = URL(string: artistString(artistId)) else {
             return nil
@@ -66,7 +84,11 @@ class SpotifyScraper {
         return monthlyListeners
     }
 
-    public func getBuildInfo() async -> (String, String)? {
+    public func getBuildInfo(useCache: Bool) async -> (String, String)? {
+        if useCache, let date = Date.convertor(cacheBuildDate), date.isToday() {
+            return (cacheBuildVer, cacheBuildDate)
+        }
+
         guard let spotifyHTML: String = await APIRequest.shared.request(
             urlString: SpotifyScraper.baseScrapeURL
         ) else {
@@ -103,7 +125,10 @@ class SpotifyScraper {
             return nil
         }
 
-        return (String(buildComponents[1]), String(buildComponents[3]))
+        cacheBuildVer = String(buildComponents[1])
+        cacheBuildDate = String(buildComponents[3])
+
+        return (cacheBuildVer, cacheBuildDate)
     }
 
 }
