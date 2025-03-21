@@ -15,7 +15,6 @@ public struct HeadElementView: View {
 
     @Binding var userProfile: SpotifyUser?
 
-    @State var searchText: String = ""
     @FocusState var isSearchFocused: Bool
 
     let collapsed: Bool
@@ -88,7 +87,7 @@ public struct HeadElementView: View {
                         .frame(width: 5)
 
                     if mainViewModel.currentView == .search {
-                        TextField(text: $searchText) {
+                        TextField(text: $mainViewModel.searchText) {
                             Text("Search")
                                 .font(.title3)
                         }
