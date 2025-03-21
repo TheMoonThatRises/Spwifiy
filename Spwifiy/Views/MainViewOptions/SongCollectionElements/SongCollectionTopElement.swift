@@ -1,5 +1,5 @@
 //
-//  PlaylistTopElement.swift
+//  SongCollectionTopElement.swift.swift
 //  Spwifiy
 //
 //  Created by Peter Duanmu on 11/28/24.
@@ -8,7 +8,7 @@
 import SwiftUI
 import SpotifyWebAPI
 
-struct PlaylistTopElement: View {
+struct SongCollectionTopElement: View {
 
     var playingId: String?
 
@@ -21,8 +21,20 @@ struct PlaylistTopElement: View {
     @Binding var totalDuration: HumanFormat?
     @Binding var searchText: String
 
+    private var name: String? {
+        playlist?.name ?? album?.name
+    }
+
+    private var owner: String? {
+        playlist?.owner?.displayName ?? album?.artists?.first?.name
+    }
+
+    private var totalSongs: Int? {
+        playlist?.items.total ?? album?.totalTracks
+    }
+
     var body: some View {
-        Text(playlist?.name ?? album?.name ?? "Unknown")
+        Text(name ?? "Unknown")
             .font(.satoshiBlack(40))
             .fontWeight(.black)
             .foregroundStyle(.fgPrimary)
@@ -35,7 +47,7 @@ struct PlaylistTopElement: View {
                 .font(.callout)
                 .foregroundStyle(.fgSecondary)
 
-            Text(playlist?.owner?.displayName ?? album?.artists?.first?.name ?? "Unknown")
+            Text(owner ?? "Unknown")
                 .font(.callout)
                 .foregroundStyle(.fgPrimary)
 
@@ -43,7 +55,7 @@ struct PlaylistTopElement: View {
                 .frame(width: 3, height: 3)
                 .foregroundStyle(.fgSecondary)
 
-            Text("\(playlist?.items.total ?? album?.totalTracks ?? 0) songs")
+            Text("\(totalSongs ?? 0) songs")
                 .font(.callout)
                 .foregroundStyle(.fgSecondary)
 

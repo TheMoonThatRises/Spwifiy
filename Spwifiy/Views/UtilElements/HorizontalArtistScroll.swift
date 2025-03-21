@@ -21,7 +21,7 @@ struct HorizontalArtistScroll: View {
                     Button {
                         selectedArtist = artist
                     } label: {
-                        ArtistItem(artist: artist)
+                        ArtistItemView(artist: artist)
                             .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
@@ -39,7 +39,7 @@ struct HorizontalArtistScroll: View {
 
 }
 
-struct ArtistItem: View {
+struct ArtistItemView: View {
 
     var artist: Artist
 

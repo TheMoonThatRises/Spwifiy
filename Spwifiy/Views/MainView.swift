@@ -15,6 +15,7 @@ struct MainView: View {
     @ObservedObject var spotifyDataViewModel: SpotifyDataViewModel
 
     @ObservedObject var mainViewModel: MainViewModel
+    @ObservedObject var searchViewModel: SearchViewModel
     @ObservedObject var settingsViewModel: SettingsViewModel
 
     @ObservedObject var spotifyCache: SpotifyCache
@@ -46,6 +47,18 @@ struct MainView: View {
                             case .home:
                                 HomeView(spotifyDataViewModel: spotifyDataViewModel,
                                          mainViewModel: mainViewModel)
+                            case .search:
+                                SearchView(avAudioPlayer: avAudioPlayer,
+                                           searchViewModel: searchViewModel,
+                                           selectedArtist: $mainViewModel.selectedArtist,
+                                           selectedAlbum: $mainViewModel.selectedAlbum,
+                                           selectedPlaylist: $mainViewModel.selectedPlaylist)
+                                    .onDisappear {
+                                        mainViewModel.searchText = ""
+                                    }
+                            case .settings:
+                                SettingsView(settingsViewModel: settingsViewModel,
+                                             avAudioPlayer: avAudioPlayer)
 
                                 // sidebar views
                             case .likedSongs:
@@ -57,13 +70,11 @@ struct MainView: View {
                                 // layers deep abstracted view
                             case .selectedPlaylist:
                                 if let selectedPlaylist = mainViewModel.selectedPlaylist {
-                                    SelectedPlaylistView(
-                                        showFlags: PlaylistShowFlags.none,
-                                        spotifyCache: spotifyCache,
-                                        avAudioPlayer: avAudioPlayer,
-                                        playlist: selectedPlaylist,
-                                        selectedArtist: $mainViewModel.selectedArtist,
-                                        selectedAlbum: $mainViewModel.selectedAlbum
+                                    SelectedPlaylistView(spotifyCache: spotifyCache,
+                                                         avAudioPlayer: avAudioPlayer,
+                                                         playlist: selectedPlaylist,
+                                                         selectedArtist: $mainViewModel.selectedArtist,
+                                                         selectedAlbum: $mainViewModel.selectedAlbum
                                     )
                                 } else {
                                     Text("Unable to get selected playlist")
@@ -78,9 +89,16 @@ struct MainView: View {
                                     Text("Unable to get selected artist")
                                         .font(.title)
                                 }
-                            case .settings:
-                                SettingsView(settingsViewModel: settingsViewModel,
-                                             avAudioPlayer: avAudioPlayer)
+                            case .selectedAlbum:
+                                if let album = mainViewModel.selectedAlbum {
+                                    SelectedAlbumView(album: album,
+                                                      spotifyCache: spotifyCache,
+                                                      avAudioPlayer: avAudioPlayer,
+                                                      selectedArtist: $mainViewModel.selectedArtist)
+                                } else {
+                                    Text("Unable to get selected album")
+                                        .font(.title)
+                                }
 
                             // unimplemented views
                             default:
@@ -135,6 +153,9 @@ struct MainView: View {
         .sheet(isPresented: $mainViewModel.showLogoutSheet) {
             LogoutConfirmSheet(logout: spotifyViewModel.logout,
                               showLogoutSheet: $mainViewModel.showLogoutSheet)
+        }
+        .onChange(of: mainViewModel.searchText) { text in
+            searchViewModel.search(spotifyViewModel: spotifyViewModel, query: text)
         }
         .task {
             await spotifyViewModel.loadUserProfile()

@@ -1,5 +1,5 @@
 //
-//  PlaylistSongListElement.swift
+//  SongCollectionListElement.swift
 //  Spwifiy
 //
 //  Created by Peter Duanmu on 11/28/24.
@@ -8,14 +8,14 @@
 import SwiftUI
 import SpotifyWebAPI
 
-class PlaylistShowFlags {
+class CollectionShowFlags {
     static let none = 1 << 1
-    static let album = 1 << 2
+    static let showAlbum = 1 << 2
     static let largerSide = 1 << 3
     static let noSongListTitle = 1 << 4
 }
 
-struct PlaylistSongListElement: View {
+struct SongCollectionListElement: View {
 
     var showFlags: Int
     var playingId: String?
@@ -30,6 +30,10 @@ struct PlaylistSongListElement: View {
 
     @State var hoverTrackId: String?
 
+    private var showAlbumInfo: Bool {
+        (showFlags & CollectionShowFlags.showAlbum) > 0
+    }
+
     private var columnFormat: [GridItem] {
         var defaultColumn: [GridItem] = [
             .init(.fixed(30)),                              // index
@@ -38,7 +42,7 @@ struct PlaylistSongListElement: View {
             .init(.fixed(30))                               // like
         ]
 
-        if (showFlags & PlaylistShowFlags.album) == 0 {
+        if showAlbumInfo {
             defaultColumn.insert(.init(.flexible()), at: 2) // album
         }
 
@@ -46,13 +50,13 @@ struct PlaylistSongListElement: View {
     }
 
     var body: some View {
-        if (showFlags & PlaylistShowFlags.noSongListTitle) == 0 {
+        if (showFlags & CollectionShowFlags.noSongListTitle) == 0 {
             LazyVGrid(columns: columnFormat, alignment: .leading) {
                 Text("#")
 
                 Text("Title")
 
-                if (showFlags & PlaylistShowFlags.album) == 0 {
+                if showAlbumInfo {
                     Text("Album")
                 }
 
@@ -116,11 +120,13 @@ struct PlaylistSongListElement: View {
                         }
 
                         HStack {
-                            CroppedCachedAsyncImage(url: track.album?.images?.first?.url,
-                                                    width: 50,
-                                                    height: 50,
-                                                    alignment: .center,
-                                                    clipShape: RoundedRectangle(cornerRadius: 5))
+                            if showAlbumInfo {
+                                CroppedCachedAsyncImage(url: track.album?.images?.first?.url,
+                                                        width: 50,
+                                                        height: 50,
+                                                        alignment: .center,
+                                                        clipShape: RoundedRectangle(cornerRadius: 5))
+                            }
 
                             VStack(alignment: .leading) {
                                 Text(track.name)
@@ -148,14 +154,16 @@ struct PlaylistSongListElement: View {
                             }
                         }
 
-                        Button {
-                            selectedAlbum = track.album
-                        } label: {
-                            Text(track.album?.name ?? "Unknown album")
-                                .lineLimit(2)
+                        if showAlbumInfo {
+                            Button {
+                                selectedAlbum = track.album
+                            } label: {
+                                Text(track.album?.name ?? "Unknown album")
+                                    .lineLimit(2)
+                            }
+                            .buttonStyle(.plain)
+                            .cursorHover(.pointingHand)
                         }
-                        .buttonStyle(.plain)
-                        .cursorHover(.pointingHand)
 
                         Text(track.durationMS?.humanReadable.description ?? "00:00")
 

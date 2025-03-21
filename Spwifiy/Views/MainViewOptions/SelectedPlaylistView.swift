@@ -10,7 +10,7 @@ import SpotifyWebAPI
 
 struct SelectedPlaylistView: View {
 
-    var showFlags: Int
+    private var showFlags: Int = CollectionShowFlags.showAlbum
 
     @StateObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
 
@@ -21,17 +21,13 @@ struct SelectedPlaylistView: View {
 
     var playingId: String? {
         selectedPlaylistViewModel.playlistDetails?.id
-        // ?? selectedAlbumViewModel.albumDetails?.id
     }
 
-    init(showFlags: Int,
-         spotifyCache: SpotifyCache,
+    init(spotifyCache: SpotifyCache,
          avAudioPlayer: AVAudioPlayer,
          playlist: Playlist<PlaylistItemsReference>,
          selectedArtist: Binding<Artist?>,
          selectedAlbum: Binding<Album?>) {
-        self.showFlags = showFlags
-
         self._selectedPlaylistViewModel = StateObject(
             wrappedValue: SelectedPlaylistViewModel(spotifyCache: spotifyCache,
                                                     playlist: playlist)
@@ -48,24 +44,24 @@ struct SelectedPlaylistView: View {
             if let playlist = selectedPlaylistViewModel.playlistDetails {
                 HStack {
                     VStack(alignment: .leading) {
-                        PlaylistTopElement(playingId: playingId,
-                                           playlist: $selectedPlaylistViewModel.playlistDetails,
-                                           album: .constant(nil),
-                                           avAudioPlayer: avAudioPlayer,
-                                           tracks: $selectedPlaylistViewModel.tracks,
-                                           totalDuration: $selectedPlaylistViewModel.totalDuration,
-                                           searchText: $selectedPlaylistViewModel.searchText)
+                        SongCollectionTopElement(playingId: playingId,
+                                                 playlist: $selectedPlaylistViewModel.playlistDetails,
+                                                 album: .constant(nil),
+                                                 avAudioPlayer: avAudioPlayer,
+                                                 tracks: $selectedPlaylistViewModel.tracks,
+                                                 totalDuration: $selectedPlaylistViewModel.totalDuration,
+                                                 searchText: $selectedPlaylistViewModel.searchText)
 
                         Spacer()
                             .frame(height: 20)
 
-                        PlaylistSongListElement(showFlags: showFlags,
-                                                playingId: playingId,
-                                                avAudioPlayer: avAudioPlayer,
-                                                tracks: $selectedPlaylistViewModel.tracks,
-                                                savedTracks: $selectedPlaylistViewModel.savedTracks,
-                                                selectedArtist: $selectedArtist,
-                                                selectedAlbum: $selectedAlbum)
+                        SongCollectionListElement(showFlags: showFlags,
+                                                  playingId: playingId,
+                                                  avAudioPlayer: avAudioPlayer,
+                                                  tracks: $selectedPlaylistViewModel.tracks,
+                                                  savedTracks: $selectedPlaylistViewModel.savedTracks,
+                                                  selectedArtist: $selectedArtist,
+                                                  selectedAlbum: $selectedAlbum)
 
                         Spacer()
                     }
@@ -74,13 +70,13 @@ struct SelectedPlaylistView: View {
                     Spacer()
 
                     if geom.size.width > 800 {
-                        PlaylistSidebarElement(showFlags: showFlags,
-                                               imageURL: playlist.images.first?.url,
-                                               uri: playlist.uri,
-                                               dominantColor: $selectedPlaylistViewModel.dominantColor,
-                                               genreList: $selectedPlaylistViewModel.genreList,
-                                               artists: $selectedPlaylistViewModel.artists,
-                                               selectedArtist: $selectedArtist)
+                        SongCollectionSidebarElement(showFlags: showFlags,
+                                                     imageURL: playlist.images.first?.url,
+                                                     uri: playlist.uri,
+                                                     dominantColor: $selectedPlaylistViewModel.dominantColor,
+                                                     genreList: $selectedPlaylistViewModel.genreList,
+                                                     artists: $selectedPlaylistViewModel.artists,
+                                                     selectedArtist: $selectedArtist)
                     }
                 }
                 .padding()
@@ -94,7 +90,7 @@ struct SelectedPlaylistView: View {
             }
         }
         .task {
-            await selectedPlaylistViewModel.updatePlaylistInfo()
+            await selectedPlaylistViewModel.updateSongCollectionInfo()
         }
     }
 }

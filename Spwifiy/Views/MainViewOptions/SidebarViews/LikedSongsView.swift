@@ -17,6 +17,10 @@ struct LikedSongsView: View {
     @Binding var selectedArtist: Artist?
     @Binding var selectedAlbum: Album?
 
+    private var showFlags: Int {
+        CollectionShowFlags.showAlbum
+    }
+
     init(spotifyCache: SpotifyCache,
          avAudioPlayer: AVAudioPlayer,
          selectedArtist: Binding<Artist?>,
@@ -105,16 +109,16 @@ struct LikedSongsView: View {
             Spacer()
                 .frame(height: 20)
 
-            PlaylistSongListElement(showFlags: 0,
-                                    avAudioPlayer: avAudioPlayer,
-                                    tracks: $likedSongsViewModel.tracks,
-                                    savedTracks: .constant([]),
-                                    selectedArtist: $selectedArtist,
-                                    selectedAlbum: $selectedAlbum)
+            SongCollectionListElement(showFlags: showFlags,
+                                      avAudioPlayer: avAudioPlayer,
+                                      tracks: $likedSongsViewModel.tracks,
+                                      savedTracks: .constant([]),
+                                      selectedArtist: $selectedArtist,
+                                      selectedAlbum: $selectedAlbum)
         }
         .padding()
         .task {
-            await likedSongsViewModel.updatePlaylistInfo()
+            await likedSongsViewModel.updateSongCollectionInfo()
         }
     }
 

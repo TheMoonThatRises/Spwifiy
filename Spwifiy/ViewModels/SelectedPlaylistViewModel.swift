@@ -8,7 +8,7 @@
 import SwiftUI
 import SpotifyWebAPI
 
-class SelectedPlaylistViewModel: GenericPlaylistViewModel {
+class SelectedPlaylistViewModel: GenericSongCollectionViewModel {
 
     private let playlist: Playlist<PlaylistItemsReference>
 
@@ -32,20 +32,20 @@ class SelectedPlaylistViewModel: GenericPlaylistViewModel {
     }
 
     @MainActor
-    override public func updatePlaylistInfo() async {
+    override public func updateSongCollectionInfo() async {
         let willUpdatePlaylist = didPlaylistChange || playlistDetails == nil
         let willUpdateTracks = tracks.isEmpty || willUpdatePlaylist
         let willUpdateArtists = artists.isEmpty || willUpdateTracks
-        let willUpdateSavedTracks = savedTracks.isEmpty || willUpdateArtists
+//        let willUpdateSavedTracks = savedTracks.isEmpty || willUpdateArtists
 
-        guard !isFetchingPlaylist && willUpdateSavedTracks else {
+        guard !isFetchingSongCollection && willUpdateArtists else {
             return
         }
 
-        isFetchingPlaylist = true
+        isFetchingSongCollection = true
 
         defer {
-            isFetchingPlaylist = false
+            isFetchingSongCollection = false
         }
 
         do {
@@ -75,6 +75,8 @@ class SelectedPlaylistViewModel: GenericPlaylistViewModel {
                 withAnimation(.defaultAnimation) {
                     artists = artistResults
 
+                    genreList = artists.compactMap { $0.genres }.flatMap { $0 }
+
                     sortGenres()
                 }
             }
@@ -90,19 +92,6 @@ class SelectedPlaylistViewModel: GenericPlaylistViewModel {
         } catch {
             print("unable to refresh playlist details: \(error)")
         }
-    }
-
-    private func sortGenres() {
-        let totalGenres = artists.compactMap { $0.genres }.flatMap { $0 }
-
-        genreList = Array(
-            Array(Set(totalGenres)).sorted { one, two in
-                let oneCount = totalGenres.filter { $0 == one }.count
-                let twoCount = totalGenres.filter { $0 == two }.count
-
-                return oneCount == twoCount ? one > two : oneCount > twoCount
-            }.prefix(4)
-        )
     }
 
 }

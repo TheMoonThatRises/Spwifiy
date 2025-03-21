@@ -1,5 +1,5 @@
 //
-//  PlaylistSidebarElement.swift
+//  SongCollectionSidebarElement.swift
 //  Spwifiy
 //
 //  Created by Peter Duanmu on 11/28/24.
@@ -8,7 +8,7 @@
 import SwiftUI
 import SpotifyWebAPI
 
-struct PlaylistSidebarElement: View {
+struct SongCollectionSidebarElement: View {
 
     var showFlags: Int
 
@@ -22,7 +22,7 @@ struct PlaylistSidebarElement: View {
     @Binding var selectedArtist: Artist?
 
     var sidebarSize: CGFloat {
-        (showFlags & PlaylistShowFlags.largerSide) > 0 ? 400 : 260
+        (showFlags & CollectionShowFlags.largerSide) != 0 ? 300 : 260
     }
 
     var body: some View {
@@ -37,7 +37,7 @@ struct PlaylistSidebarElement: View {
             }
 
             VStack {
-                WrapHStack(items: genreList) { item in
+                WrapHStack(items: Array(genreList.prefix(4))) { item in
                     Text(item)
                         .foregroundStyle(.fgSecondary)
                         .font(.callout)

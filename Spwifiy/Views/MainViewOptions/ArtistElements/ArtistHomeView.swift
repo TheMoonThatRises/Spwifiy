@@ -25,6 +25,10 @@ struct ArtistHomeView: View {
     }
     @State var topTracks: [Track] = []
 
+    private var showFlags: Int  {
+        CollectionShowFlags.noSongListTitle | CollectionShowFlags.showAlbum
+    }
+
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -36,12 +40,12 @@ struct ArtistHomeView: View {
                 Spacer()
                     .frame(height: 20)
 
-                PlaylistSongListElement(showFlags: PlaylistShowFlags.noSongListTitle,
-                                        avAudioPlayer: avAudioPlayer,
-                                        tracks: $topTracks,
-                                        savedTracks: .constant([]),
-                                        selectedArtist: .constant(nil),
-                                        selectedAlbum: .constant(nil))
+                SongCollectionListElement(showFlags: showFlags,
+                                          avAudioPlayer: avAudioPlayer,
+                                          tracks: $topTracks,
+                                          savedTracks: .constant([]),
+                                          selectedArtist: .constant(nil),
+                                          selectedAlbum: .constant(nil))
 
                 Spacer()
                     .frame(height: 20)

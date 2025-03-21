@@ -1,5 +1,5 @@
 //
-//  GenericPlaylistViewModel.swift
+//  GenericSongCollectionViewModel.swift
 //  Spwifiy
 //
 //  Created by Peter Duanmu on 11/29/24.
@@ -8,11 +8,11 @@
 import SwiftUI
 import SpotifyWebAPI
 
-class GenericPlaylistViewModel: ObservableObject {
+class GenericSongCollectionViewModel: ObservableObject {
 
     let spotifyCache: SpotifyCache
 
-    var isFetchingPlaylist: Bool = false
+    var isFetchingSongCollection: Bool = false
 
     var artistIds: [String] = [] {
         didSet {
@@ -67,7 +67,7 @@ class GenericPlaylistViewModel: ObservableObject {
     }
 
     @MainActor
-    public func updatePlaylistInfo() async {
+    public func updateSongCollectionInfo() async {
         preconditionFailure("This method must be overridden")
     }
 
@@ -98,6 +98,17 @@ class GenericPlaylistViewModel: ObservableObject {
 
             return oneCount == twoCount ? one.name > two.name : oneCount > twoCount
         }
+    }
+
+    func sortGenres() {
+        genreList = Array(
+            Array(Set(genreList)).sorted { one, two in
+                let oneCount = genreList.filter { $0 == one }.count
+                let twoCount = genreList.filter { $0 == two }.count
+
+                return oneCount == twoCount ? one > two : oneCount > twoCount
+            }
+        )
     }
 
     private func generateTrackSearchString(track: Track) -> Bool {

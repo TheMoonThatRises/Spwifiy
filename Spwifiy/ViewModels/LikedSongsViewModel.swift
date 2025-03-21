@@ -8,7 +8,7 @@
 import SwiftUI
 import SpotifyWebAPI
 
-class LikedSongsViewModel: GenericPlaylistViewModel {
+class LikedSongsViewModel: GenericSongCollectionViewModel {
 
     public enum DisplayType {
         case list, grid
@@ -23,15 +23,15 @@ class LikedSongsViewModel: GenericPlaylistViewModel {
     }
 
     @MainActor
-    override public func updatePlaylistInfo() async {
-        guard !isFetchingPlaylist else {
+    override public func updateSongCollectionInfo() async {
+        guard !isFetchingSongCollection else {
             return
         }
 
-        isFetchingPlaylist = true
+        isFetchingSongCollection = true
 
         defer {
-            isFetchingPlaylist = false
+            isFetchingSongCollection = false
         }
 
         do {
