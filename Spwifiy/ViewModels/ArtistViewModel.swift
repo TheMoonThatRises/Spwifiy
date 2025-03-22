@@ -63,21 +63,16 @@ class ArtistViewModel: ObservableObject {
             return
         }
 
+        isFetchingArtistDetails = true
+
+        defer {
+            isFetchingArtistDetails = false
+        }
+
         do {
             if let id = artist.id {
                 if willUpdateArtist {
                     try await getArtist(artistId: id)
-                }
-
-                if willUpdateAlbums {
-                    albums = (try await spotifyCache.fetchArtistAlbum(artistId: id))
-                        .sorted { ($0.releaseDate ?? Date()) > ($1.releaseDate ?? Date()) }
-                }
-
-                if willUpdateAlbumTracks {
-                    await populateAlbumTracks(fetchTracks: true)
-
-                    await getBackgroundArt()
                 }
 
                 if willUpdateTopTracks {
@@ -86,6 +81,17 @@ class ArtistViewModel: ObservableObject {
 
                 if willUpdateMonthlyListeners {
                     await getMonthlyListeners(artistId: id)
+                }
+
+                if willUpdateAlbumTracks {
+                    await populateAlbumTracks(fetchTracks: true)
+
+                    await getBackgroundArt()
+                }
+
+                if willUpdateAlbums {
+                    albums = (try await spotifyCache.fetchArtistAlbum(artistId: id))
+                        .sorted { ($0.releaseDate ?? Date()) > ($1.releaseDate ?? Date()) }
                 }
             }
         } catch {
