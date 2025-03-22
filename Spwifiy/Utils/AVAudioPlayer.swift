@@ -168,12 +168,16 @@ class AVAudioPlayer: ObservableObject {
            let artists = track.artists?.description,
            let musicId = await YoutubeMusicAPI.shared.getYoutubeSongId(artistName: artists,
                                                                        songName: track.name,
-                                                                       albumName: track.album?.name),
-           let (expiration, m3u8) = await YoutubeAPI.shared.getSongHLS(musicId: musicId) {
-            let sponsorBlock = await SponsorBlockAPI.shared.getSkipSegments(videoId: musicId)
-            let sponsorBlockSegments = sponsorBlock.items.map { ($0.segment[0], $0.segment[1]) }
+                                                                       albumName: track.album?.name) {
+            async let hlsResponse = YoutubeAPI.shared.getSongHLS(musicId: musicId) ?? (nil, nil)
+            async let sponsorBlock = SponsorBlockAPI.shared.getSkipSegments(videoId: musicId)
 
-            print(sponsorBlock)
+            let sponsorBlockSegments = await sponsorBlock.items.map { ($0.segment[0], $0.segment[1]) }
+
+            guard let expiration = await hlsResponse.0,
+                  let m3u8 = await hlsResponse.1 else {
+                return false
+            }
 
             playerItems[trackId] = QueuePlayerItem(avPlayerItem: createPlayerItem(m3u8: m3u8),
                                                    track: track,

@@ -28,7 +28,7 @@ class SearchViewModel: ObservableObject {
     @Published var isSearching: Bool = false
 
     public func search(spotifyViewModel: SpotifyViewModel, query: String) {
-        if let searchTask = searchTask, !searchTask.isCancelled {
+        if let searchTask = searchTask {
             searchTask.cancel()
         }
 
