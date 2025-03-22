@@ -184,14 +184,11 @@ class AVAudioPlayer: ObservableObject {
 
             let sponsorBlockSegments = await sponsorBlock.items.map { ($0.segment[0], $0.segment[1]) }
 
-            guard let hlsResponse = await hlsResponse else {
+            guard let (expiration, m3u8) = await hlsResponse else {
                 print("youtube api response nil")
 
                 return false
             }
-
-            let expiration = hlsResponse.0
-            let m3u8 = hlsResponse.1
 
             playerItems[trackId] = QueuePlayerItem(avPlayerItem: createPlayerItem(m3u8: m3u8),
                                                    track: track,
