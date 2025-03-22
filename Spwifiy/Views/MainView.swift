@@ -87,7 +87,8 @@ struct MainView: View {
                                 if let artist = mainViewModel.selectedArtist {
                                     ArtistView(spotifyCache: spotifyCache,
                                                artist: artist,
-                                               avAudioPlayer: avAudioPlayer)
+                                               avAudioPlayer: avAudioPlayer,
+                                               selectedAlbum: $mainViewModel.selectedAlbum)
                                 } else {
                                     Text("Unable to get selected artist")
                                         .font(.title)

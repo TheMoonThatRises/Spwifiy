@@ -22,13 +22,19 @@ struct ArtistView: View {
 
     @ObservedObject var avAudioPlayer: AVAudioPlayer
 
+    @Binding var selectedAlbum: Album?
+
     @State var currentView: CurrentView = .homeView
 
-    init(spotifyCache: SpotifyCache, artist: Artist, avAudioPlayer: AVAudioPlayer) {
+    init(spotifyCache: SpotifyCache,
+         artist: Artist,
+         avAudioPlayer: AVAudioPlayer,
+         selectedAlbum: Binding<Album?>) {
         self._artistViewModel = StateObject(
             wrappedValue: ArtistViewModel(spotifyCache: spotifyCache, artist: artist)
         )
         self.avAudioPlayer = avAudioPlayer
+        self._selectedAlbum = selectedAlbum
     }
 
     var body: some View {
@@ -44,9 +50,29 @@ struct ArtistView: View {
                         UnderlinedViewMenu(types: CurrentView.allCases,
                                            currentOption: $currentView)
 
-                        ExpandSearch(searchText: $artistViewModel.searchText)
-
                         Spacer()
+
+                        if [.albumView, .singlesEpView].contains(currentView) {
+                            NavButton(currentButton: .list, currentView: $artistViewModel.displayType) {
+
+                            } label: {
+                                Image("spwifiy.list")
+                                    .resizable()
+                                    .frame(width: 40, height: 40)
+                            }
+                            .toButton()
+
+                            NavButton(currentButton: .grid, currentView: $artistViewModel.displayType) {
+
+                            } label: {
+                                Image("spwifiy.grid")
+                                    .resizable()
+                                    .frame(width: 40, height: 40)
+                            }
+                            .toButton()
+                        }
+
+                        ExpandSearch(searchText: $artistViewModel.searchText)
                     }
                     .font(.title3)
                     .padding(5)
@@ -54,15 +80,32 @@ struct ArtistView: View {
                     Group {
                         switch currentView {
                         case .homeView:
-                            ArtistHomeView(artistViewModel: artistViewModel,
-                                           avAudioPlayer: avAudioPlayer)
-//                        case .albumView:
-//                        case .singlesEpView:
+                            ArtistHomeView(avAudioPlayer: avAudioPlayer,
+                                           topTracks: $artistViewModel.topTracks)
+                        case .albumView:
+                            ArtistAlbumView(avAudioPlayer: avAudioPlayer,
+                                            filteredAlbums: $artistViewModel.filteredAlbums,
+                                            selectedAlbum: $selectedAlbum,
+                                            displayType: $artistViewModel.displayType)
+                            .onChange(of: artistViewModel.searchText) { _ in
+                                artistViewModel.onAlbumFilterChange()
+                            }
+                        case .singlesEpView:
+                            ArtistAlbumView(avAudioPlayer: avAudioPlayer,
+                                            filteredAlbums: $artistViewModel.filteredSingleEp,
+                                            selectedAlbum: $selectedAlbum,
+                                            displayType: $artistViewModel.displayType)
+                            .onChange(of: artistViewModel.searchText) { _ in
+                                artistViewModel.onSingleEpFilterChange()
+                            }
 //                        case .merchView:
 //                        case .aboutView:
                         default:
                             Text("Unknown error")
                         }
+                    }
+                    .onChange(of: artistViewModel.albums) { _ in
+                        artistViewModel.updateAlbumsFilters()
                     }
                     .padding()
                     .frame(maxWidth: .infinity)

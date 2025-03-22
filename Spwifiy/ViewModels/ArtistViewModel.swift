@@ -14,9 +14,14 @@ class ArtistViewModel: ObservableObject {
 
     private var isFetchingArtistDetails: Bool = false
 
+    @AppStorage("settings.artists.displaytype") var displayType: DisplayType = .grid
+
     @Published var artist: Artist
     @Published var topTracks: [Track]
     @Published var albums: [Album]
+
+    @Published var filteredAlbums: [Album]
+    @Published var filteredSingleEp: [Album]
 
     @Published var albumTracks: [String: [Track]] = [:]
 
@@ -34,6 +39,12 @@ class ArtistViewModel: ObservableObject {
         self.topTracks = spotifyCache[artistTopTracksId: artist.id ?? ""] ?? []
 
         self.albums = spotifyCache[artistAlbumsId: artist.id ?? ""] ?? []
+
+        self.filteredAlbums = []
+        self.filteredSingleEp = []
+
+        self.onAlbumFilterChange()
+        self.onSingleEpFilterChange()
 
         Task { @MainActor in
             await self.populateAlbumTracks(fetchTracks: false)
@@ -189,6 +200,36 @@ class ArtistViewModel: ObservableObject {
         } else {
             albumTracks = spotifyCache.getAllAlbumTracks(albumIds: albumIds)
         }
+    }
+
+    public func onAlbumFilterChange() {
+        let artistAlbums = albums.filter {
+            $0.albumGroup == .album
+        }
+
+        filteredAlbums = searchText.isEmpty
+            ? artistAlbums
+            : artistAlbums.filter {
+                $0.name.lowercased().contains(searchText.lowercased())
+            }
+    }
+
+    public func onSingleEpFilterChange() {
+        let artistSingleEp = albums.filter {
+            $0.albumGroup == .ep ||
+            $0.albumGroup == .single
+        }
+
+        filteredSingleEp = searchText.isEmpty
+            ? artistSingleEp
+            : artistSingleEp.filter {
+                $0.name.lowercased().contains(searchText.lowercased())
+            }
+    }
+
+    public func updateAlbumsFilters() {
+        onAlbumFilterChange()
+        onSingleEpFilterChange()
     }
 
 }

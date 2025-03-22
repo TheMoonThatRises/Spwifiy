@@ -10,22 +10,22 @@ import SpotifyWebAPI
 
 struct ArtistHomeView: View {
 
-    @ObservedObject var artistViewModel: ArtistViewModel
-
     @ObservedObject var avAudioPlayer: AVAudioPlayer
+
+    @Binding var topTracks: [Track]
 
     @State var showExtendedTop: Bool = false {
         didSet {
             withAnimation(.defaultAnimation) {
-                topTracks = Array(
-                    artistViewModel.topTracks[
-                        0..<min(showExtendedTop ? 10 : 5, artistViewModel.topTracks.count)
+                displayTopTracks = Array(
+                    topTracks[
+                        0..<min(showExtendedTop ? 10 : 5, topTracks.count)
                     ]
                 )
             }
         }
     }
-    @State var topTracks: [Track] = []
+    @State var displayTopTracks: [Track] = []
 
     private var showFlags: Int {
         CollectionShowFlags.noSongListTitle | CollectionShowFlags.showAlbum
@@ -44,7 +44,7 @@ struct ArtistHomeView: View {
 
                 SongCollectionListElement(showFlags: showFlags,
                                           avAudioPlayer: avAudioPlayer,
-                                          tracks: $topTracks,
+                                          tracks: $displayTopTracks,
                                           savedTracks: .constant([]),
                                           selectedArtist: .constant(nil),
                                           selectedAlbum: .constant(nil))
@@ -66,7 +66,7 @@ struct ArtistHomeView: View {
             Spacer()
                 .frame(width: 20)
         }
-        .onChange(of: artistViewModel.topTracks) { _ in
+        .onChange(of: topTracks) { _ in
             showExtendedTop = false
         }
         .onAppear {
