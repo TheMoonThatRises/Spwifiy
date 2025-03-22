@@ -28,6 +28,8 @@ class SelectedAlbumViewModel: GenericSongCollectionViewModel {
 
             self.sortGenres()
         }
+
+        self.fixTrackInfo()
     }
 
     @MainActor
@@ -71,6 +73,8 @@ class SelectedAlbumViewModel: GenericSongCollectionViewModel {
                 withAnimation(.defaultAnimation) {
                     allTracks = trackResults
 
+                    fixTrackInfo()
+
                     calcTotalDuration()
                 }
             }
@@ -87,6 +91,37 @@ class SelectedAlbumViewModel: GenericSongCollectionViewModel {
         } catch {
             print("unable to refresh album details: \(error)")
         }
+    }
+
+    private func fixTrackInfo() {
+        var updatedTracks: [Track] = []
+
+        for track in allTracks {
+            updatedTracks.append(
+                .init(name: track.name,
+                      album: album,
+                      artists: track.artists,
+                      uri: track.uri,
+                      id: track.id,
+                      isLocal: track.isLocal,
+                      popularity: track.popularity,
+                      durationMS: track.durationMS,
+                      trackNumber: track.trackNumber,
+                      isExplicit: track.isExplicit,
+                      isPlayable: track.isPlayable,
+                      href: track.href,
+                      previewURL: track.previewURL,
+                      externalURLs: track.externalURLs,
+                      externalIds: track.externalIds,
+                      availableMarkets: track.availableMarkets,
+                      linkedFrom: track.linkedFrom,
+                      restrictions: track.restrictions,
+                      discNumber: track.discNumber,
+                      type: track.type)
+            )
+        }
+
+        allTracks = updatedTracks
     }
 
 }
