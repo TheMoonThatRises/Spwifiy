@@ -16,11 +16,13 @@ struct ArtistHomeView: View {
 
     @State var showExtendedTop: Bool = false {
         didSet {
-            topTracks = Array(
-                artistViewModel.topTracks[
-                    0..<min(showExtendedTop ? 10 : 5, artistViewModel.topTracks.count)
-                ]
-            )
+            withAnimation(.defaultAnimation) {
+                topTracks = Array(
+                    artistViewModel.topTracks[
+                        0..<min(showExtendedTop ? 10 : 5, artistViewModel.topTracks.count)
+                    ]
+                )
+            }
         }
     }
     @State var topTracks: [Track] = []
@@ -65,6 +67,9 @@ struct ArtistHomeView: View {
                 .frame(width: 20)
         }
         .onChange(of: artistViewModel.topTracks) { _ in
+            showExtendedTop = false
+        }
+        .onAppear {
             showExtendedTop = false
         }
     }
