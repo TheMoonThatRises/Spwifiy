@@ -53,9 +53,6 @@ struct MainView: View {
                                            selectedArtist: $mainViewModel.selectedArtist,
                                            selectedAlbum: $mainViewModel.selectedAlbum,
                                            selectedPlaylist: $mainViewModel.selectedPlaylist)
-                                    .onDisappear {
-                                        mainViewModel.searchText = ""
-                                    }
                             case .settings:
                                 SettingsView(settingsViewModel: settingsViewModel,
                                              avAudioPlayer: avAudioPlayer)

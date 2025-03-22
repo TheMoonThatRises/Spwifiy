@@ -74,19 +74,16 @@ public struct HeadElementView: View {
 
             Spacer()
 
-            NavButton(currentButton: .search,
-                      currentView: $mainViewModel.currentView) {
+            Group {
+                if mainViewModel.currentView == .search {
+                    HStack {
+                        Image("spwifiy.search")
+                            .resizable()
+                            .frame(width: 40, height: 40)
 
-            } label: {
-                HStack {
-                    Image("spwifiy.search")
-                        .resizable()
-                        .frame(width: 40, height: 40)
+                        Spacer()
+                            .frame(width: 5)
 
-                    Spacer()
-                        .frame(width: 5)
-
-                    if mainViewModel.currentView == .search {
                         TextField(text: $mainViewModel.searchText) {
                             Text("Search")
                                 .font(.title3)
@@ -96,16 +93,39 @@ public struct HeadElementView: View {
                         .onAppear {
                             isSearchFocused = true
                         }
-                    } else {
-                        Text("Search")
-                            .font(.title3)
-
-                        Spacer()
+                        .onDisappear {
+                            mainViewModel.searchText = ""
+                        }
                     }
+                    .foregroundStyle(.fgPrimary)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 5)
+                            .foregroundStyle(.fgPrimary.opacity(0.1))
+                            .allowsHitTesting(false)
+                    }
+                } else {
+                    NavButton(currentButton: .search,
+                              currentView: $mainViewModel.currentView) {
+
+                    } label: {
+                        HStack {
+                            Image("spwifiy.search")
+                                .resizable()
+                                .frame(width: 40, height: 40)
+
+                            Spacer()
+                                .frame(width: 5)
+
+                            Text("Search")
+                                .font(.title3)
+
+                            Spacer()
+                        }
+                    }
+                    .toButton()
                 }
-                .frame(maxWidth: 300)
             }
-            .toButton()
+            .frame(maxWidth: 300)
 
             Spacer()
 

@@ -39,6 +39,9 @@ struct ExpandSearch: View {
                     .onAppear {
                         isFocused = true
                     }
+                    .onDisappear {
+                        searchText = ""
+                    }
                 }
             }
         }
