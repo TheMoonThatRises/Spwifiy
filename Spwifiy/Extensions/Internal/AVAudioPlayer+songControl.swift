@@ -114,4 +114,11 @@ extension AVAudioPlayer {
         }
     }
 
+    public func cleanPlayer() {
+        trackQueue = []
+        playingIndex = 0
+        playingId = nil
+        currentPlayingTrack = nil
+    }
+
 }

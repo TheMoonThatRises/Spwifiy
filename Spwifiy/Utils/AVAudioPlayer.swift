@@ -199,6 +199,8 @@ class AVAudioPlayer: ObservableObject {
 
                 playingIndex = 0
             } else {
+                cleanPlayer()
+
                 return
             }
         }
