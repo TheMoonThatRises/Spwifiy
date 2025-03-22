@@ -99,6 +99,7 @@ class AVAudioPlayer: ObservableObject {
     var periodicTimeObserverToken: Any?
 
     private var isQueueingItem: Bool = false
+    private var queuingItems: [String] = []
 
     var playerReady: Bool {
         player.status == .readyToPlay
@@ -139,11 +140,7 @@ class AVAudioPlayer: ObservableObject {
             return nil
         }
 
-        if item.expiration.timeIntervalSince1970 < Date().timeIntervalSince1970 {
-            return nil
-        } else {
-            return item
-        }
+        return item.expiration.hasExpired() ? nil : item
     }
 
     private func createPlayerItem(m3u8: URL) -> AVPlayerItem {
@@ -159,30 +156,49 @@ class AVAudioPlayer: ObservableObject {
         }
 
         let track = trackQueue[itemIndex]
+        let playerItem = playerItems[track.id ?? ""]
 
-        if playerItems[track.id ?? ""] != nil {
+        if let playerItem = playerItem,
+           !playerItem.expiration.hasExpired(buffer: 30.0) {
             return true
         }
 
-        if let trackId = track.id,
-           let artists = track.artists?.description,
+        guard let trackId = track.id else {
+            print("track id is nil")
+
+            return false
+        }
+
+        if queuingItems.contains(trackId) {
+            return true
+        } else {
+            queuingItems.append(trackId)
+        }
+
+        if let artists = track.artists?.description,
            let musicId = await YoutubeMusicAPI.shared.getYoutubeSongId(artistName: artists,
                                                                        songName: track.name,
                                                                        albumName: track.album?.name) {
-            async let hlsResponse = YoutubeAPI.shared.getSongHLS(musicId: musicId) ?? (nil, nil)
+            async let hlsResponse = YoutubeAPI.shared.getSongHLS(musicId: musicId)
             async let sponsorBlock = SponsorBlockAPI.shared.getSkipSegments(videoId: musicId)
 
             let sponsorBlockSegments = await sponsorBlock.items.map { ($0.segment[0], $0.segment[1]) }
 
-            guard let expiration = await hlsResponse.0,
-                  let m3u8 = await hlsResponse.1 else {
+            guard let hlsResponse = await hlsResponse else {
+                print("youtube api response nil")
+
                 return false
             }
+
+            let expiration = hlsResponse.0
+            let m3u8 = hlsResponse.1
 
             playerItems[trackId] = QueuePlayerItem(avPlayerItem: createPlayerItem(m3u8: m3u8),
                                                    track: track,
                                                    expiration: expiration,
                                                    sponsorBlockSegments: sponsorBlockSegments)
+
+            queuingItems.removeAll { $0 == trackId }
 
             return true
         } else {

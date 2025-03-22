@@ -27,12 +27,12 @@ class YoutubeAPI {
             return nil
         }
 
-        if expiration.timeIntervalSince1970 > Date().timeIntervalSince1970 {
-            return (expiration, hls)
-        } else {
+        if expiration.hasExpired() {
             musicIdCache.removeValue(forKey: musicId)
 
             return nil
+        } else {
+            return (expiration, hls)
         }
     }
 
