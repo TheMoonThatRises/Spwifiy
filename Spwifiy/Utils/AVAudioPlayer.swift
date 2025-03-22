@@ -89,7 +89,7 @@ class AVAudioPlayer: ObservableObject {
     @AppStorage("setting.playing.looping") var isLooping: Bool = false
     @AppStorage("setting.playing.volume") var volume: Double = 1.0 {
         didSet {
-            player.volume = Float(pow(volume, 2.5))
+            updateVolume()
         }
     }
 
@@ -118,6 +118,7 @@ class AVAudioPlayer: ObservableObject {
         self.setupRemoteCommandCenter()
 
         self.discordRPCInit()
+        self.updateVolume()
     }
 
     deinit {
@@ -132,6 +133,10 @@ class AVAudioPlayer: ObservableObject {
         }
 
         NotificationCenter.default.removeObserver(self)
+    }
+
+    private func updateVolume() {
+        player.volume = Float(pow(volume, 2.5))
     }
 
     private func getPlayerItem(trackId: String?) -> QueuePlayerItem? {
