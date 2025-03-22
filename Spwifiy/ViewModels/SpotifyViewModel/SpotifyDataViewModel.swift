@@ -14,6 +14,7 @@ class SpotifyDataViewModel: ObservableObject {
 
     var isRetrievingPersonalizedPlaylist: Bool = false
     var isRetrievingTopArtists: Bool = false
+    var isRetrievingFollowingArtists: Bool = false
     var isRetrievingFollowingPlaylist: Bool = false
     var isRetrievingSavedAlbums: Bool = false
 

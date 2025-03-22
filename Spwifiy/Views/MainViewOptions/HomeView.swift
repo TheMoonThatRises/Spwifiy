@@ -87,7 +87,7 @@ struct HomeView: View {
             await spotifyDataViewModel.populateFollowingPlaylist()
         }
         .task {
-            await spotifyDataViewModel.populateTopArtists()
+            spotifyDataViewModel.populateTopArtists()
         }
         .task {
             await spotifyDataViewModel.populateSavedAlbums()

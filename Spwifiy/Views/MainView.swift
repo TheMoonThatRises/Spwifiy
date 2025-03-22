@@ -43,7 +43,7 @@ struct MainView: View {
                     HStack {
                         Group {
                             switch mainViewModel.currentViewAnimated {
-                                // default view
+                            // default view
                             case .home:
                                 HomeView(spotifyDataViewModel: spotifyDataViewModel,
                                          mainViewModel: mainViewModel)
@@ -60,14 +60,20 @@ struct MainView: View {
                                 SettingsView(settingsViewModel: settingsViewModel,
                                              avAudioPlayer: avAudioPlayer)
 
-                                // sidebar views
+                            // sidebar views
                             case .likedSongs:
                                 LikedSongsView(spotifyCache: spotifyCache,
                                                avAudioPlayer: avAudioPlayer,
                                                selectedArtist: $mainViewModel.selectedArtist,
                                                selectedAlbum: $mainViewModel.selectedAlbum)
+                            case .artists:
+                                FollowingArtistView(artists: $spotifyDataViewModel.followedArtists,
+                                                    selectedArtist: $mainViewModel.selectedArtist)
+                                    .task {
+                                        spotifyDataViewModel.populateFollowingArtists()
+                                    }
 
-                                // layers deep abstracted view
+                            // layers deep abstracted view
                             case .selectedPlaylist:
                                 if let selectedPlaylist = mainViewModel.selectedPlaylist {
                                     SelectedPlaylistView(spotifyCache: spotifyCache,
