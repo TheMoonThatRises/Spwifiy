@@ -70,11 +70,32 @@ class SpotifyScraper {
             return nil
         }
 
+        var monthlyString: String
+
+        let base64Pattern = #"<script id="initial-state" type="text/plain">(.+?)</script>"#
+
+        if let base64Range = html.range(of: base64Pattern, options: .regularExpression) {
+            let splitRange = html[base64Range].split(separator: ">").flatMap { $0.split(separator: "<") }
+
+            let monthlyPattern = #""monthlyListeners":(.+?)}"#
+
+            guard splitRange.count == 3,
+                  let initJSON = String(splitRange[1]).fromBase64(),
+                  let monthlyRange = initJSON.range(of: monthlyPattern, options: .regularExpression) else {
+                return nil
+            }
+
+            monthlyString = String(initJSON[monthlyRange])
+        } else {
+            monthlyString = html.matches(for: "monthly-listeners-label\">.+?</div>").first ?? ""
+        }
+
         let monthlyListeners = Int(
-            html.matches(for: "monthly-listeners-label\">.+?</div>")
-                .first?
-                .components(separatedBy: .decimalDigits.inverted)
-                .joined() ?? "0"
+            monthlyString.isEmpty
+                ? "0"
+                : monthlyString
+                    .components(separatedBy: .decimalDigits.inverted)
+                    .joined()
         )
 
         if let monthlyListeners = monthlyListeners, monthlyListeners != 0 {
