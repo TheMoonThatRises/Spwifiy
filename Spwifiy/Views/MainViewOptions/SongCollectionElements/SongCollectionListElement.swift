@@ -98,8 +98,8 @@ struct SongCollectionListElement: View {
                                         Image(
                                             avAudioPlayer.isPlaying &&
                                             avAudioPlayer.currentPlayingTrack?.id == hoverTrackId
-                                            ? "spwifiy.pause"
-                                            : "spwifiy.play.simple"
+                                                ? "spwifiy.pause"
+                                                : "spwifiy.play.simple"
                                         )
                                         .resizable()
                                         .frame(width: 25, height: 25)
