@@ -35,7 +35,6 @@ Spwifiy is open-source and licensed under the [BSD-4-Clause](/LICENSE) license.
 1. [AlertToast](https://github.com/elai950/AlertToast) - Create Apple-like alerts & toasts using SwiftUI.
 1. [KeychainAccess](https://github.com/kishikawakatsumi/KeychainAccess) - Simple Swift wrapper for Keychain that works on iOS, watchOS, tvOS and macOS.
 1. [M3U8Decoder](https://github.com/ikhvorost/M3U8Decoder) - M3U8 playlist decoder for Swift.
-1. [SQLite.swift](https://github.com/stephencelis/SQLite.swift) - A type-safe, Swift-language layer over SQLite3.
 1. [SpotifyAPI](https://github.com/Peter-Schorn/SpotifyAPI) - A Swift library for the Spotify web API. Supports all endpoints.
 1. [swiftui-cached-async-image](https://github.com/lorenzofiamingo/swiftui-cached-async-image) - CachedAsyncImage is the simplest way to add cache to your AsyncImage.
 1. [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON) - The better way to deal with JSON data in Swift.
