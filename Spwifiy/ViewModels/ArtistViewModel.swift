@@ -43,8 +43,7 @@ class ArtistViewModel: ObservableObject {
         self.filteredAlbums = []
         self.filteredSingleEp = []
 
-        self.onAlbumFilterChange()
-        self.onSingleEpFilterChange()
+        self.updateAlbumsFilters()
 
         Task { @MainActor in
             await self.populateAlbumTracks(fetchTracks: false)
