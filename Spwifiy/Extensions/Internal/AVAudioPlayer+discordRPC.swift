@@ -25,14 +25,17 @@ extension AVAudioPlayer {
         presence.assets.largeImage = "appicon"
 
         if let track = currentPlayingTrack {
+            let artists = track.artists?.description ?? "Unknown artists"
+            let album = track.album?.name ?? "Unknown album"
+
             presence.details = track.name
-            presence.state = (track.artists?.description ?? "Unknown artists").truncate(128)
+            presence.state = artists.count > 128 ? artists.truncate(125) + "..." : artists
 
             presence.timestamps.start = Date() - currentTime
             presence.timestamps.end = Date() + totalRunTime - currentTime
 
             presence.assets.largeImage = track.album?.images?.first?.url.absoluteString
-            presence.assets.largeText = (track.album?.name ?? "Unknown album").truncate(128)
+            presence.assets.largeText = album.count > 128 ? album.truncate(125) + "..." : album
         }
 
         return presence
