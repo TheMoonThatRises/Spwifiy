@@ -21,6 +21,8 @@ struct SongCollectionTopElement: View {
     @Binding var totalDuration: HumanFormat?
     @Binding var searchText: String
 
+    @Binding var selectedArtist: Artist?
+
     private var name: String {
         playlist?.name ?? album?.name ?? "Unknown"
     }
@@ -47,9 +49,17 @@ struct SongCollectionTopElement: View {
                 .font(.callout)
                 .foregroundStyle(.fgSecondary)
 
-            Text(owner)
-                .font(.callout)
-                .foregroundStyle(.fgPrimary)
+            Button {
+                if let album {
+                    selectedArtist = album.artists?.first
+                }
+            } label: {
+                Text(owner)
+                    .font(.callout)
+                    .foregroundStyle(.fgPrimary)
+            }
+            .buttonStyle(.plain)
+            .cursorHover(.pointingHand)
 
             Circle()
                 .frame(width: 3, height: 3)

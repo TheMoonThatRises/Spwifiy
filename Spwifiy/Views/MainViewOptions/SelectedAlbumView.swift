@@ -45,7 +45,8 @@ struct SelectedAlbumView: View {
                                              avAudioPlayer: avAudioPlayer,
                                              tracks: $selectedAlbumViewModel.tracks,
                                              totalDuration: $selectedAlbumViewModel.totalDuration,
-                                             searchText: $selectedAlbumViewModel.searchText)
+                                             searchText: $selectedAlbumViewModel.searchText,
+                                             selectedArtist: $selectedArtist)
 
                     Spacer()
                         .frame(height: 20)

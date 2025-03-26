@@ -50,7 +50,8 @@ struct SelectedPlaylistView: View {
                                                  avAudioPlayer: avAudioPlayer,
                                                  tracks: $selectedPlaylistViewModel.tracks,
                                                  totalDuration: $selectedPlaylistViewModel.totalDuration,
-                                                 searchText: $selectedPlaylistViewModel.searchText)
+                                                 searchText: $selectedPlaylistViewModel.searchText,
+                                                 selectedArtist: $selectedArtist)
 
                         Spacer()
                             .frame(height: 20)
