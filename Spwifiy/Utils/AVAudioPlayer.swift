@@ -118,7 +118,6 @@ class AVAudioPlayer: ObservableObject {
         self.setupRemoteCommandCenter()
 
         self.discordRPCInit()
-        self.updateVolume()
     }
 
     deinit {
@@ -283,6 +282,8 @@ class AVAudioPlayer: ObservableObject {
     }
 
     public func playAudio() {
+        updateVolume()
+
         player.play()
 
         updateNowPlaying()
