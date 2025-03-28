@@ -70,7 +70,7 @@ struct QueueElementView: View {
                 List {
                     ForEach(currentView == .queueView
                             ? Array(avAudioPlayer.trackQueue.dropFirst(avAudioPlayer.playingIndex + 1))
-                            : avAudioPlayer.previousQueue,
+                            : avAudioPlayer.previousQueue.reversed(),
                             id: \.uri) { track in
                         TrackQueueView(track: track,
                                        removeSong: avAudioPlayer.removeSong(track:),
