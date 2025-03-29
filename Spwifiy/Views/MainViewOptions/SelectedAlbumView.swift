@@ -60,6 +60,15 @@ struct SelectedAlbumView: View {
                                               selectedAlbum: .constant(nil))
 
                     Spacer()
+                        .frame(height: 10)
+
+                    VStack {
+                        ForEach(selectedAlbumViewModel.album?.copyrights ?? [], id: \.text) { copyright in
+                            Text(copyright.text)
+                        }
+                    }
+                    .font(.caption2)
+                    .foregroundStyle(.fgSecondary)
                 }
                 .padding()
 
