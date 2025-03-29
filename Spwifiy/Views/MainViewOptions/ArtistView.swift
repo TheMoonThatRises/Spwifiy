@@ -81,7 +81,8 @@ struct ArtistView: View {
                         switch currentView {
                         case .homeView:
                             ArtistHomeView(avAudioPlayer: avAudioPlayer,
-                                           topTracks: $artistViewModel.topTracks)
+                                           topTracks: $artistViewModel.topTracks,
+                                           selectedAlbum: $selectedAlbum)
                         case .albumView:
                             ArtistAlbumView(avAudioPlayer: avAudioPlayer,
                                             filteredAlbums: $artistViewModel.filteredAlbums,

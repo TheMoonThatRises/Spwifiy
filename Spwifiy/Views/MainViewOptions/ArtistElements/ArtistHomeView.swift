@@ -14,6 +14,8 @@ struct ArtistHomeView: View {
 
     @Binding var topTracks: [Track]
 
+    @Binding var selectedAlbum: Album?
+
     @State var showExtendedTop: Bool = false {
         didSet {
             withAnimation(.defaultAnimation) {
@@ -47,7 +49,7 @@ struct ArtistHomeView: View {
                                           tracks: $displayTopTracks,
                                           savedTracks: .constant([]),
                                           selectedArtist: .constant(nil),
-                                          selectedAlbum: .constant(nil))
+                                          selectedAlbum: $selectedAlbum)
 
                 Spacer()
                     .frame(height: 20)
