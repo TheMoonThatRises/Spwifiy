@@ -63,7 +63,7 @@ struct SelectedAlbumView: View {
                         .frame(height: 10)
 
                     VStack {
-                        ForEach(selectedAlbumViewModel.album?.copyrights ?? [], id: \.text) { copyright in
+                        ForEach(selectedAlbumViewModel.album?.copyrights ?? []) { copyright in
                             Text(copyright.text)
                         }
                     }
