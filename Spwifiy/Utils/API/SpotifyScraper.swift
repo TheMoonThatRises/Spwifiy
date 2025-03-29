@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 class SpotifyScraper {
 
@@ -15,13 +16,13 @@ class SpotifyScraper {
         "https://open.spotify.com"
     }
 
-    private var monthlyListenersCache: [String: Int] = [:]
-
     private var artistString: (String) -> String {
         { artistId in
             "\(SpotifyScraper.baseScrapeURL)/artist/\(artistId)"
         }
     }
+
+    private var artistJSONCache: [String: JSON] = [:]
 
     private var cacheBuildVer: String {
         get {
@@ -41,68 +42,83 @@ class SpotifyScraper {
         }
     }
 
-    private func getArtistHTML(artistId: String) async -> String? {
-        guard let artistURL = URL(string: artistString(artistId)) else {
-            return nil
-        }
-
-        let wkWebViewer = await WKWebViewer()
-
-        do {
-            guard let html = try await wkWebViewer.getHTML(from: artistURL) else {
-                return nil
-            }
-
-            return html
-        } catch {
-            print("unable to get artist html: \(error)")
-
-            return nil
-        }
+    public func hasArtistJSON(artistId: String) -> Bool {
+        artistJSONCache.keys.contains(artistId)
     }
 
-    public func getArtistMonthlyListeners(artistId: String) async -> Int? {
-        if let cacheListeners = monthlyListenersCache[artistId] {
-            return cacheListeners
+    public func fetchArtistJSON(artistId: String, success: (() -> Void)?) async {
+        guard let url = URL(string: artistString(artistId)) else {
+            return
         }
 
-        guard let html = await getArtistHTML(artistId: artistId) else {
-            return nil
+        guard let (data, _) = try? await URLSession.shared.data(from: url),
+              let spotifyHTML = String(data: data, encoding: .utf8) else {
+            return
         }
 
-        var monthlyString: String
+        let base64Pattern = #"<script id="initialState" type="text/plain">(.+?)</script>"#
 
-        let base64Pattern = #"<script id="initial-state" type="text/plain">(.+?)</script>"#
-
-        if let base64Range = html.range(of: base64Pattern, options: .regularExpression) {
-            let splitRange = html[base64Range].split(separator: ">").flatMap { $0.split(separator: "<") }
-
-            let monthlyPattern = #""monthlyListeners":(.+?)}"#
-
-            guard splitRange.count == 3,
-                  let initJSON = String(splitRange[1]).fromBase64(),
-                  let monthlyRange = initJSON.range(of: monthlyPattern, options: .regularExpression) else {
-                return nil
-            }
-
-            monthlyString = String(initJSON[monthlyRange])
-        } else {
-            monthlyString = html.matches(for: "monthly-listeners-label\">.+?</div>").first ?? ""
+        guard let base64Range = spotifyHTML.range(of: base64Pattern, options: .regularExpression) else {
+            return
         }
 
-        let monthlyListeners = Int(
-            monthlyString.isEmpty
-                ? "0"
-                : monthlyString
-                    .components(separatedBy: .decimalDigits.inverted)
-                    .joined()
-        )
+        let splitRange = spotifyHTML[base64Range].split(separator: ">").flatMap { $0.split(separator: "<") }
 
-        if let monthlyListeners = monthlyListeners, monthlyListeners != 0 {
-            monthlyListenersCache[artistId] = monthlyListeners
+        guard splitRange.count == 3,
+              let dataJSON = String(splitRange[1]).fromBase64() else {
+            return
         }
 
-        return monthlyListeners
+        artistJSONCache[artistId] = JSON(parseJSON: dataJSON)[
+            "entities",
+            "items",
+            "spotify:artist:\(artistId)"
+        ]
+
+        success?()
+    }
+
+    public func getArtistMonthlyListeners(artistId: String) -> Int? {
+        artistJSONCache[artistId]?[
+            "stats",
+            "monthlyListeners"
+        ].intValue
+    }
+
+    public func getArtistFollowers(artistId: String) -> Int? {
+        artistJSONCache[artistId]?[
+            "stats",
+            "followers"
+        ].intValue
+    }
+
+    public func getArtistBiography(artistId: String) -> String? {
+        artistJSONCache[artistId]?[
+            "profile",
+            "biography",
+            "text"
+        ].stringValue
+    }
+
+    public func getArtistExternalLinks(artistId: String) -> [(String, String)] {
+        artistJSONCache[artistId]?[
+            "profile",
+            "externalLinks",
+            "items"
+        ].array?
+        .map { ($0["name"].stringValue, $0["url"].stringValue) } ?? []
+    }
+
+    public func getArtistBackgroundBanner(artistId: String) -> String? {
+        artistJSONCache[artistId]?[
+            "headerImage",
+            "data",
+            "sources"
+        ].array?.sorted { one, two in
+            (one["maxHeight"].int ?? 0) > (two["maxHeight"].int ?? 0)
+        }
+        .first?["url"]
+        .stringValue
     }
 
     public func getBuildInfo(useCache: Bool) async -> (String, String)? {

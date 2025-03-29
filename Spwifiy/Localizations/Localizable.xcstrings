@@ -7,6 +7,16 @@
     ") content" : {
 
     },
+    "[%@](%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "[%1$@](%2$@)"
+          }
+        }
+      }
+    },
     "#" : {
 
     },
@@ -89,6 +99,9 @@
     "Follow" : {
 
     },
+    "Followers" : {
+
+    },
     "Force quit" : {
 
     },
@@ -108,6 +121,9 @@
 
     },
     "Miscellaneous" : {
+
+    },
+    "Monthly Listeners" : {
 
     },
     "My Library" : {

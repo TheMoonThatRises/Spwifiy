@@ -20,13 +20,16 @@ class ArtistViewModel: ObservableObject {
     @Published var topTracks: [Track]
     @Published var albums: [Album]
 
-    @Published var filteredAlbums: [Album]
-    @Published var filteredSingleEp: [Album]
+    @Published var filteredAlbums: [Album] = []
+    @Published var filteredSingleEp: [Album] = []
 
     @Published var albumTracks: [String: [Track]] = [:]
 
     @Published var backgroundImageURL: URL?
     @Published var monthlyListeners: Int?
+    @Published var followers: Int?
+    @Published var biography: String?
+    @Published var externalLinks: [(String, String)] = []
 
     @Published var searchText: String = ""
 
@@ -40,19 +43,15 @@ class ArtistViewModel: ObservableObject {
 
         self.albums = spotifyCache[artistAlbumsId: artist.id ?? ""] ?? []
 
-        self.filteredAlbums = []
-        self.filteredSingleEp = []
-
         self.updateAlbumsFilters()
 
         Task { @MainActor in
             await self.populateAlbumTracks(fetchTracks: false)
+            self.populateArtistInfo()
 
-            if !self.topTracks.isEmpty {
-                await self.getBackgroundArt()
+            if backgroundImageURL == nil {
+                await self.getBackgroundArt(useCache: true)
             }
-
-            self.monthlyListeners = await SpotifyScraper.shared.getArtistMonthlyListeners(artistId: artist.id ?? "")
         }
     }
 
@@ -60,15 +59,15 @@ class ArtistViewModel: ObservableObject {
     public func updateArtistDetails() async {
         let willUpdateArtist = artist.followers == nil
         let willUpdateAlbums = albums.isEmpty
-        let willUpdateAlbumTracks = true
+        let willUpdateAlbumTracks = albumTracks.isEmpty || willUpdateAlbums
         let willUpdateTopTracks = willUpdateArtist || topTracks.isEmpty
-        let willUpdateMonthlyListeners = monthlyListeners == nil
+        let willUpdateArtistJSONInfo = monthlyListeners == nil
 
         guard !isFetchingArtistDetails &&
                 (
                     willUpdateAlbumTracks ||
                     willUpdateTopTracks ||
-                    willUpdateMonthlyListeners
+                    willUpdateArtistJSONInfo
                 ) else {
             return
         }
@@ -89,19 +88,25 @@ class ArtistViewModel: ObservableObject {
                     topTracks = try await spotifyCache.fetchArtistTopTracks(artistId: id)
                 }
 
-                if willUpdateMonthlyListeners {
-                    await getMonthlyListeners(artistId: id)
-                }
-
-                if willUpdateAlbumTracks {
-                    await populateAlbumTracks(fetchTracks: true)
-
-                    await getBackgroundArt()
+                if willUpdateArtistJSONInfo {
+                    await SpotifyScraper.shared.fetchArtistJSON(artistId: id) {
+                        Task { @MainActor in
+                            self.populateArtistInfo()
+                        }
+                    }
                 }
 
                 if willUpdateAlbums {
                     albums = (try await spotifyCache.fetchArtistAlbum(artistId: id))
                         .sorted { ($0.releaseDate ?? Date()) > ($1.releaseDate ?? Date()) }
+                }
+
+                if willUpdateAlbumTracks {
+                    await populateAlbumTracks(fetchTracks: true)
+
+                    if backgroundImageURL == nil {
+                        await getBackgroundArt(useCache: false)
+                    }
                 }
             }
         } catch {
@@ -126,14 +131,14 @@ class ArtistViewModel: ObservableObject {
     }
 
     @MainActor
-    private func getBackgroundArt() async {
+    private func getBackgroundArt(useCache: Bool) async {
         if let artistId = artist.id,
            let backgroundArt = YoutubeMusicAPI.shared.getBackgroundArtCache(artistId: artistId),
            let url = URL(string: backgroundArt) {
             withAnimation(.easeInOut) {
                 backgroundImageURL = url
             }
-        } else {
+        } else if !useCache {
             let track = albumTracks
                 .sorted { one, two in
                     if one.value.first?.album != nil && two.value.first?.album != nil {
@@ -178,15 +183,6 @@ class ArtistViewModel: ObservableObject {
     }
 
     @MainActor
-    private func getMonthlyListeners(artistId: String) async {
-        let listeners = await SpotifyScraper.shared.getArtistMonthlyListeners(artistId: artistId)
-
-        withAnimation(.easeInOut) {
-            monthlyListeners = listeners
-        }
-    }
-
-    @MainActor
     private func populateAlbumTracks(fetchTracks: Bool) async {
         let albumIds = Array(albums.compactMap { $0.id }.prefix(populateAlbumTrackCount))
 
@@ -198,6 +194,41 @@ class ArtistViewModel: ObservableObject {
             }
         } else {
             albumTracks = spotifyCache.getAllAlbumTracks(albumIds: albumIds)
+        }
+    }
+
+    private func populateArtistInfo() {
+        guard let artistId = artist.id else {
+            return
+        }
+
+        if let backgroundString = SpotifyScraper.shared.getArtistBackgroundBanner(artistId: artistId),
+           let backgroundURL = URL(string: backgroundString) {
+            withAnimation(.easeInOut) {
+                backgroundImageURL = backgroundURL
+            }
+        }
+
+        if let artistListeners = SpotifyScraper.shared.getArtistMonthlyListeners(artistId: artistId) {
+            withAnimation(.easeInOut) {
+                monthlyListeners = artistListeners
+            }
+        }
+
+        if let artistFollowers = SpotifyScraper.shared.getArtistFollowers(artistId: artistId) {
+            withAnimation(.easeInOut) {
+                followers = artistFollowers
+            }
+        }
+
+        if let artistBiography = SpotifyScraper.shared.getArtistBiography(artistId: artistId) {
+            withAnimation(.easeInOut) {
+                biography = artistBiography
+            }
+        }
+
+        withAnimation(.easeInOut) {
+            externalLinks = SpotifyScraper.shared.getArtistExternalLinks(artistId: artistId)
         }
     }
 

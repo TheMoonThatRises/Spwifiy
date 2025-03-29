@@ -38,81 +38,89 @@ struct ArtistView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack {
-                ArtistBannerElement(artistImageURL: artistViewModel.artist.images?.first?.url,
-                                    artistName: artistViewModel.artist.name,
-                                    backgroundImageURL: $artistViewModel.backgroundImageURL,
-                                    monthlyListeners: $artistViewModel.monthlyListeners)
-
+        GeometryReader { geom in
+            ScrollView {
                 VStack {
-                    HStack {
-                        UnderlinedViewMenu(types: CurrentView.allCases,
-                                           currentOption: $currentView)
+                    ArtistBannerElement(bannerHeight: geom.size.height / 2,
+                                        artistImageURL: artistViewModel.artist.images?.first?.url,
+                                        artistName: artistViewModel.artist.name,
+                                        backgroundImageURL: $artistViewModel.backgroundImageURL,
+                                        monthlyListeners: $artistViewModel.monthlyListeners)
 
-                        Spacer()
+                    VStack {
+                        HStack {
+                            UnderlinedViewMenu(types: CurrentView.allCases,
+                                               currentOption: $currentView)
 
-                        if [.albumView, .singlesEpView].contains(currentView) {
-                            NavButton(currentButton: .list, currentView: $artistViewModel.displayType) {
+                            Spacer()
 
-                            } label: {
-                                Image("spwifiy.list")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
+                            if [.albumView, .singlesEpView].contains(currentView) {
+                                NavButton(currentButton: .list, currentView: $artistViewModel.displayType) {
+
+                                } label: {
+                                    Image("spwifiy.list")
+                                        .resizable()
+                                        .frame(width: 40, height: 40)
+                                }
+                                .toButton()
+
+                                NavButton(currentButton: .grid, currentView: $artistViewModel.displayType) {
+
+                                } label: {
+                                    Image("spwifiy.grid")
+                                        .resizable()
+                                        .frame(width: 40, height: 40)
+                                }
+                                .toButton()
                             }
-                            .toButton()
 
-                            NavButton(currentButton: .grid, currentView: $artistViewModel.displayType) {
-
-                            } label: {
-                                Image("spwifiy.grid")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                            }
-                            .toButton()
+                            ExpandSearch(searchText: $artistViewModel.searchText)
                         }
+                        .font(.title3)
+                        .padding(5)
 
-                        ExpandSearch(searchText: $artistViewModel.searchText)
-                    }
-                    .font(.title3)
-                    .padding(5)
-
-                    Group {
-                        switch currentView {
-                        case .homeView:
-                            ArtistHomeView(avAudioPlayer: avAudioPlayer,
-                                           topTracks: $artistViewModel.topTracks,
-                                           selectedAlbum: $selectedAlbum)
-                        case .albumView:
-                            ArtistAlbumView(avAudioPlayer: avAudioPlayer,
-                                            filteredAlbums: $artistViewModel.filteredAlbums,
-                                            selectedAlbum: $selectedAlbum,
-                                            displayType: $artistViewModel.displayType)
-                            .onChange(of: artistViewModel.searchText) { _ in
-                                artistViewModel.onAlbumFilterChange()
+                        Group {
+                            switch currentView {
+                            case .homeView:
+                                ArtistHomeView(avAudioPlayer: avAudioPlayer,
+                                               topTracks: $artistViewModel.topTracks,
+                                               selectedAlbum: $selectedAlbum)
+                            case .albumView:
+                                ArtistAlbumView(avAudioPlayer: avAudioPlayer,
+                                                filteredAlbums: $artistViewModel.filteredAlbums,
+                                                selectedAlbum: $selectedAlbum,
+                                                displayType: $artistViewModel.displayType)
+                                .onChange(of: artistViewModel.searchText) { _ in
+                                    artistViewModel.onAlbumFilterChange()
+                                }
+                            case .singlesEpView:
+                                ArtistAlbumView(avAudioPlayer: avAudioPlayer,
+                                                filteredAlbums: $artistViewModel.filteredSingleEp,
+                                                selectedAlbum: $selectedAlbum,
+                                                displayType: $artistViewModel.displayType)
+                                .onChange(of: artistViewModel.searchText) { _ in
+                                    artistViewModel.onSingleEpFilterChange()
+                                }
+//                          case .merchView:
+                            case .aboutView:
+                                ArtistAboutView(geom: geom,
+                                                biography: $artistViewModel.biography,
+                                                followers: $artistViewModel.followers,
+                                                monthlyListeners: $artistViewModel.monthlyListeners,
+                                                externalLinks: $artistViewModel.externalLinks)
+                            default:
+                                Text("Unknown error")
                             }
-                        case .singlesEpView:
-                            ArtistAlbumView(avAudioPlayer: avAudioPlayer,
-                                            filteredAlbums: $artistViewModel.filteredSingleEp,
-                                            selectedAlbum: $selectedAlbum,
-                                            displayType: $artistViewModel.displayType)
-                            .onChange(of: artistViewModel.searchText) { _ in
-                                artistViewModel.onSingleEpFilterChange()
-                            }
-//                        case .merchView:
-//                        case .aboutView:
-                        default:
-                            Text("Unknown error")
                         }
+                        .onChange(of: artistViewModel.albums) { _ in
+                            artistViewModel.updateAlbumsFilters()
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
                     }
-                    .onChange(of: artistViewModel.albums) { _ in
-                        artistViewModel.updateAlbumsFilters()
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(.bgMain)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.bgMain)
             }
         }
         .task {

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ArtistBannerElement: View {
 
+    var bannerHeight: CGFloat
+
     var artistImageURL: URL?
     var artistName: String
 
@@ -26,13 +28,13 @@ struct ArtistBannerElement: View {
                     if let backgroundImageURL = backgroundImageURL {
                         CroppedCachedAsyncImage(url: backgroundImageURL,
                                                 width: geom.size.width,
-                                                height: 400,
+                                                height: bannerHeight,
                                                 alignment: .top,
                                                 clipShape: RoundedRectangle(cornerRadius: 5))
                     } else {
                         CroppedCachedAsyncImage(url: artistImageURL,
                                                 width: geom.size.width,
-                                                height: 400,
+                                                height: bannerHeight,
                                                 alignment: .center,
                                                 clipShape: RoundedRectangle(cornerRadius: 5))
                     }
@@ -133,11 +135,11 @@ struct ArtistBannerElement: View {
             .offset(y: -(minY - 92) / 2)
             .onChange(of: minY) { newValue in
                 withAnimation(.easeInOut) {
-                    showArtistBannerInfo = -newValue < 50
+                    showArtistBannerInfo = -newValue < 45
                 }
             }
         }
-        .frame(height: 400)
+        .frame(height: bannerHeight)
     }
 
 }

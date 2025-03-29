@@ -16,7 +16,7 @@ struct ArtistHomeView: View {
 
     @Binding var selectedAlbum: Album?
 
-    @State var showExtendedTop: Bool = false {
+    @State var showExtendedTop: Bool = true {
         didSet {
             withAnimation(.defaultAnimation) {
                 displayTopTracks = Array(
@@ -62,17 +62,12 @@ struct ArtistHomeView: View {
                 .buttonStyle(.plain)
                 .cursorHover(.pointingHand)
             }
-
-            Spacer()
-
-            Spacer()
-                .frame(width: 20)
         }
         .onChange(of: topTracks) { _ in
-            showExtendedTop = false
+            showExtendedTop = true
         }
         .onAppear {
-            showExtendedTop = false
+            showExtendedTop = true
         }
     }
 
