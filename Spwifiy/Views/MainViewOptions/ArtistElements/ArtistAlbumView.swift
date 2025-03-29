@@ -19,13 +19,17 @@ struct ArtistAlbumView: View {
 
     var body: some View {
         ScrollView {
-            if displayType == .list {
-                ArtistAlbumListView(filteredAlbums: $filteredAlbums,
-                                    selectedAlbum: $selectedAlbum,
-                                    avAudioPlayer: avAudioPlayer)
+            if filteredAlbums.isEmpty {
+                Text("No discography found")
             } else {
-                ArtistAlbumGridView(filteredAlbums: $filteredAlbums,
-                                    selectedAlbum: $selectedAlbum)
+                if displayType == .list {
+                    ArtistAlbumListView(filteredAlbums: $filteredAlbums,
+                                        selectedAlbum: $selectedAlbum,
+                                        avAudioPlayer: avAudioPlayer)
+                } else {
+                    ArtistAlbumGridView(filteredAlbums: $filteredAlbums,
+                                        selectedAlbum: $selectedAlbum)
+                }
             }
         }
     }
