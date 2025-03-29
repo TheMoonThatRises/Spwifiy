@@ -46,6 +46,7 @@ struct HorizontalAlbumScroll: View {
 struct AlbumItemView: View {
 
     var album: Album
+    var imageOnly: Bool = false
 
     @State var dominantColor: Color = .fgPrimary
 
@@ -65,29 +66,31 @@ struct AlbumItemView: View {
                 }
             }
 
-            HStack {
-                Text(album.name)
-                    .foregroundStyle(.fgPrimary)
+            if !imageOnly {
+                HStack {
+                    Text(album.name)
+                        .foregroundStyle(.fgPrimary)
+
+                    Spacer()
+
+                    Text(String(album.totalTracks ?? 0))
+                        .foregroundStyle(dominantColor)
+                }
+                .font(.callout)
 
                 Spacer()
+                    .frame(height: 15)
 
-                Text(String(album.totalTracks ?? 0))
-                    .foregroundStyle(dominantColor)
+                if let artists = album.artists?.description {
+                    Text(artists)
+                        .foregroundStyle(.fgSecondary)
+                        .font(.caption)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(2)
+                }
+
+                Spacer()
             }
-            .font(.callout)
-
-            Spacer()
-                .frame(height: 15)
-
-            if let artists = album.artists?.description {
-                Text(artists)
-                    .foregroundStyle(.fgSecondary)
-                    .font(.caption)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .lineLimit(2)
-            }
-
-            Spacer()
         }
         .frame(width: 170)
     }
