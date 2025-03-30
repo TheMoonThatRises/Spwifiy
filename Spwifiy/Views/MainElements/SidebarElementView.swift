@@ -13,10 +13,50 @@ public struct SidebarElementView: View {
 
     let collapsed: Bool
 
+    var disableBackNav: Bool {
+        mainViewModel.navigationIndex >= mainViewModel.navigationStack.count - 1
+    }
+
+    var disableForwardNav: Bool {
+        mainViewModel.navigationIndex <= 0
+    }
+
     public var body: some View {
         VStack {
+            HStack {
+                Button {
+                    mainViewModel.updateNavigation(navForwards: false)
+                } label: {
+                    Image("spwifiy.left")
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                }
+                .buttonStyle(.plain)
+                .disabled(disableBackNav)
+                .cursorHover(disableBackNav ? .operationNotAllowed : .pointingHand)
+
+                if !collapsed {
+                    Button {
+                        mainViewModel.updateNavigation(navForwards: true)
+                    } label: {
+                        Image("spwifiy.right")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(disableForwardNav)
+                    .cursorHover(disableForwardNav ? .operationNotAllowed : .pointingHand)
+                }
+
+                Spacer()
+            }
+
+            Spacer()
+                .frame(height: 20)
+
             NavButton(currentButton: .library,
-                      currentView: $mainViewModel.currentView) {
+                      currentView: $mainViewModel.currentView,
+                      isDisabled: true) {
 
             } label: {
                 HStack {
@@ -39,10 +79,11 @@ public struct SidebarElementView: View {
             .toButton()
 
             Spacer()
-                .frame(height: 20)
+                .frame(height: 5)
 
             NavButton(currentButton: .pins,
-                      currentView: $mainViewModel.currentView) {
+                      currentView: $mainViewModel.currentView,
+                      isDisabled: true) {
 
             } label: {
                 HStack {
@@ -70,7 +111,8 @@ public struct SidebarElementView: View {
                 .frame(height: 5)
 
             NavButton(currentButton: .playlist,
-                      currentView: $mainViewModel.currentView) {
+                      currentView: $mainViewModel.currentView,
+                      isDisabled: true) {
 
             } label: {
                 HStack {
@@ -120,7 +162,8 @@ public struct SidebarElementView: View {
                 .frame(height: 5)
 
             NavButton(currentButton: .saves,
-                      currentView: $mainViewModel.currentView) {
+                      currentView: $mainViewModel.currentView,
+                      isDisabled: true) {
 
             } label: {
                 HStack {
@@ -142,7 +185,8 @@ public struct SidebarElementView: View {
                 .frame(height: 5)
 
             NavButton(currentButton: .albums,
-                      currentView: $mainViewModel.currentView) {
+                      currentView: $mainViewModel.currentView,
+                      isDisabled: true) {
 
             } label: {
                 HStack {
@@ -164,7 +208,8 @@ public struct SidebarElementView: View {
                 .frame(height: 5)
 
             NavButton(currentButton: .folders,
-                      currentView: $mainViewModel.currentView) {
+                      currentView: $mainViewModel.currentView,
+                      isDisabled: true) {
 
             } label: {
                 HStack {

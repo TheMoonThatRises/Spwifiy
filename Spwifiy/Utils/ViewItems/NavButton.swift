@@ -13,18 +13,21 @@ public struct NavButton<Label: View, Option: Equatable>: View {
 
     let currentButton: Option
     let isSelected: Bool
+    let isDisabled: Bool
 
     let action: @MainActor () -> Void
     let label: Label
 
     init(currentButton: Option,
          currentView: Binding<Option>,
+         isDisabled: Bool = false,
          action: @escaping @MainActor () -> Void,
          @ViewBuilder label: () -> Label) {
         self._currentView = currentView
 
         self.currentButton = currentButton
         self.isSelected = currentButton == currentView.wrappedValue
+        self.isDisabled = isDisabled
 
         self.action = action
         self.label = label()
@@ -56,6 +59,7 @@ public struct NavButton<Label: View, Option: Equatable>: View {
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)
-        .cursorHover(.pointingHand)
+        .disabled(isDisabled)
+        .cursorHover(isDisabled ? .operationNotAllowed : .pointingHand)
     }
 }

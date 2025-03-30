@@ -49,7 +49,8 @@ public struct HeadElementView: View {
                     .frame(width: 20)
 
                 NavButton(currentButton: .discover,
-                          currentView: $mainViewModel.currentView) {
+                          currentView: $mainViewModel.currentView,
+                          isDisabled: true) {
 
                 } label: {
                     HStack {
@@ -131,7 +132,8 @@ public struct HeadElementView: View {
 
             Group {
                 NavButton(currentButton: .notification,
-                          currentView: $mainViewModel.currentView) {
+                          currentView: $mainViewModel.currentView,
+                          isDisabled: true) {
 
                 } label: {
                     Image("spwifiy.news")

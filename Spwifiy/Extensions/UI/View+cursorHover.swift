@@ -10,6 +10,7 @@ import SwiftUI
 enum Cursors {
     case pointingHand
     case resizeLeftRight
+    case operationNotAllowed
 }
 
 extension View {
@@ -21,6 +22,8 @@ extension View {
                     NSCursor.pointingHand.set()
                 case .resizeLeftRight:
                     NSCursor.resizeLeftRight.set()
+                case .operationNotAllowed:
+                    NSCursor.operationNotAllowed.set()
                 }
             } else {
                 NSCursor.arrow.set()
