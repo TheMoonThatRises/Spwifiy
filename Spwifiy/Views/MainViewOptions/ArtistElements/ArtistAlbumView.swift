@@ -113,83 +113,83 @@ struct ArtistAlbumListView: View {
                             }
                             .font(.caption)
 
-                            //                    HStack {
-                            //                        Button {
-                            //                            if avAudioPlayer.playingId == album.id {
-                            //                                avAudioPlayer.togglePlay()
-                            //                            } else {
-                            //                                avAudioPlayer.updatePlayingList(newPlayingId: album.id,
-                            //                                                                tracks: album.tracks?.items ?? [])
-                            //                            }
-                            //                        } label: {
-                            //                            Image(
-                            //                                avAudioPlayer.playingId == album.id &&
-                            //                                avAudioPlayer.isPlaying ? "spwifiy.pause.fill"  : "spwifiy.play.fill"
-                            //                            )
-                            //                            .resizable()
-                            //                            .overlay {
-                            //                                if album.tracks?.items.isEmpty ?? true {
-                            //                                    ProgressView()
-                            //                                        .progressViewStyle(.circular)
-                            //                                }
-                            //                            }
-                            //                            .frame(width: 40, height: 40)
-                            //                        }
-                            //                        .buttonStyle(.plain)
-                            //                        .cursorHover(.pointingHand)
-                            //
-                            //                        DotButton(toggle: $avAudioPlayer.isShuffled,
-                            //                                  image: Image("spwifiy.shuffle"))
-                            //
-                            //                        Button {
-                            //
-                            //                        } label: {
-                            //                            Image("spwifiy.add")
-                            //                                .resizable()
-                            //                                .frame(width: 40, height: 40)
-                            //                        }
-                            //                        .buttonStyle(.plain)
-                            //                        .cursorHover(.pointingHand)
-                            //
-                            //                        Button {
-                            //
-                            //                        } label: {
-                            //                            Image("spwifiy.add.queue")
-                            //                                .resizable()
-                            //                                .frame(width: 40, height: 40)
-                            //                        }
-                            //                        .buttonStyle(.plain)
-                            //                        .cursorHover(.pointingHand)
-                            //                        Button {
-                            //
-                            //                        } label: {
-                            //                            Image("spwifiy.download")
-                            //                                .resizable()
-                            //                                .frame(width: 40, height: 40)
-                            //                        }
-                            //                        .buttonStyle(.plain)
-                            //                        .cursorHover(.pointingHand)
-                            //
-                            //                        Button {
-                            //
-                            //                        } label: {
-                            //                            Image("spwifiy.share")
-                            //                                .resizable()
-                            //                                .frame(width: 40, height: 40)
-                            //                        }
-                            //                        .buttonStyle(.plain)
-                            //                        .cursorHover(.pointingHand)
-                            //
-                            //                        Button {
-                            //
-                            //                        } label: {
-                            //                            Image("spwifiy.more")
-                            //                                .resizable()
-                            //                                .frame(width: 40, height: 40)
-                            //                        }
-                            //                        .buttonStyle(.plain)
-                            //                        .cursorHover(.pointingHand)
-                            //                    }
+        //                    HStack {
+        //                        Button {
+        //                            if avAudioPlayer.playingId == album.id {
+        //                                avAudioPlayer.togglePlay()
+        //                            } else {
+        //                                avAudioPlayer.updatePlayingList(newPlayingId: album.id,
+        //                                                                tracks: album.tracks?.items ?? [])
+        //                            }
+        //                        } label: {
+        //                            Image(
+        //                                avAudioPlayer.playingId == album.id &&
+        //                                avAudioPlayer.isPlaying ? "spwifiy.pause.fill"  : "spwifiy.play.fill"
+        //                            )
+        //                            .resizable()
+        //                            .overlay {
+        //                                if album.tracks?.items.isEmpty ?? true {
+        //                                    ProgressView()
+        //                                        .progressViewStyle(.circular)
+        //                                }
+        //                            }
+        //                            .frame(width: 40, height: 40)
+        //                        }
+        //                        .buttonStyle(.plain)
+        //                        .cursorHover(.pointingHand)
+        //
+        //                        DotButton(toggle: $avAudioPlayer.isShuffled,
+        //                                  image: Image("spwifiy.shuffle"))
+        //
+        //                        Button {
+        //
+        //                        } label: {
+        //                            Image("spwifiy.add")
+        //                                .resizable()
+        //                                .frame(width: 40, height: 40)
+        //                        }
+        //                        .buttonStyle(.plain)
+        //                        .cursorHover(.pointingHand)
+        //
+        //                        Button {
+        //
+        //                        } label: {
+        //                            Image("spwifiy.add.queue")
+        //                                .resizable()
+        //                                .frame(width: 40, height: 40)
+        //                        }
+        //                        .buttonStyle(.plain)
+        //                        .cursorHover(.pointingHand)
+        //                        Button {
+        //
+        //                        } label: {
+        //                            Image("spwifiy.download")
+        //                                .resizable()
+        //                                .frame(width: 40, height: 40)
+        //                        }
+        //                        .buttonStyle(.plain)
+        //                        .cursorHover(.pointingHand)
+        //
+        //                        Button {
+        //
+        //                        } label: {
+        //                            Image("spwifiy.share")
+        //                                .resizable()
+        //                                .frame(width: 40, height: 40)
+        //                        }
+        //                        .buttonStyle(.plain)
+        //                        .cursorHover(.pointingHand)
+        //
+        //                        Button {
+        //
+        //                        } label: {
+        //                            Image("spwifiy.more")
+        //                                .resizable()
+        //                                .frame(width: 40, height: 40)
+        //                        }
+        //                        .buttonStyle(.plain)
+        //                        .cursorHover(.pointingHand)
+        //                    }
                         }
 
                         Spacer()
