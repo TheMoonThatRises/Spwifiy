@@ -70,6 +70,7 @@ struct PlaylistItemView: View {
             HStack {
                 Text(playlist.name)
                     .foregroundStyle(.fgPrimary)
+                    .lineLimit(1)
 
                 Spacer()
 
@@ -79,7 +80,7 @@ struct PlaylistItemView: View {
             .font(.callout)
 
             Spacer()
-                .frame(height: 15)
+                .frame(height: 10)
 
             if let description = playlist.description?.replacingOccurrences(of: "<a href=(.+?)>(.+?)</a>",
                                                                             with: "$2",

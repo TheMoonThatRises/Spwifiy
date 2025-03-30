@@ -45,8 +45,13 @@ struct HorizontalAlbumScroll: View {
 
 struct AlbumItemView: View {
 
+    enum SubText {
+        case artist, year
+    }
+
     var album: Album
     var imageOnly: Bool = false
+    var subtext: SubText = .artist
 
     @State var dominantColor: Color = .fgPrimary
 
@@ -70,6 +75,7 @@ struct AlbumItemView: View {
                 HStack {
                     Text(album.name)
                         .foregroundStyle(.fgPrimary)
+                        .lineLimit(1)
 
                     Spacer()
 
@@ -79,15 +85,19 @@ struct AlbumItemView: View {
                 .font(.callout)
 
                 Spacer()
-                    .frame(height: 15)
+                    .frame(height: 10)
 
-                if let artists = album.artists?.description {
-                    Text(artists)
-                        .foregroundStyle(.fgSecondary)
-                        .font(.caption)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .lineLimit(2)
+                Group {
+                    if subtext == .year {
+                        Text(album.releaseDate?.formatted(.dateTime.year()) ?? "Unknown artist")
+                    } else {
+                        Text(album.artists?.description ?? "Unknown artist")
+                    }
                 }
+                .foregroundStyle(.fgSecondary)
+                .font(.caption)
+                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(2)
 
                 Spacer()
             }

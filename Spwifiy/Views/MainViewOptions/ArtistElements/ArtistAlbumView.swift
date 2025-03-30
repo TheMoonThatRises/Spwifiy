@@ -51,7 +51,7 @@ struct ArtistAlbumGridView: View {
                 Button {
                     selectedAlbum = album
                 } label: {
-                    AlbumItemView(album: album)
+                    AlbumItemView(album: album, subtext: .year)
                         .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
@@ -96,7 +96,7 @@ struct ArtistAlbumListView: View {
                             .foregroundStyle(.fgPrimary)
 
                         HStack {
-                            Text("\(album.releaseDate?.formatted(.dateTime.year()) ?? "Unknown year")")
+                            Text(album.releaseDate?.formatted(.dateTime.year()) ?? "Unknown year")
 
                             Circle()
                                 .frame(width: 3, height: 3)
