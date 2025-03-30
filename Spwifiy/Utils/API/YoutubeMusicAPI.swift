@@ -289,7 +289,13 @@ class YoutubeMusicAPI {
            let songId = getSongMusicId(json: matchJSON) {
             musicId = songId
         } else if albumName != nil {
-            return await getYoutubeSongId(artistName: artistName, songName: songName, albumName: nil)
+            var newArtistName = artistName
+
+            if artistName.split(separator: ",").count > 0 && songName.lowercased().contains("feat") {
+                newArtistName = String(artistName.split(separator: ",")[0])
+            }
+
+            return await getYoutubeSongId(artistName: newArtistName, songName: songName, albumName: nil)
         } else {
             guard let song = songResults?.first,
                   let songId = getSongMusicId(json: song) else {
