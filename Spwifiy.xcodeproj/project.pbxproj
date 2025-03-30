@@ -13,6 +13,7 @@
 		346630652CFED5B700B5D8D9 /* SwordRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 346630642CFED5B700B5D8D9 /* SwordRPC */; };
 		346630682CFED6A600B5D8D9 /* SwordRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 346630672CFED6A600B5D8D9 /* SwordRPC */; };
 		34C115742D8E6E42002DC45E /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 34C115732D8E6E42002DC45E /* CachedAsyncImage */; };
+		34DB36B22D99EA5D008EBE43 /* HTMLEntities in Frameworks */ = {isa = PBXBuildFile; productRef = 34DB36B12D99EA5D008EBE43 /* HTMLEntities */; };
 		B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */ = {isa = PBXBuildFile; productRef = B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */; };
 		B6E81A5D2CF3DD7A002060FA /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A5C2CF3DD7A002060FA /* AlertToast */; };
 		B6E81A602CF3EA39002060FA /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A5F2CF3EA39002060FA /* KeychainAccess */; };
@@ -77,6 +78,7 @@
 			files = (
 				346630682CFED6A600B5D8D9 /* SwordRPC in Frameworks */,
 				B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */,
+				34DB36B22D99EA5D008EBE43 /* HTMLEntities in Frameworks */,
 				346630482CFD75C400B5D8D9 /* M3U8Decoder in Frameworks */,
 				34C115742D8E6E42002DC45E /* CachedAsyncImage in Frameworks */,
 				B6E81A5D2CF3DD7A002060FA /* AlertToast in Frameworks */,
@@ -137,6 +139,7 @@
 				346630642CFED5B700B5D8D9 /* SwordRPC */,
 				346630672CFED6A600B5D8D9 /* SwordRPC */,
 				34C115732D8E6E42002DC45E /* CachedAsyncImage */,
+				34DB36B12D99EA5D008EBE43 /* HTMLEntities */,
 			);
 			productName = Spwifiy;
 			productReference = B6EDE45D2CF2923B004666B1 /* Spwifiy.app */;
@@ -175,6 +178,7 @@
 				346630462CFD75C400B5D8D9 /* XCRemoteSwiftPackageReference "M3U8Decoder" */,
 				346630662CFED6A600B5D8D9 /* XCRemoteSwiftPackageReference "SwordRPC" */,
 				34C115722D8E6E42002DC45E /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
+				34DB36B02D99EA5D008EBE43 /* XCRemoteSwiftPackageReference "swift-html-entities" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B6EDE45E2CF2923B004666B1 /* Products */;
@@ -482,6 +486,14 @@
 				minimumVersion = 2.1.1;
 			};
 		};
+		34DB36B02D99EA5D008EBE43 /* XCRemoteSwiftPackageReference "swift-html-entities" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Kitura/swift-html-entities";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.1;
+			};
+		};
 		B6DAB6B22CF32B60000FAE96 /* XCRemoteSwiftPackageReference "SpotifyAPI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Peter-Schorn/SpotifyAPI";
@@ -537,6 +549,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 34C115722D8E6E42002DC45E /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */;
 			productName = CachedAsyncImage;
+		};
+		34DB36B12D99EA5D008EBE43 /* HTMLEntities */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34DB36B02D99EA5D008EBE43 /* XCRemoteSwiftPackageReference "swift-html-entities" */;
+			productName = HTMLEntities;
 		};
 		B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */ = {
 			isa = XCSwiftPackageProductDependency;

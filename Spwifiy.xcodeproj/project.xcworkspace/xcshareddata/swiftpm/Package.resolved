@@ -1,5 +1,5 @@
 {
-  "originHash" : "23f277ddd7a09dcd6ac3e4c5471ffb04095943eaa402df9447e99056439fbb42",
+  "originHash" : "6a5a3499c395f56b009d8baa7e6249d798da04045f52904e20de299a65bd6ed7",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ikhvorost/M3U8Decoder",
       "state" : {
-        "revision" : "a8db615a5b702714fcb107af425814ea597693e7",
-        "version" : "2.1.1"
+        "revision" : "ef6b1aa7080bb62a1950ac349637f23fa7ae8790",
+        "version" : "2.1.2"
       }
     },
     {
@@ -80,6 +80,15 @@
       "state" : {
         "revision" : "ddb07e896a2a8af79512543b1c7eb9797f8898a5",
         "version" : "1.1.7"
+      }
+    },
+    {
+      "identity" : "swift-html-entities",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Kitura/swift-html-entities",
+      "state" : {
+        "revision" : "d8ca73197f59ce260c71bd6d7f6eb8bbdccf508b",
+        "version" : "4.0.1"
       }
     },
     {

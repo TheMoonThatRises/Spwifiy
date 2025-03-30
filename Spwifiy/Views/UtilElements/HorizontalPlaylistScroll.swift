@@ -82,16 +82,11 @@ struct PlaylistItemView: View {
             Spacer()
                 .frame(height: 10)
 
-            if let description = playlist.description?.replacingOccurrences(of: "<a href=(.+?)>(.+?)</a>",
-                                                                            with: "$2",
-                                                                            options: .regularExpression,
-                                                                            range: nil) {
-                Text(description)
-                    .foregroundStyle(.fgSecondary)
-                    .font(.caption)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .lineLimit(2)
-            }
+            Text(playlist.description?.removeHTML() ?? "No description provided")
+                .foregroundStyle(.fgSecondary)
+                .font(.caption)
+                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(2)
 
             Spacer()
         }

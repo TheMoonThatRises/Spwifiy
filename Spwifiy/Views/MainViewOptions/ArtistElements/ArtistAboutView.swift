@@ -19,7 +19,7 @@ struct ArtistAboutView: View {
     var body: some View {
         ScrollView {
             HStack(alignment: .top) {
-                Text(biography ?? "No biography provided.")
+                Text(biography?.removeHTML() ?? "No biography provided.")
                     .font(.title3)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(width: geom.size.width * 2 / 3, alignment: .leading)
