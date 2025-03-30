@@ -129,7 +129,7 @@ class SpotifyViewModel: ObservableObject {
 
     @MainActor
     private func authClient(authResponse: SpotifyAuthResponse) {
-        if authResponse.accessToken.count != 376 {
+        if ![376, 378].contains(authResponse.accessToken.count) {
             Task {
                 try? keychain.remove(SpotifyAuthManager.authAccessResponse)
 
