@@ -42,7 +42,7 @@ struct ArtistBannerElement: View {
                 .overlay(
                     Rectangle()
                         .foregroundStyle(
-                            LinearGradient(colors: [.clear, .clear, .bgSecondary.opacity(0.8)],
+                            LinearGradient(colors: [.clear, .bgSecondary.opacity(0.2), .bgSecondary.opacity(0.8)],
                                            startPoint: .top,
                                            endPoint: .bottom)
                         )
