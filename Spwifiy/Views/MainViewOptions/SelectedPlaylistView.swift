@@ -10,18 +10,12 @@ import SpotifyWebAPI
 
 struct SelectedPlaylistView: View {
 
-    private var showFlags: Int = CollectionShowFlags.showAlbum
-
     @StateObject var selectedPlaylistViewModel: SelectedPlaylistViewModel
 
     @ObservedObject var avAudioPlayer: AVAudioPlayer
 
     @Binding var selectedArtist: Artist?
     @Binding var selectedAlbum: Album?
-
-    var playingId: String? {
-        selectedPlaylistViewModel.playlistDetails?.id
-    }
 
     init(spotifyCache: SpotifyCache,
          avAudioPlayer: AVAudioPlayer,
@@ -44,7 +38,7 @@ struct SelectedPlaylistView: View {
             if let playlist = selectedPlaylistViewModel.playlistDetails {
                 HStack {
                     VStack(alignment: .leading) {
-                        SongCollectionTopElement(playingId: playingId,
+                        SongCollectionTopElement(playingId: selectedPlaylistViewModel.playingId,
                                                  playlist: $selectedPlaylistViewModel.playlistDetails,
                                                  album: .constant(nil),
                                                  avAudioPlayer: avAudioPlayer,
@@ -56,8 +50,8 @@ struct SelectedPlaylistView: View {
                         Spacer()
                             .frame(height: 20)
 
-                        SongCollectionListElement(showFlags: showFlags,
-                                                  playingId: playingId,
+                        SongCollectionListElement(showFlags: selectedPlaylistViewModel.showFlags,
+                                                  playingId: selectedPlaylistViewModel.playingId,
                                                   avAudioPlayer: avAudioPlayer,
                                                   tracks: $selectedPlaylistViewModel.tracks,
                                                   savedTracks: $selectedPlaylistViewModel.savedTracks,
@@ -71,7 +65,7 @@ struct SelectedPlaylistView: View {
                     Spacer()
 
                     if geom.size.width > 800 {
-                        SongCollectionSidebarElement(showFlags: showFlags,
+                        SongCollectionSidebarElement(showFlags: selectedPlaylistViewModel.showFlags,
                                                      imageURL: playlist.images.first?.url,
                                                      uri: playlist.uri,
                                                      dominantColor: $selectedPlaylistViewModel.dominantColor,

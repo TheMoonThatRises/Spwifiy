@@ -10,6 +10,14 @@ import SpotifyWebAPI
 
 class ArtistViewModel: ObservableObject {
 
+    enum CurrentView: String, CaseIterable {
+        case homeView = "Home"
+        case albumView = "Albums"
+        case singlesEpView = "Singles and EPs"
+        case merchView = "Merch"
+        case aboutView = "About"
+    }
+
     var spotifyCache: SpotifyCache
 
     private var isFetchingArtistDetails: Bool = false
@@ -32,6 +40,8 @@ class ArtistViewModel: ObservableObject {
     @Published var externalLinks: [(String, String)] = []
 
     @Published var searchText: String = ""
+
+    @Published  var currentView: CurrentView = .homeView
 
     private var populateAlbumTrackCount = 25
 

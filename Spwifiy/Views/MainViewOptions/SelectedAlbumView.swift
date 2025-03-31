@@ -10,17 +10,11 @@ import SpotifyWebAPI
 
 struct SelectedAlbumView: View {
 
-    private var showFlags: Int = CollectionShowFlags.largerSide
-
     @StateObject var selectedAlbumViewModel: SelectedAlbumViewModel
 
     @ObservedObject var avAudioPlayer: AVAudioPlayer
 
     @Binding var selectedArtist: Artist?
-
-    var playingId: String? {
-        selectedAlbumViewModel.album?.id
-    }
 
     init(album: Album,
          spotifyCache: SpotifyCache,
@@ -39,7 +33,7 @@ struct SelectedAlbumView: View {
         GeometryReader { geom in
             HStack {
                 VStack(alignment: .leading) {
-                    SongCollectionTopElement(playingId: playingId,
+                    SongCollectionTopElement(playingId: selectedAlbumViewModel.playingId,
                                              playlist: .constant(nil),
                                              album: .constant(selectedAlbumViewModel.album),
                                              avAudioPlayer: avAudioPlayer,
@@ -51,8 +45,8 @@ struct SelectedAlbumView: View {
                     Spacer()
                         .frame(height: 20)
 
-                    SongCollectionListElement(showFlags: showFlags,
-                                              playingId: playingId,
+                    SongCollectionListElement(showFlags: selectedAlbumViewModel.showFlags,
+                                              playingId: selectedAlbumViewModel.playingId,
                                               avAudioPlayer: avAudioPlayer,
                                               tracks: $selectedAlbumViewModel.tracks,
                                               savedTracks: $selectedAlbumViewModel.savedTracks,
@@ -75,7 +69,7 @@ struct SelectedAlbumView: View {
                 Spacer()
 
                 if geom.size.width > 800 {
-                    SongCollectionSidebarElement(showFlags: showFlags,
+                    SongCollectionSidebarElement(showFlags: selectedAlbumViewModel.showFlags,
                                                  imageURL: selectedAlbumViewModel.album?.images?.first?.url,
                                                  uri: selectedAlbumViewModel.album?.uri ?? "",
                                                  dominantColor: $selectedAlbumViewModel.dominantColor,

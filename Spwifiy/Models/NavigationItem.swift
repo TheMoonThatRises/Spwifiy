@@ -28,6 +28,6 @@ enum NavigationItem: Equatable {
 
     // deep views
     case selectedPlaylistView(Playlist<PlaylistItemsReference>?)   // playlist item
-    case selectedArtistView(Artist?, ArtistView.CurrentView)       // artist struct and tab in view
+    case selectedArtistView(Artist?, ArtistViewModel.CurrentView)  // artist struct and tab in view
     case selectedAlbumView(Album?)                                 // album item
 }

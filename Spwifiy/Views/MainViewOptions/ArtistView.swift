@@ -10,21 +10,11 @@ import SpotifyWebAPI
 
 struct ArtistView: View {
 
-    enum CurrentView: String, CaseIterable {
-        case homeView = "Home"
-        case albumView = "Albums"
-        case singlesEpView = "Singles and EPs"
-        case merchView = "Merch"
-        case aboutView = "About"
-    }
-
     @StateObject var artistViewModel: ArtistViewModel
 
     @ObservedObject var avAudioPlayer: AVAudioPlayer
 
     @Binding var selectedAlbum: Album?
-
-    @State var currentView: CurrentView = .homeView
 
     init(spotifyCache: SpotifyCache,
          artist: Artist,
@@ -49,12 +39,12 @@ struct ArtistView: View {
 
                     VStack {
                         HStack {
-                            UnderlinedViewMenu(types: CurrentView.allCases,
-                                               currentOption: $currentView)
+                            UnderlinedViewMenu(types: ArtistViewModel.CurrentView.allCases,
+                                               currentOption: $artistViewModel.currentView)
 
                             Spacer()
 
-                            if [.albumView, .singlesEpView].contains(currentView) {
+                            if [.albumView, .singlesEpView].contains(artistViewModel.currentView) {
                                 NavButton(currentButton: .list, currentView: $artistViewModel.displayType) {
 
                                 } label: {
@@ -80,7 +70,7 @@ struct ArtistView: View {
                         .padding(5)
 
                         Group {
-                            switch currentView {
+                            switch artistViewModel.currentView {
                             case .homeView:
                                 ArtistHomeView(avAudioPlayer: avAudioPlayer,
                                                topTracks: $artistViewModel.topTracks,

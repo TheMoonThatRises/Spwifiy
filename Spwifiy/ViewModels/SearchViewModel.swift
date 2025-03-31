@@ -27,6 +27,10 @@ class SearchViewModel: ObservableObject {
     @Published var searchResult: SearchResult?
     @Published var isSearching: Bool = false
 
+    var showFlags: Int {
+        CollectionShowFlags.noSongListTitle | CollectionShowFlags.showAlbum
+    }
+
     public func search(spotifyViewModel: SpotifyViewModel, query: String) {
         if let searchTask = searchTask {
             searchTask.cancel()

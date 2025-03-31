@@ -14,6 +14,11 @@ class SelectedAlbumViewModel: GenericSongCollectionViewModel {
 
     @Published var album: Album?
 
+    var showFlags: Int = CollectionShowFlags.largerSide
+    override var playingId: String? {
+        album?.id
+    }
+
     init(spotifyCache: SpotifyCache, albumId: String?) {
         self.albumId = albumId
         self.album = spotifyCache[albumId: albumId ?? ""]

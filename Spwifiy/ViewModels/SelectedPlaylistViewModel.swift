@@ -14,8 +14,14 @@ class SelectedPlaylistViewModel: GenericSongCollectionViewModel {
 
     @Published var playlistDetails: Playlist<PlaylistItems>?
 
+    var showFlags: Int = CollectionShowFlags.showAlbum
+
     var didPlaylistChange: Bool {
         playlist.snapshotId != playlistDetails?.snapshotId
+    }
+
+    override var playingId: String? {
+        playlistDetails?.id
     }
 
     init(spotifyCache: SpotifyCache,

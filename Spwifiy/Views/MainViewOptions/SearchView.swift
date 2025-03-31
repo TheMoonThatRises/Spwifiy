@@ -19,16 +19,12 @@ struct SearchView: View {
     @Binding var selectedAlbum: Album?
     @Binding var selectedPlaylist: Playlist<PlaylistItemsReference>?
 
-    private var showFlags: Int {
-        CollectionShowFlags.noSongListTitle | CollectionShowFlags.showAlbum
-    }
-
     var body: some View {
         if let searchResult = searchViewModel.searchResult {
             ScrollView {
                 LazyVStack {
                     if let tracks = searchResult.tracks?.items {
-                        SongCollectionListElement(showFlags: showFlags,
+                        SongCollectionListElement(showFlags: searchViewModel.showFlags,
                                                   avAudioPlayer: avAudioPlayer,
                                                   tracks: .constant(Array(tracks.prefix(7))),
                                                   savedTracks: .constant([]),

@@ -62,6 +62,10 @@ class GenericSongCollectionViewModel: ObservableObject {
         }
     }
 
+    var playingId: String? {
+        fatalError("must be overridden")
+    }
+
     init(spotifyCache: SpotifyCache) {
         self.spotifyCache = spotifyCache
     }
