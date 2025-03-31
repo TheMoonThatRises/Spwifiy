@@ -49,7 +49,13 @@ class MainViewModel: ObservableObject {
 
     @Published var showLogoutSheet: Bool = false
 
-    @Published var searchText: String = ""
+    @Published var searchText: String = "" {
+        didSet {
+            if case .searchView = navigationStack.first {
+                navigationStack[0] = .searchView(searchText)
+            }
+        }
+    }
 
     @Published var navigationStack: [NavigationItem] = [] // newest first
     @Published var navigationIndex: Int = 0
