@@ -91,7 +91,7 @@ struct ArtistView: View {
                                 .onChange(of: artistViewModel.searchText) { _ in
                                     artistViewModel.onSingleEpFilterChange()
                                 }
-//                          case .merchView:
+//                            case .merchView:
                             case .aboutView:
                                 ArtistAboutView(geom: geom,
                                                 biography: $artistViewModel.biography,
