@@ -179,10 +179,17 @@ class AVAudioPlayer: ObservableObject {
             queuingItems.append(trackId)
         }
 
-        if let artists = track.artists?.description,
-           let musicId = await YoutubeMusicAPI.shared.getYoutubeSongId(artistName: artists,
-                                                                       songName: track.name,
-                                                                       albumName: track.album?.name) {
+        var musicId: String?
+
+        if let isrc = track.externalIds?["isrc"] {
+            musicId = await YoutubeAPI.shared.getSongFromISRC(isrc: isrc)
+        } else if let artists = track.artists?.description {
+            musicId = await YoutubeMusicAPI.shared.getYoutubeSongId(artistName: artists,
+                                                                    songName: track.name,
+                                                                    albumName: track.album?.name)
+        }
+
+        if let musicId {
             async let hlsResponse = YoutubeAPI.shared.getSongHLS(musicId: musicId)
             async let sponsorBlock = SponsorBlockAPI.shared.getSkipSegments(videoId: musicId)
 

@@ -45,7 +45,7 @@ class YoutubeAPI {
 
     public func retrieveVisitorData() async {
         let result = await SearchResponse.sendNonThrowingRequest(
-            youtubeModel: self.youtubeModel,
+            youtubeModel: youtubeModel,
             data: [.query: "never gonna give you up"]
         )
 
@@ -55,6 +55,27 @@ class YoutubeAPI {
         case .failure(let error):
             print("failed to retrieve visitor data: \(error)")
         }
+    }
+
+    public func getSongFromISRC(isrc: String) async -> String? {
+        let result = await SearchResponse.sendNonThrowingRequest(
+            youtubeModel: youtubeModel,
+            data: [.query: isrc]
+        )
+
+        print("isrc: \(isrc)")
+
+        switch result {
+        case .success(let response):
+            if let response = response.results.first,
+               let ytvideo = response as? YTVideo {
+                return ytvideo.videoId
+            }
+        case .failure(let error):
+            print("failed to retrieve videoId from isrc: \(error)")
+        }
+
+        return nil
     }
 
     public func getSongHLS(musicId: String) async -> (Date, URL)? {
