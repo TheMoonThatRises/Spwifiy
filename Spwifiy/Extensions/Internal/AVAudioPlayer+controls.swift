@@ -46,7 +46,7 @@ extension AVAudioPlayer {
     private func observePlayerStatus(avPlayer: AVPlayer) {
         switch avPlayer.status {
         case .readyToPlay:
-            player.play()
+            playAudio()
         case .failed:
             print("failed to play song")
             nextSong()

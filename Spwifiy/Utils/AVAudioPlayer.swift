@@ -77,10 +77,10 @@ class AVAudioPlayer: ObservableObject {
     @Published var isScrubbing: Bool = false {
         didSet {
             if isScrubbing {
-                player.pause()
+                pauseAudio()
             } else {
                 seek(time: CMTime(seconds: currentPlayTime, preferredTimescale: 100))
-                player.play()
+                playAudio()
             }
         }
     }
@@ -210,7 +210,7 @@ class AVAudioPlayer: ObservableObject {
     }
 
     public func updatePlayer() {
-        player.pause()
+        pauseAudio()
 
         if playingIndex >= trackQueue.count || playingIndex < 0 {
             if isLooping {
@@ -235,7 +235,7 @@ class AVAudioPlayer: ObservableObject {
 
             setupNowPlaying()
 
-            player.play()
+            playAudio()
 
             Task { @MainActor in
                 if isQueueingItem {

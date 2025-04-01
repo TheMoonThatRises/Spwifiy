@@ -39,7 +39,7 @@ extension AVAudioPlayer {
     }
 
     public func removeAllSongs() {
-        player.pause()
+        pauseAudio()
 
         trackQueue.removeAll()
 
