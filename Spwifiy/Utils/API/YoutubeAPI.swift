@@ -57,7 +57,7 @@ class YoutubeAPI {
         }
     }
 
-    public func getSongFromISRC(isrc: String) async -> String? {
+    public func getSongFromISRC(isrc: String, artist: String) async -> String? {
         let result = await SearchResponse.sendNonThrowingRequest(
             youtubeModel: youtubeModel,
             data: [.query: isrc]
@@ -67,9 +67,14 @@ class YoutubeAPI {
 
         switch result {
         case .success(let response):
-            if let response = response.results.first,
+            if let response = response
+                .results
+                .filter({ artist.lowercased().contains(($0 as? YTVideo)?.channel?.name?.lowercased() ?? "") })
+                .first,
                let ytvideo = response as? YTVideo {
                 return ytvideo.videoId
+            } else {
+                print("failed to find proper isrc video")
             }
         case .failure(let error):
             print("failed to retrieve videoId from isrc: \(error)")

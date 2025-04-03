@@ -181,10 +181,14 @@ class AVAudioPlayer: ObservableObject {
 
         var musicId: String?
 
+        guard let artistsName = track.artists?.description else {
+            return false
+        }
+
         if let isrc = track.externalIds?["isrc"] {
-            musicId = await YoutubeAPI.shared.getSongFromISRC(isrc: isrc)
-        } else if let artists = track.artists?.description {
-            musicId = await YoutubeMusicAPI.shared.getYoutubeSongId(artistName: artists,
+            musicId = await YoutubeAPI.shared.getSongFromISRC(isrc: isrc, artist: artistsName)
+        } else {
+            musicId = await YoutubeMusicAPI.shared.getYoutubeSongId(artistName: artistsName,
                                                                     songName: track.name,
                                                                     albumName: track.album?.name)
         }
