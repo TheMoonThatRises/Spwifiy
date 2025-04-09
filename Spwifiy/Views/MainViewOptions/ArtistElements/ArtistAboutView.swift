@@ -63,7 +63,7 @@ struct ArtistAboutView: View {
                         Spacer()
                             .frame(height: 10)
 
-                        Text("[\(item.1)](\(item.1))")
+                        Text(.init("[\(item.1)](\(item.1))"))
                             .font(.title3)
                             .foregroundStyle(.fgSecondary)
 
