@@ -242,29 +242,33 @@ class ArtistViewModel: ObservableObject {
         }
     }
 
-    public func onAlbumFilterChange() {
-        let artistAlbums = albums.filter {
-            $0.albumGroup == .album
+    private func onFilterChange(type: [AlbumType], albumList: inout [Album]) {
+        let albumTypes = albums.filter {
+            if let albumGroup = $0.albumGroup {
+                return type.contains(albumGroup)
+            } else {
+                return false
+            }
         }
 
-        filteredAlbums = searchText.isEmpty
-            ? artistAlbums
-            : artistAlbums.filter {
-                $0.name.lowercased().contains(searchText.lowercased())
+        albumList = (
+                searchText.isEmpty
+                    ? albumTypes
+                    : albumTypes.filter {
+                        $0.searchText.contains(searchText.lowercased())
+                    }
+            )
+            .sorted {
+                ($0.releaseDate ?? Date()) > ($1.releaseDate ?? Date())
             }
     }
 
-    public func onSingleEpFilterChange() {
-        let artistSingleEp = albums.filter {
-            $0.albumGroup == .ep ||
-            $0.albumGroup == .single
-        }
+    public func onAlbumFilterChange() {
+        onFilterChange(type: [.album], albumList: &filteredAlbums)
+    }
 
-        filteredSingleEp = searchText.isEmpty
-            ? artistSingleEp
-            : artistSingleEp.filter {
-                $0.name.lowercased().contains(searchText.lowercased())
-            }
+    public func onSingleEpFilterChange() {
+        onFilterChange(type: [.ep, .single], albumList: &filteredSingleEp)
     }
 
     public func updateAlbumsFilters() {
