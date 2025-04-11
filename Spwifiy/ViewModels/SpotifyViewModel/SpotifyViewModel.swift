@@ -12,6 +12,8 @@ import KeychainAccess
 
 class SpotifyViewModel: ObservableObject {
 
+//    private static let authCodeLengths: [Int] = [376, 378, 383]
+
     public enum AuthorizationStatus {
         case none, valid, failed
     }
@@ -129,15 +131,17 @@ class SpotifyViewModel: ObservableObject {
 
     @MainActor
     private func authClient(authResponse: SpotifyAuthResponse) {
-        if ![376, 378].contains(authResponse.accessToken.count) {
-            Task {
-                try? keychain.remove(SpotifyAuthManager.authAccessResponse)
+        print("auth code len: \(authResponse.accessToken.count)")
 
-                await attemptSpotifyAuthToken(method: .`init`)
-            }
-
-            return
-        }
+//        if !SpotifyViewModel.authCodeLengths.contains(authResponse.accessToken.count) {
+//            Task {
+//                try? keychain.remove(SpotifyAuthManager.authAccessResponse)
+//
+//                await attemptSpotifyAuthToken(method: .`init`)
+//            }
+//
+//            return
+//        }
 
         let expirationDate = Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs)
 
