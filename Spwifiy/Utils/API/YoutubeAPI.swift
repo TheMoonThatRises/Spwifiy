@@ -69,7 +69,24 @@ class YoutubeAPI {
         case .success(let response):
             if let response = response
                 .results
-                .filter({ artist.lowercased().contains(($0 as? YTVideo)?.channel?.name?.lowercased() ?? "") })
+                .filter({
+                    let channelNameSegments = Set(
+                        ($0 as? YTVideo)?.channel?
+                        .name?
+                        .lowercased()
+                        .split(separator: " ") ?? []
+                    )
+
+                    let artistNameSegments = Set(artist.split(separator: ",")[0].lowercased().split(separator: " "))
+
+                    let commonCount = channelNameSegments.intersection(artistNameSegments)
+
+                    let artistMatch = (
+                        Double(commonCount.count) / Double(min(channelNameSegments.count, artistNameSegments.count))
+                    ) > 0.5
+
+                    return artistMatch
+                })
                 .first,
                let ytvideo = response as? YTVideo {
                 return ytvideo.videoId
