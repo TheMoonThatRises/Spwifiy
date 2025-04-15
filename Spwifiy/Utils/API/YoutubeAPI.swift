@@ -107,7 +107,9 @@ class YoutubeAPI {
 
         let video = YTVideo(videoId: musicId)
 
-        await retrieveVisitorData()
+        if youtubeModel.visitorData.isEmpty {
+            await retrieveVisitorData()
+        }
 
         do {
             let streamingInfo = try await video.fetchStreamingInfosThrowing(youtubeModel: youtubeModel)
