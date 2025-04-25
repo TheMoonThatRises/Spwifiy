@@ -162,7 +162,7 @@ struct PlayingElementView: View {
                 .cursorHover(.pointingHand)
 
                 Button {
-                    mainViewModel.selectedLyricsSongId = avAudioPlayer.currentPlayingTrack?.id
+                    mainViewModel.currentView = .lyrics
                 } label: {
                     Image("spwifiy.lyrics")
                         .resizable()

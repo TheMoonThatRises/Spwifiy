@@ -44,11 +44,6 @@ class MainViewModel: ObservableObject {
             currentView = .selectedAlbum
         }
     }
-    @Published var selectedLyricsSongId: String? {
-        didSet {
-            currentView = .lyrics
-        }
-    }
 
     @Published var playingTrack: Track?
 
@@ -133,7 +128,7 @@ class MainViewModel: ObservableObject {
         case .selectedAlbum:
             return .selectedAlbumView(selectedAlbum)
         case .lyrics:
-            return .lyrics(selectedLyricsSongId)
+            return .lyrics
         }
     }
 
@@ -174,8 +169,8 @@ class MainViewModel: ObservableObject {
             selectedArtist = artist
         case .selectedAlbumView(let album):
             selectedAlbum = album
-        case .lyrics(let songId):
-            selectedLyricsSongId = songId
+        case .lyrics:
+            currentView = .lyrics
         }
     }
 

@@ -32,5 +32,5 @@ enum NavigationItem: Equatable {
     case selectedAlbumView(Album?)                                 // album item
 
     // misc views
-    case lyrics(String?)                                           // lyrics song id
+    case lyrics
 }
