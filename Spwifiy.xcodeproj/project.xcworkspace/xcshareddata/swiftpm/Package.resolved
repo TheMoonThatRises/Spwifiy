@@ -1,5 +1,5 @@
 {
-  "originHash" : "01f5a26af18ebd81a7a3904f8ba5c9f3f3fe0a60a3e67481437e41a89c49e566",
+  "originHash" : "2909eb9d93bc7c895d9ced13817673e92eb588cd6d29a7732895465fb76ef5dc",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio",
       "state" : {
-        "revision" : "c51907a839e63ebf0ba2076bba73dd96436bd1b9",
-        "version" : "2.81.0"
+        "revision" : "6e17bc946821e550b88d22fd964423f70f1ce42d",
+        "version" : "2.82.0"
       }
     },
     {
