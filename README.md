@@ -13,6 +13,7 @@
 - Uninterrupted listening and minimal UI - no ads
 - Secure credential storage stored in Keychain
 - Cached data for less network use
+- Time-synced lyrics
 
 ## License
 
@@ -34,11 +35,11 @@ Spwifiy is open-source and licensed under the [BSD-4-Clause](/LICENSE) license.
 
 1. [AlertToast](https://github.com/elai950/AlertToast) - Create Apple-like alerts & toasts using SwiftUI.
 1. [GRDB](https://github.com/groue/GRDB.swift) - A toolkit for SQLite databases, with a focus on application development.
-1. [swift-html-entities](https://github.com/Kitura/swift-html-entities) - HTML5 spec-compliant character encoder/decoder for Swift.
 1. [KeychainAccess](https://github.com/kishikawakatsumi/KeychainAccess) - Simple Swift wrapper for Keychain that works on iOS, watchOS, tvOS and macOS.
 1. [M3U8Decoder](https://github.com/ikhvorost/M3U8Decoder) - M3U8 playlist decoder for Swift.
 1. [SpotifyAPI](https://github.com/Peter-Schorn/SpotifyAPI) - A Swift library for the Spotify web API. Supports all endpoints.
 1. [swiftui-cached-async-image](https://github.com/lorenzofiamingo/swiftui-cached-async-image) - CachedAsyncImage is the simplest way to add cache to your AsyncImage.
+1. [swift-html-entities](https://github.com/Kitura/swift-html-entities) - HTML5 spec-compliant character encoder/decoder for Swift.
 1. [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON) - The better way to deal with JSON data in Swift.
 1. [SwordRPC](https://github.com/spotlightishere/SwordRPC) - A Discord Rich Presence Library for Swift.
 1. [Thread-Safe-Dictionary](https://github.com/iThink32/Thread-Safe-Dictionary) - A Thread Safe Dictionary.
