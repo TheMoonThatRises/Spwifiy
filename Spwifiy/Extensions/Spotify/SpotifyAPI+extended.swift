@@ -10,6 +10,11 @@ import SpotifyWebAPI
 
 extension SpotifyAPI {
 
+    private static var userAgent: String {
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
+        "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3.1 Safari/605.1.15"
+    }
+
     private var jsonDecoder: JSONDecoder {
         JSONDecoder()
     }
@@ -36,7 +41,7 @@ extension SpotifyAPI {
         request.setValue("empty", forHTTPHeaderField: "Sec-Fetch-Dest")
         request.setValue("cors", forHTTPHeaderField: "Sec-Fetch-Mode")
         request.setValue("same-site", forHTTPHeaderField: "Sec-Fetch-Site")
-//        request.setValue(RandomUserAgent.generate(), forHTTPHeaderField: "User-Agent")
+        request.setValue(SpotifyAPI.userAgent, forHTTPHeaderField: "User-Agent")
     }
 
     func getLyrics(trackId: String) async -> SpotifyLyrics? {
