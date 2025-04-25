@@ -33,8 +33,11 @@ struct LyricsView: View {
                     VStack(alignment: .leading) {
                         ForEach(spotifyLyrics.lyrics.lines.enumeratedArray(), id: \.element.startTimeMs) { idx, line in
                             Button {
-                                seek(CMTime(seconds: Double(line.startTimeMs) / 1000.0,
+                                let seekTime = Double(line.startTimeMs) / 1000.0
+
+                                seek(CMTime(seconds: seekTime,
                                             preferredTimescale: 100))
+                                currentPlayTime = seekTime
                             } label: {
                                 Text(line.words)
                                     .foregroundStyle(
