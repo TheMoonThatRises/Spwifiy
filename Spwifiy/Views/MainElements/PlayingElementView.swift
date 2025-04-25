@@ -11,6 +11,7 @@ import SpotifyWebAPI
 struct PlayingElementView: View {
 
     @ObservedObject var avAudioPlayer: AVAudioPlayer
+    @ObservedObject var mainViewModel: MainViewModel
 
     @Binding var selectedArtist: Artist?
     @Binding var selectedAlbum: Album?
@@ -161,11 +162,12 @@ struct PlayingElementView: View {
                 .cursorHover(.pointingHand)
 
                 Button {
-
+                    mainViewModel.selectedLyricsSongId = avAudioPlayer.currentPlayingTrack?.id
                 } label: {
                     Image("spwifiy.lyrics")
                         .resizable()
                         .frame(width: 40, height: 40)
+                        .foregroundStyle(mainViewModel.currentView == .lyrics ? .fgPrimary : .fgSecondary)
                 }
                 .buttonStyle(.plain)
                 .cursorHover(.pointingHand)

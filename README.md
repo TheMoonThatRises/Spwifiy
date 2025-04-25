@@ -33,6 +33,7 @@ Spwifiy is open-source and licensed under the [BSD-4-Clause](/LICENSE) license.
 ### Dependencies
 
 1. [AlertToast](https://github.com/elai950/AlertToast) - Create Apple-like alerts & toasts using SwiftUI.
+1. [GRDB](https://github.com/groue/GRDB.swift) - A toolkit for SQLite databases, with a focus on application development.
 1. [swift-html-entities](https://github.com/Kitura/swift-html-entities) - HTML5 spec-compliant character encoder/decoder for Swift.
 1. [KeychainAccess](https://github.com/kishikawakatsumi/KeychainAccess) - Simple Swift wrapper for Keychain that works on iOS, watchOS, tvOS and macOS.
 1. [M3U8Decoder](https://github.com/ikhvorost/M3U8Decoder) - M3U8 playlist decoder for Swift.

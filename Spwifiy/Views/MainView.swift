@@ -104,6 +104,12 @@ struct MainView: View {
                                         .font(.title)
                                 }
 
+                            // misc
+                            case .lyrics:
+                                LyricsView(spotifyCache: spotifyCache,
+                                           currentTrack: $avAudioPlayer.currentPlayingTrack,
+                                           currentPlayTime: $avAudioPlayer.currentPlayTime)
+
                             // unimplemented views
                             default:
                                 Text("Unknown error")
@@ -144,6 +150,7 @@ struct MainView: View {
                     }
 
                     PlayingElementView(avAudioPlayer: avAudioPlayer,
+                                       mainViewModel: mainViewModel,
                                        selectedArtist: $mainViewModel.selectedArtist,
                                        selectedAlbum: $mainViewModel.selectedAlbum,
                                        showQueueView: $mainViewModel.showQueueView)

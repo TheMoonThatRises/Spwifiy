@@ -30,6 +30,8 @@ class SpotifyCache: ObservableObject {
     var savedTracksCache: [Track] = []
     var savedTracksContainsCache = ThreadSafeDictionary<String, Bool>()
 
+    let lyricsCache: LyricsTableCache = LyricsTableCache()
+
     subscript(artistId id: String) -> Artist? {
         artistsCache[id]
     }
@@ -60,6 +62,10 @@ class SpotifyCache: ObservableObject {
 
     subscript(isSavedTrack id: String) -> Bool? {
         savedTracksContainsCache[id]
+    }
+
+    subscript(lyricSongId id: String) -> SpotifyLyrics? {
+        lyricsCache.getSpotifyLyrics(songId: id)
     }
 
     public func getArtists(artistIds: [String]) -> [Artist] {

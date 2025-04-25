@@ -30,4 +30,7 @@ enum NavigationItem: Equatable {
     case selectedPlaylistView(Playlist<PlaylistItemsReference>?)   // playlist item
     case selectedArtistView(Artist?, ArtistViewModel.CurrentView)  // artist struct and tab in view
     case selectedAlbumView(Album?)                                 // album item
+
+    // misc views
+    case lyrics(String?)                                           // lyrics song id
 }

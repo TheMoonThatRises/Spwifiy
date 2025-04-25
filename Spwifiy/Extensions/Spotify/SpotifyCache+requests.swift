@@ -199,4 +199,22 @@ extension SpotifyCache {
         }
     }
 
+    public func fetchLyrics(songId: String) async throws -> SpotifyLyrics? {
+        guard let spotifyViewModel else {
+            throw SpwifiyErrors.spotifyNoViewModel
+        }
+
+        if let lyrics = self[lyricSongId: songId] {
+            return lyrics
+        }
+
+        guard let lyrics = await spotifyViewModel.spotify.getLyrics(trackId: songId) else {
+            return nil
+        }
+
+        lyricsCache.addLyrics(songId: songId, source: .spotify, lyrics: lyrics)
+
+        return lyrics
+    }
+
 }

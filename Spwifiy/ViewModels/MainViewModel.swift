@@ -44,6 +44,11 @@ class MainViewModel: ObservableObject {
             currentView = .selectedAlbum
         }
     }
+    @Published var selectedLyricsSongId: String? {
+        didSet {
+            currentView = .lyrics
+        }
+    }
 
     @Published var playingTrack: Track?
 
@@ -64,44 +69,7 @@ class MainViewModel: ObservableObject {
 
     private func updateNavigationStack() {
         if shouldUpdateNavStack {
-            var navItem: NavigationItem {
-                switch currentView {
-                case .home:
-                    return .homeView
-                case .discover:
-                    return .discoverView
-                case .search:
-                    return .searchView(searchText)
-                case .notification:
-                    return .notificationView
-                case .settings:
-                    return .settingsView
-                case .profile:
-                    return .profileView
-                case .library:
-                    return .libraryView
-                case .pins:
-                    return .pinsView
-                case .playlist:
-                    return .playlistView
-                case .likedSongs:
-                    return .likedSongsView
-                case .saves:
-                    return .savesView
-                case .albums:
-                    return .albumsView
-                case .folders:
-                    return .foldersView
-                case .artists:
-                    return .followingArtistView
-                case .selectedPlaylist:
-                    return .selectedPlaylistView(selectedPlaylist)
-                case .selectedArtist:
-                    return .selectedArtistView(selectedArtist, .homeView)
-                case .selectedAlbum:
-                    return .selectedAlbumView(selectedAlbum)
-                }
-            }
+            let navItem = currentToNav()
 
             if navigationIndex > 0 {
                 navigationStack.removeSubrange(0..<navigationIndex)
@@ -125,6 +93,51 @@ class MainViewModel: ObservableObject {
 
         shouldUpdateNavStack = false
 
+        navToCurrent()
+    }
+
+    private func currentToNav() -> NavigationItem {
+        switch currentView {
+        case .home:
+            return .homeView
+        case .discover:
+            return .discoverView
+        case .search:
+            return .searchView(searchText)
+        case .notification:
+            return .notificationView
+        case .settings:
+            return .settingsView
+        case .profile:
+            return .profileView
+        case .library:
+            return .libraryView
+        case .pins:
+            return .pinsView
+        case .playlist:
+            return .playlistView
+        case .likedSongs:
+            return .likedSongsView
+        case .saves:
+            return .savesView
+        case .albums:
+            return .albumsView
+        case .folders:
+            return .foldersView
+        case .artists:
+            return .followingArtistView
+        case .selectedPlaylist:
+            return .selectedPlaylistView(selectedPlaylist)
+        case .selectedArtist:
+            return .selectedArtistView(selectedArtist, .homeView)
+        case .selectedAlbum:
+            return .selectedAlbumView(selectedAlbum)
+        case .lyrics:
+            return .lyrics(selectedLyricsSongId)
+        }
+    }
+
+    private func navToCurrent() {
         switch navigationStack[navigationIndex] {
         case .homeView:
             currentView = .home
@@ -161,6 +174,8 @@ class MainViewModel: ObservableObject {
             selectedArtist = artist
         case .selectedAlbumView(let album):
             selectedAlbum = album
+        case .lyrics(let songId):
+            selectedLyricsSongId = songId
         }
     }
 

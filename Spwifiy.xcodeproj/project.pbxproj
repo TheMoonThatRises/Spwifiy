@@ -14,6 +14,7 @@
 		346630682CFED6A600B5D8D9 /* SwordRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 346630672CFED6A600B5D8D9 /* SwordRPC */; };
 		34C115742D8E6E42002DC45E /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 34C115732D8E6E42002DC45E /* CachedAsyncImage */; };
 		34DB36B22D99EA5D008EBE43 /* HTMLEntities in Frameworks */ = {isa = PBXBuildFile; productRef = 34DB36B12D99EA5D008EBE43 /* HTMLEntities */; };
+		34E78A4E2DBB307200AFF000 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 34E78A4D2DBB307200AFF000 /* GRDB */; };
 		B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */ = {isa = PBXBuildFile; productRef = B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */; };
 		B6E81A5D2CF3DD7A002060FA /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A5C2CF3DD7A002060FA /* AlertToast */; };
 		B6E81A602CF3EA39002060FA /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = B6E81A5F2CF3EA39002060FA /* KeychainAccess */; };
@@ -80,6 +81,7 @@
 				B6DAB6B42CF32B60000FAE96 /* SpotifyAPI in Frameworks */,
 				34DB36B22D99EA5D008EBE43 /* HTMLEntities in Frameworks */,
 				346630482CFD75C400B5D8D9 /* M3U8Decoder in Frameworks */,
+				34E78A4E2DBB307200AFF000 /* GRDB in Frameworks */,
 				34C115742D8E6E42002DC45E /* CachedAsyncImage in Frameworks */,
 				B6E81A5D2CF3DD7A002060FA /* AlertToast in Frameworks */,
 				346630652CFED5B700B5D8D9 /* SwordRPC in Frameworks */,
@@ -140,6 +142,7 @@
 				346630672CFED6A600B5D8D9 /* SwordRPC */,
 				34C115732D8E6E42002DC45E /* CachedAsyncImage */,
 				34DB36B12D99EA5D008EBE43 /* HTMLEntities */,
+				34E78A4D2DBB307200AFF000 /* GRDB */,
 			);
 			productName = Spwifiy;
 			productReference = B6EDE45D2CF2923B004666B1 /* Spwifiy.app */;
@@ -179,6 +182,7 @@
 				346630662CFED6A600B5D8D9 /* XCRemoteSwiftPackageReference "SwordRPC" */,
 				34C115722D8E6E42002DC45E /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
 				34DB36B02D99EA5D008EBE43 /* XCRemoteSwiftPackageReference "swift-html-entities" */,
+				34E78A4C2DBB307200AFF000 /* XCRemoteSwiftPackageReference "GRDB" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B6EDE45E2CF2923B004666B1 /* Products */;
@@ -363,6 +367,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Spwifiy/Spwifiy.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -396,6 +401,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Spwifiy/Spwifiy.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -494,6 +500,14 @@
 				minimumVersion = 4.0.1;
 			};
 		};
+		34E78A4C2DBB307200AFF000 /* XCRemoteSwiftPackageReference "GRDB" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		B6DAB6B22CF32B60000FAE96 /* XCRemoteSwiftPackageReference "SpotifyAPI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Peter-Schorn/SpotifyAPI";
@@ -554,6 +568,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 34DB36B02D99EA5D008EBE43 /* XCRemoteSwiftPackageReference "swift-html-entities" */;
 			productName = HTMLEntities;
+		};
+		34E78A4D2DBB307200AFF000 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 34E78A4C2DBB307200AFF000 /* XCRemoteSwiftPackageReference "GRDB" */;
+			productName = GRDB;
 		};
 		B6DAB6B32CF32B60000FAE96 /* SpotifyAPI */ = {
 			isa = XCSwiftPackageProductDependency;
