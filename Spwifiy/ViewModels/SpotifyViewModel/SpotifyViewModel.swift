@@ -100,16 +100,13 @@ class SpotifyViewModel: ObservableObject {
 
             APIRequest.shared.request(urlString: authUrl, noCache: true) { data in
                 Task { @MainActor in
-                    defer {
-                        self.isAuthenticating = false
-                    }
-
                     APIRequest.shared.removeCookies(cookies: [spDcCookie, spTCookie], noCache: true)
 
                     guard let data = data,
                           let authResponse = try? self.decoder.decode(SpotifyAuthResponse.self, from: data),
                           !authResponse.isAnonymous else {
                         self.isAuthorized = .failed
+                        self.isAuthenticating = false
 
                         return
                     }
@@ -118,6 +115,7 @@ class SpotifyViewModel: ObservableObject {
                         data: SpotifyAuthManager.authAccessResponse
                     ] = try self.encoder.encode(authResponse)
 
+                    // note: authClient must set `isAuthenticating` to false at the end
                     self.authClient(authResponse: authResponse)
                 }
             }
@@ -143,6 +141,10 @@ class SpotifyViewModel: ObservableObject {
             }
 
             return
+        }
+
+        defer {
+            self.isAuthenticating = false
         }
 
         let expirationDate = Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs)
