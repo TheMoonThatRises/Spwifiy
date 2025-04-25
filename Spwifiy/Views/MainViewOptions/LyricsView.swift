@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SpotifyWebAPI
+import MediaPlayer
 
 struct LyricsView: View {
 
@@ -14,6 +15,8 @@ struct LyricsView: View {
 
     @Binding var currentTrack: Track?
     @Binding var currentPlayTime: Double
+
+    let seek: (CMTime) -> Void
 
     @State var spotifyLyrics: SpotifyLyrics?
 
@@ -29,15 +32,22 @@ struct LyricsView: View {
                 ScrollView {
                     VStack(alignment: .leading) {
                         ForEach(spotifyLyrics.lyrics.lines.enumeratedArray(), id: \.element.startTimeMs) { idx, line in
-                            Text(line.words)
-                                .foregroundStyle(
-                                    line.startTimeMs - offset <= currentPlayTimeMS && (
-                                        spotifyLyrics.lyrics.lines.count <= idx + 1 ||
-                                        spotifyLyrics.lyrics.lines[idx + 1].startTimeMs - offset > currentPlayTimeMS
-                                    )
+                            Button {
+                                seek(CMTime(seconds: Double(line.startTimeMs) / 1000.0,
+                                            preferredTimescale: 100))
+                            } label: {
+                                Text(line.words)
+                                    .foregroundStyle(
+                                        line.startTimeMs - offset <= currentPlayTimeMS && (
+                                            spotifyLyrics.lyrics.lines.count <= idx + 1 ||
+                                            spotifyLyrics.lyrics.lines[idx + 1].startTimeMs - offset > currentPlayTimeMS
+                                        )
                                         ? .fgPrimary
                                         : .fgSecondary
-                                )
+                                    )
+                            }
+                            .cursorHover(.pointingHand)
+                            .buttonStyle(.plain)
 
                             if line.startTimeMs != spotifyLyrics.lyrics.lines.last?.startTimeMs {
                                 Spacer()

@@ -108,7 +108,8 @@ struct MainView: View {
                             case .lyrics:
                                 LyricsView(spotifyCache: spotifyCache,
                                            currentTrack: $avAudioPlayer.currentPlayingTrack,
-                                           currentPlayTime: $avAudioPlayer.currentPlayTime)
+                                           currentPlayTime: $avAudioPlayer.currentPlayTime,
+                                           seek: avAudioPlayer.seek(time:))
 
                             // unimplemented views
                             default:
