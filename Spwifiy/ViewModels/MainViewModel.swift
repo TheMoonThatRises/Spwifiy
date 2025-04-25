@@ -45,8 +45,6 @@ class MainViewModel: ObservableObject {
         }
     }
 
-    @Published var playingTrack: Track?
-
     @Published var showLogoutSheet: Bool = false
 
     @Published var searchText: String = "" {
