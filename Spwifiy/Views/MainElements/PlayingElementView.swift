@@ -162,7 +162,11 @@ struct PlayingElementView: View {
                 .cursorHover(.pointingHand)
 
                 Button {
-                    mainViewModel.currentView = .lyrics
+                    if mainViewModel.currentView == .lyrics {
+                        mainViewModel.navToView(item: mainViewModel.navigationStack[1])
+                    } else {
+                        mainViewModel.currentView = .lyrics
+                    }
                 } label: {
                     Image("spwifiy.lyrics")
                         .resizable()

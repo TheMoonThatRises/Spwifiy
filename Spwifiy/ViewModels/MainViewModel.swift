@@ -62,7 +62,7 @@ class MainViewModel: ObservableObject {
 
     private func updateNavigationStack() {
         if shouldUpdateNavStack {
-            let navItem = currentToNav()
+            let navItem = viewToNav(view: currentView)
 
             if navigationIndex > 0 {
                 navigationStack.removeSubrange(0..<navigationIndex)
@@ -86,11 +86,11 @@ class MainViewModel: ObservableObject {
 
         shouldUpdateNavStack = false
 
-        navToCurrent()
+        navToView(item: navigationStack[navigationIndex])
     }
 
-    private func currentToNav() -> NavigationItem {
-        switch currentView {
+    public func viewToNav(view: MainViewOptions) -> NavigationItem {
+        switch view {
         case .home:
             return .homeView
         case .discover:
@@ -130,8 +130,8 @@ class MainViewModel: ObservableObject {
         }
     }
 
-    private func navToCurrent() {
-        switch navigationStack[navigationIndex] {
+    public func navToView(item: NavigationItem) {
+        switch item {
         case .homeView:
             currentView = .home
         case .discoverView:
