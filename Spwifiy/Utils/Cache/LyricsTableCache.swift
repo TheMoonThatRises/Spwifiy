@@ -16,7 +16,7 @@ class LyricsTableCache: GenericTable {
     private let contentKey: String = "content"
 
     init() {
-        super.init(tableName: "lyrics")
+        super.init(tableName: SpotifyLyricsSqlite<SpotifyLyrics>.databaseTableName)
     }
 
     override func createTable(builder: TableDefinition) {
@@ -32,24 +32,17 @@ class LyricsTableCache: GenericTable {
                                                source: src,
                                                content: lyrics)
 
-        queryDatabase { dbc in
-            try dbc.write { dbv in
-                try sqliteStruct.insert(dbv)
-            }
-        }
+        insertItem(item: sqliteStruct)
     }
 
     public func getSpotifyLyrics(songId sId: String) -> SpotifyLyrics? {
-        let result = queryDatabase { dbc in
-            try dbc.read { dbv in
-                try SpotifyLyricsSqlite<SpotifyLyrics>
-                    .filter(Column(self.songIdKey) == sId)
-                    .filter(Column(self.sourceKey) == LyricSource.spotify.rawValue)
-                    .fetchOne(dbv)
-            }
+        let item: SpotifyLyricsSqlite<SpotifyLyrics>? = getItem { fetch in
+            fetch
+                .filter(Column(self.songIdKey) == sId)
+                .filter(Column(self.sourceKey) == LyricSource.spotify.rawValue)
         }
 
-        return result??.content
+        return item?.content
     }
 
 }

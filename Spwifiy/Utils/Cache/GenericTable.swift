@@ -29,7 +29,7 @@ class GenericTable {
     }
 
     @discardableResult
-    func queryDatabase<T>(method: @escaping (DatabasePool) throws -> T) -> T? {
+    func queryDatabase<T>(method: @escaping (DatabasePool) throws -> T?) -> T? {
         if GenericTable.database.getConnection() == nil {
             GenericTable.database.tryConnectDatabase()
         }
@@ -45,6 +45,23 @@ class GenericTable {
         }
 
         return nil
+    }
+
+    func insertItem<T: PersistableRecord>(item: T) {
+        queryDatabase { dbc in
+            try dbc.write { dbv in
+                try item.insert(dbv)
+            }
+        }
+    }
+
+    func getItem<T: FetchableRecord>(filter: @escaping (T.Type) -> QueryInterfaceRequest<T>) -> T? {
+        queryDatabase { dbc in
+            try dbc.read { dbv in
+                try filter(T.self)
+                    .fetchOne(dbv)
+            }
+        }
     }
 
 }
