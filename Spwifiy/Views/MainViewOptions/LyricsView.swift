@@ -77,6 +77,8 @@ struct LyricsView: View {
             }
         }
         .onChange(of: currentTrack) { _ in
+            currentLineIdx = nil
+
             Task {
                 if let songId = currentTrack?.id {
                     spotifyLyrics = try? await spotifyCache.fetchLyrics(songId: songId)
