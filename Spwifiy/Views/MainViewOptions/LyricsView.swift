@@ -19,6 +19,7 @@ struct LyricsView: View {
     let seek: (CMTime) -> Void
 
     @State var spotifyLyrics: SpotifyLyrics?
+    @State var currentLineIdx: Int?
 
     var currentPlayTimeMS: Int {
         Int(currentPlayTime * 1000)
@@ -40,14 +41,7 @@ struct LyricsView: View {
                                 currentPlayTime = seekTime
                             } label: {
                                 Text(line.words)
-                                    .foregroundStyle(
-                                        line.startTimeMs - offset <= currentPlayTimeMS && (
-                                            spotifyLyrics.lyrics.lines.count <= idx + 1 ||
-                                            spotifyLyrics.lyrics.lines[idx + 1].startTimeMs - offset > currentPlayTimeMS
-                                        )
-                                        ? .fgPrimary
-                                        : .fgSecondary
-                                    )
+                                    .foregroundStyle(currentLineIdx == idx ? .fgPrimary : .fgSecondary)
                             }
                             .cursorHover(.pointingHand)
                             .buttonStyle(.plain)
@@ -68,6 +62,20 @@ struct LyricsView: View {
             }
         }
         .font(.satoshiBlack(40))
+        .onChange(of: currentPlayTimeMS) { newTime in
+            if let lines = spotifyLyrics?.lyrics.lines {
+                if let newIdx = lines.firstIndex(where: { line in
+                    let nextStart = lines[safe: lines.firstIndex(of: line)! + 1]?.startTimeMs ?? Int.max
+                    return line.startTimeMs - offset <= newTime && nextStart - offset > newTime
+                }) {
+                    if newIdx != currentLineIdx {
+                        withAnimation(.defaultAnimation) {
+                            currentLineIdx = newIdx
+                        }
+                    }
+                }
+            }
+        }
         .onChange(of: currentTrack) { _ in
             Task {
                 if let songId = currentTrack?.id {

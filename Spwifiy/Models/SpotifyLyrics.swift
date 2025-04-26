@@ -35,7 +35,7 @@ struct SpotifyLyricsData: Codable {
     let previewLines: [SpotifyLyricsLine]
 }
 
-struct SpotifyLyricsLine: Codable {
+struct SpotifyLyricsLine: Codable, Equatable {
     let startTimeMs: Int
     let words: String
     let syllables: [String?]
