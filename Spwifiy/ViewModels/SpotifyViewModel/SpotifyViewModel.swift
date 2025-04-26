@@ -159,7 +159,6 @@ class SpotifyViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     private func authClient(authResponse: SpotifyAuthResponse) {
         let expirationDate = Date(millisecondsSince1970: authResponse.accessTokenExpirationTimestampMs)
 
