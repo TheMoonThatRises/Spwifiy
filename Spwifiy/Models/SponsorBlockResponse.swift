@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SponsorBlockItem: Decodable {
+struct SponsorBlockItem: Codable {
     let category: String
     let actionType: String
     let segment: [Double]

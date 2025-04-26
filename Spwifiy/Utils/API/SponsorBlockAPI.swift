@@ -11,7 +11,7 @@ class SponsorBlockAPI {
 
     public static let shared = SponsorBlockAPI()
 
-    private var sponsorBlockCache: [String: SponsorBlockResponse] = [:]
+    private var sponsorBlockCache: SponsorBlockTableCache = SponsorBlockTableCache()
 
     private let requestParams: [URLQueryItem] = [
         .init(name: "category[]", value: "sponsor"),
@@ -36,14 +36,19 @@ class SponsorBlockAPI {
         }
     }
 
-    public func getSkipSegments(videoId: String) async -> SponsorBlockResponse {
-        if let cacheResponse = sponsorBlockCache[videoId] {
+    public func getSkipSegments(videoId: String) async -> [SponsorBlockItem] {
+        if let cacheResponse = sponsorBlockCache.getSponsorBlockItem(songId: videoId) {
             return cacheResponse
         }
 
         let response: String? = await APIRequest.shared.request(url: requestURL(videoId))
+        let sponsorItems = SponsorBlockResponse(response: response ?? "No response")
+            .items
+            .filter { $0.locked == 1 || $0.votes > 0 }
 
-        return SponsorBlockResponse(response: response ?? "No response")
+        sponsorBlockCache.addSponsorBlockItem(songId: videoId, content: sponsorItems)
+
+        return sponsorItems
     }
 
 }

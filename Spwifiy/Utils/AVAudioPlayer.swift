@@ -199,7 +199,7 @@ class AVAudioPlayer: ObservableObject {
             async let hlsResponse = YoutubeAPI.shared.getSongHLS(musicId: musicId)
             async let sponsorBlock = SponsorBlockAPI.shared.getSkipSegments(videoId: musicId)
 
-            let sponsorBlockSegments = await sponsorBlock.items.map { ($0.segment[0], $0.segment[1]) }
+            let sponsorBlockSegments = await sponsorBlock.map { ($0.segment[0], $0.segment[1]) }
 
             guard let (expiration, m3u8) = await hlsResponse else {
                 print("youtube api response nil")
