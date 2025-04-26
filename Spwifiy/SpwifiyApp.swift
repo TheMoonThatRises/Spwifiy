@@ -52,7 +52,7 @@ struct SpwifiyApp: App {
                         .font(.satoshiBlack(24))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .task(priority: .utility) {
-                            await spotifyViewModel.attemptSpotifyAuthToken(method: .transport)
+                            await spotifyViewModel.spotifyAuthCycle()
                         }
                 }
             }
