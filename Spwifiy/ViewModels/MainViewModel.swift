@@ -13,7 +13,14 @@ class MainViewModel: ObservableObject {
     @AppStorage("settings.view.showqueueview") var showQueueView: Bool = false
     @AppStorage("settings.view.queueviewwidth") var queueViewWidth: Double = 300
 
-    @Published var authStatus: SpotifyAuthManager.AuthStatus = .cookieSet
+    @Published var showAuthLoading: Bool = false
+    @Published var showErrorMessage: Bool = false
+
+    @Published var errorMessage: String = "" {
+        didSet {
+            showErrorMessage = !errorMessage.isEmpty
+        }
+    }
 
     @Published var currentView: MainViewOptions = .home {
         willSet {

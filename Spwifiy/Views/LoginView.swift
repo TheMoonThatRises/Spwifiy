@@ -9,26 +9,34 @@ import SwiftUI
 
 struct LoginView: View {
 
-    @Binding var authStatus: SpotifyAuthManager.AuthStatus
+    @ObservedObject var spotifyViewModel: SpotifyViewModel
 
     @State var isLoggingIn: Bool = false
 
     var body: some View {
         VStack {
-            if isLoggingIn {
-                SpotifyWebView(authStatus: $authStatus)
-            } else {
-                Button {
-                    isLoggingIn.toggle()
-                } label: {
-                    Text("Login with Spotify")
-                        .font(.satoshiBlack(24))
-                        .padding()
-                }
-                .cursorHover(.pointingHand)
+            Spacer()
+
+            Text("Attempting to authorize...")
+                .font(.title)
+
+            Spacer()
+
+            Text("Click the URL below if an authorization window does not appear")
+                .font(.title)
+            Link(destination: spotifyViewModel.authorizationURL) {
+                Text(spotifyViewModel.authorizationURL.absoluteString)
+                    .font(.title)
             }
+
+            Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear {
+            if spotifyViewModel.useURLAuth {
+                NSWorkspace.shared.open(spotifyViewModel.authorizationURL)
+            }
+        }
     }
 
 }

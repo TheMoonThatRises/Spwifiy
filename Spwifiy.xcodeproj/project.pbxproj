@@ -50,10 +50,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		B6EDE4B32CF2BCB4004666B1 /* Exceptions for "Spwifiy" folder in "Copy Files" phase from "Spwifiy" target */ = {
+		343784492E5E4F9C000F88EC /* Exceptions for "Spwifiy" folder in "Copy Files" phase from "Spwifiy" target */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = B6EDE4B02CF2BC9E004666B1 /* CopyFiles */;
 			membershipExceptions = (
+				"Assets/Satoshi-Black.otf",
 				"Assets/Satoshi-Light.otf",
 				Assets/Satoshi.ttf,
 			);
@@ -65,7 +66,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				B6EDE4AC2CF2BC30004666B1 /* Exceptions for "Spwifiy" folder in "Spwifiy" target */,
-				B6EDE4B32CF2BCB4004666B1 /* Exceptions for "Spwifiy" folder in "Copy Files" phase from "Spwifiy" target */,
+				343784492E5E4F9C000F88EC /* Exceptions for "Spwifiy" folder in "Copy Files" phase from "Spwifiy" target */,
 			);
 			path = Spwifiy;
 			sourceTree = "<group>";
@@ -156,7 +157,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1630;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					B6EDE45C2CF2923B004666B1 = {
 						CreatedOnToolsVersion = 16.2;

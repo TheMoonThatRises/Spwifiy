@@ -30,8 +30,7 @@ struct SpwifiyApp: App {
     var body: some Scene {
         WindowGroup {
             Group {
-                switch mainViewModel.authStatus {
-                case .success:
+                if spotifyViewModel.isAuthorized {
                     MainView(spotifyViewModel: spotifyViewModel,
                              spotifyDataViewModel: spotifyDataViewModel,
                              mainViewModel: mainViewModel,
@@ -39,25 +38,38 @@ struct SpwifiyApp: App {
                              settingsViewModel: settingsViewModel,
                              spotifyCache: spotifyCache,
                              avAudioPlayer: avAudioPlayer)
-                        .onAppear {
-                            mainViewModel.currentView = .home
-                        }
-                        .onDisappear {
-                            avAudioPlayer.removeAllSongs()
-                        }
-                case .inProcess, .failed:
-                    LoginView(authStatus: $mainViewModel.authStatus)
-                case .cookieSet:
-                    Text("attempting authorization")
-                        .font(.satoshiBlack(24))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .task(priority: .utility) {
-                            await spotifyViewModel.spotifyAuthCycle()
-                        }
+                    .onAppear {
+                        mainViewModel.currentView = .home
+                        mainViewModel.showAuthLoading = false
+                    }
+                    .onDisappear {
+                        avAudioPlayer.removeAllSongs()
+                    }
+                } else {
+                    LoginView(spotifyViewModel: spotifyViewModel)
                 }
             }
-            .onChange(of: spotifyViewModel.isAuthorized) { newValue in
-                mainViewModel.authStatus = [.valid, .none].contains(newValue) ? .success : .failed
+            .handlesExternalEvents(preferring: ["{path of URL?}"], allowing: ["*"])
+            .onOpenURL { url in
+                Task { @MainActor in
+                    if url.absoluteString.contains(SpotifyViewModel.loginCallback) {
+                        do {
+                            mainViewModel.showAuthLoading = true
+
+                            try await spotifyViewModel.spotifyRequestAccess(redirectURL: url)
+                        } catch {
+                            mainViewModel.errorMessage = error.localizedDescription
+                        }
+
+                        mainViewModel.showAuthLoading = false
+                    }
+                }
+            }
+            .toast(isPresenting: $mainViewModel.showAuthLoading) {
+                AlertToast(displayMode: .alert, type: .loading)
+            }
+            .toast(isPresenting: $mainViewModel.showErrorMessage) {
+                AlertToast(displayMode: .alert, type: .error(.red), title: mainViewModel.errorMessage)
             }
             .frame(minWidth: 950, minHeight: 550)
             .background(.bgMain)

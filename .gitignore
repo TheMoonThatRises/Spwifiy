@@ -64,3 +64,6 @@ fastlane/test_output
 # Logs
 # Generated for analyzing with Swiftlint
 xcodebuild.log
+
+# File system data
+.DS_Store
