@@ -88,5 +88,6 @@ struct SpwifiyApp: App {
 //                await YoutubeAPI.shared.retrieveVisitorData()
 //            }
         }
+        .windowStyle(.hiddenTitleBar)
     }
 }
