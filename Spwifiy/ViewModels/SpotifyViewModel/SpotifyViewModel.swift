@@ -20,8 +20,6 @@ class SpotifyViewModel: ObservableObject {
 
     private static let authScopes: Set<Scope> = Scope.allCases
 
-    @Published var useURLAuth: Bool = false
-
     private let clientId: String
 
     private let codeVerifier: String
@@ -94,12 +92,9 @@ class SpotifyViewModel: ObservableObject {
 
                     Task { @MainActor in
                         self.isAuthorized = false
-                        self.useURLAuth = true
                     }
                 }
             }
-        } else {
-            self.useURLAuth = true
         }
     }
 

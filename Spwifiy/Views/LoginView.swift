@@ -33,9 +33,7 @@ struct LoginView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
-            if spotifyViewModel.useURLAuth {
-                NSWorkspace.shared.open(spotifyViewModel.authorizationURL)
-            }
+            NSWorkspace.shared.open(spotifyViewModel.authorizationURL)
         }
     }
 
