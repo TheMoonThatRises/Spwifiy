@@ -153,8 +153,6 @@ struct MainView: View {
 
                     PlayingElementView(avAudioPlayer: avAudioPlayer,
                                        mainViewModel: mainViewModel,
-                                       selectedArtist: $mainViewModel.selectedArtist,
-                                       selectedAlbum: $mainViewModel.selectedAlbum,
                                        showQueueView: $mainViewModel.showQueueView)
                 }
             }

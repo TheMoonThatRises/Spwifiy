@@ -13,9 +13,6 @@ struct PlayingElementView: View {
     @ObservedObject var avAudioPlayer: AVAudioPlayer
     @ObservedObject var mainViewModel: MainViewModel
 
-    @Binding var selectedArtist: Artist?
-    @Binding var selectedAlbum: Album?
-
     @Binding var showQueueView: Bool
 
     @State var showVolumeSlider: Bool = false
@@ -112,7 +109,7 @@ struct PlayingElementView: View {
                         .foregroundStyle(.fgPrimary)
 
                     Button {
-                        selectedArtist = avAudioPlayer.currentPlayingTrack?.artists?.first
+                        mainViewModel.selectedArtist = avAudioPlayer.currentPlayingTrack?.artists?.first
                     } label: {
                         HStack {
                             if avAudioPlayer.currentPlayingTrack?.isExplicit ?? false {
@@ -126,7 +123,7 @@ struct PlayingElementView: View {
                     .cursorHover(.pointingHand)
 
                     Button {
-                        selectedAlbum = avAudioPlayer.currentPlayingTrack?.album
+                        mainViewModel.selectedAlbum = avAudioPlayer.currentPlayingTrack?.album
                     } label: {
                         Text(avAudioPlayer.currentPlayingTrack?.album?.name ?? "Album")
                     }
