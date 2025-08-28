@@ -24,24 +24,6 @@ class SpotifyScraper {
 
     private var artistJSONCache: [String: JSON] = [:]
 
-    private var cacheBuildVer: String {
-        get {
-            UserDefaults.standard.string(forKey: "spwifiy.cache.buildVer") ?? ""
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "spwifiy.cache.buildVer")
-        }
-    }
-
-    private var cacheBuildDate: String {
-        get {
-            UserDefaults.standard.string(forKey: "spwifiy.cache.buildDate") ?? ""
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "spwifiy.cache.buildDate")
-        }
-    }
-
     public func hasArtistJSON(artistId: String) -> Bool {
         artistJSONCache.keys.contains(artistId)
     }
@@ -119,53 +101,6 @@ class SpotifyScraper {
         }
         .first?["url"]
         .stringValue
-    }
-
-    public func getBuildInfo(useCache: Bool) async -> (String, String)? {
-        if useCache, let date = Date.convertor(cacheBuildDate), date.isToday() {
-            return (cacheBuildVer, cacheBuildDate)
-        }
-
-        guard let spotifyHTML: String = await APIRequest.shared.request(
-            urlString: SpotifyScraper.baseScrapeURL
-        ) else {
-            return nil
-        }
-
-        let scriptPattern = #"<script src="https://open.spotifycdn.com/cdn/build/web-player/web-player(.+?)js">"#
-
-        guard let scriptRange = spotifyHTML.range(of: scriptPattern, options: .regularExpression) else {
-            return nil
-        }
-
-        let scriptComponents = spotifyHTML[scriptRange].split(separator: "\"")
-
-        guard scriptComponents.count == 3 else {
-            return nil
-        }
-
-        guard let scriptHTML: String = await APIRequest.shared.request(
-            urlString: String(scriptComponents[1])
-        ) else {
-            return nil
-        }
-
-        let buildPattern = #"buildVer:"(.+?)",buildDate:"(.+?)""#
-
-        guard let buildRange = scriptHTML.range(of: buildPattern, options: .regularExpression) else {
-            return nil
-        }
-
-        let buildComponents = scriptHTML[buildRange].split(separator: "\"")
-
-        guard buildComponents.count == 4 else {
-            return nil
-        }
-
-        cacheBuildVer = String(buildComponents[1])
-        cacheBuildDate = String(buildComponents[3])
-
-        return (cacheBuildVer, cacheBuildDate)
     }
 
 }
