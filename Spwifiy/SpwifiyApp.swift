@@ -30,7 +30,6 @@ struct SpwifiyApp: App {
             .handlesExternalEvents(preferring: ["{path of URL?}"], allowing: ["*"])
             .onOpenURL { url in
                 Task { @MainActor in
-                    print(url)
                     if url.absoluteString.contains(SpotifyViewModel.loginCallback) {
                         do {
                             spotifyViewModel.isAuthenticating = true

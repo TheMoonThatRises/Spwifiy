@@ -33,7 +33,10 @@ struct LoginView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
-            NSWorkspace.shared.open(spotifyViewModel.authorizationURL)
+            let openConfig = NSWorkspace.OpenConfiguration()
+            openConfig.activates = true
+
+            NSWorkspace.shared.open(spotifyViewModel.authorizationURL, configuration: openConfig)
         }
     }
 
