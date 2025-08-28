@@ -57,7 +57,7 @@ struct QueueElementView: View {
                     } label: {
                         Text("Clear")
                             .foregroundStyle(.fgPrimary)
-                            .font(.satoshiLight(14))
+                            .font(.satoshiNormal(14))
                             .contentShape(.rect)
                     }
                     .buttonStyle(.plain)

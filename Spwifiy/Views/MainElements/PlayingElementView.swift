@@ -84,7 +84,7 @@ struct PlayingElementView: View {
 
                         VStack {
                             Text("Volume: \(Int(avAudioPlayer.volume * 100))%")
-                                .font(.satoshiBlack(14))
+                                .font(.satoshiNormal(14))
 
                             CustomSlider<Text>(value: $avAudioPlayer.volume,
                                                maxValue: .constant(1.0),

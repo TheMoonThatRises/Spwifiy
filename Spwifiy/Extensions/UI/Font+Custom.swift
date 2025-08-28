@@ -22,6 +22,12 @@ extension Font {
 
     public static let satoshi: Font = .satoshiCustom(nil, 12)
 
+    public static var satoshiNormal: (CGFloat) -> Font {
+        { size in
+            .satoshiCustom(nil, size)
+        }
+    }
+
     public static var satoshiLight: (CGFloat) -> Font {
         { size in
             .satoshiCustom("Light", size)
