@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import GRDB
 
 struct SpotifyLyrics: Codable {
     let lyrics: SpotifyLyricsData
