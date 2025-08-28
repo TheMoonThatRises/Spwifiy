@@ -12,15 +12,16 @@ import AlertToast
 struct MainView: View {
 
     @ObservedObject var spotifyViewModel: SpotifyViewModel
-    @ObservedObject var spotifyDataViewModel: SpotifyDataViewModel
 
-    @ObservedObject var mainViewModel: MainViewModel
-    @ObservedObject var searchViewModel: SearchViewModel
-    @ObservedObject var settingsViewModel: SettingsViewModel
+    @StateObject var spotifyDataViewModel: SpotifyDataViewModel = SpotifyDataViewModel()
 
-    @ObservedObject var spotifyCache: SpotifyCache
+    @StateObject var mainViewModel: MainViewModel = MainViewModel()
+    @StateObject var searchViewModel: SearchViewModel = SearchViewModel()
+    @StateObject var settingsViewModel: SettingsViewModel = SettingsViewModel()
 
-    @ObservedObject var avAudioPlayer: AVAudioPlayer
+    @StateObject var spotifyCache: SpotifyCache = SpotifyCache()
+
+    @StateObject var avAudioPlayer: AVAudioPlayer = AVAudioPlayer()
 
     var body: some View {
         GeometryReader { geom in
@@ -159,6 +160,9 @@ struct MainView: View {
             }
             .padding()
         }
+        .onAppear {
+            mainViewModel.currentView = .home
+        }
         .sheet(isPresented: $spotifyViewModel.isAuthenticating) {
             AttemptingReauthSheet()
         }
@@ -170,6 +174,14 @@ struct MainView: View {
             searchViewModel.search(spotifyViewModel: spotifyViewModel, query: text)
         }
         .task {
+            if spotifyDataViewModel.spotifyViewModel == nil {
+                spotifyDataViewModel.setSpotifyViewModel(spotifyViewModel: spotifyViewModel)
+            }
+
+            if spotifyCache.spotifyViewModel == nil {
+                spotifyCache.setSpotifyViewModel(spotifyViewModel: spotifyViewModel)
+            }
+
             await spotifyViewModel.loadUserProfile()
         }
     }

@@ -13,31 +13,27 @@ import KeychainAccess
 class SpotifyViewModel: ObservableObject {
 
     public static let loginCallback = "spotify-login-callback"
-
-    private var isLoadingUserProfile: Bool = false
-
     private static let authorizationManagerKey = "authorizationManager"
 
     private static let authScopes: Set<Scope> = Scope.allCases
 
-    private let clientId: String
+    public let spotify: SpotifyAPI<AuthorizationCodeFlowPKCEManager>
 
+    private let clientId: String
     private let codeVerifier: String
     private let codeChallenge: String
     private let state: String
-
     public let authorizationURL: URL
 
     @Published var isAuthorized: Bool = false
 
-    public let spotify: SpotifyAPI<AuthorizationCodeFlowPKCEManager>
-
-    private let keychain: Keychain
-
     @Published var userProfile: SpotifyUser?
 
+    private var isLoadingUserProfile: Bool = false
+
     @Published var isAuthenticating: Bool = false
-    private var reauthTask: Task<Void, Never>?
+
+    private let keychain: Keychain
 
     private let decoder = JSONDecoder()
     private let encoder = JSONEncoder()
