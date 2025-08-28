@@ -47,4 +47,4 @@ Spwifiy is open-source and licensed under the [BSD-4-Clause](/LICENSE) license.
 
 </details>
 
-<div align="center"><p>&copy; Copyright Spwifiy 2024</p></div>
+<div align="center"><p>&copy; Copyright Spwifiy 2025</p></div>
