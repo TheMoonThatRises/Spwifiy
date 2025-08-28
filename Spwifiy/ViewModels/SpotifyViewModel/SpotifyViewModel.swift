@@ -152,16 +152,14 @@ class SpotifyViewModel: ObservableObject {
                                   receiveValue: ((T) throws -> Void)? = nil) async throws -> T {
         try await withCheckedThrowingContinuation { continuation in
             spotifyRequest(accessPoint: accessPoint) {
-                if let sink {
+                if case .failure(let error) = $0 {
+                    continuation.resume(throwing: error)
+                } else if let sink {
                     do {
                         try sink($0)
                     } catch {
                         continuation.resume(throwing: error)
                     }
-                }
-
-                if case .failure(let error) = $0 {
-                    continuation.resume(throwing: error)
                 }
             } receiveValue: {
                 do {
@@ -182,16 +180,14 @@ class SpotifyViewModel: ObservableObject {
                                   receiveValue: (([T]) throws -> Void)? = nil) async throws -> [T] {
         try await withCheckedThrowingContinuation { continuation in
             spotifyRequest(accessPoint: accessPoint) {
-                if let sink {
+                if case .failure(let error) = $0 {
+                    continuation.resume(throwing: error)
+                } else if let sink {
                     do {
                         try sink($0)
                     } catch {
                         continuation.resume(throwing: error)
                     }
-                }
-
-                if case .failure(let error) = $0 {
-                    continuation.resume(throwing: error)
                 }
             } receiveValue: {
                 do {
