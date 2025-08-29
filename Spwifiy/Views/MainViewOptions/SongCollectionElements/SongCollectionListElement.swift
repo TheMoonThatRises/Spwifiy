@@ -103,6 +103,11 @@ struct SongCollectionListElement: View {
                                         )
                                         .resizable()
                                         .frame(width: 25, height: 25)
+                                        .foregroundStyle(
+                                            avAudioPlayer.currentPlayingTrack?.id == track.id && avAudioPlayer.isPlaying
+                                            ? .sPrimary
+                                            : .fgPrimary
+                                        )
                                     }
                                     .buttonStyle(.plain)
                                     .cursorHover(.pointingHand)
@@ -131,7 +136,11 @@ struct SongCollectionListElement: View {
                             VStack(alignment: .leading) {
                                 Text(track.name)
                                     .font(.title3)
-                                    .foregroundStyle(.fgPrimary)
+                                    .foregroundStyle(
+                                        avAudioPlayer.currentPlayingTrack?.id == track.id && avAudioPlayer.isPlaying
+                                            ? .sPrimary
+                                            : .fgPrimary
+                                    )
                                     .lineLimit(1)
 
                                 Spacer()
