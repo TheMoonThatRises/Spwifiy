@@ -21,35 +21,39 @@ struct PlayingElementView: View {
     var body: some View {
         HStack {
             Group {
-                Button {
-                    avAudioPlayer.togglePlay()
-                } label: {
-                    Image(avAudioPlayer.isPlaying ? "spwifiy.pause.fill" : "spwifiy.play.fill")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
+                Group {
+                    Button {
+                        avAudioPlayer.togglePlay()
+                    } label: {
+                        Image(avAudioPlayer.isPlaying ? "spwifiy.pause.fill" : "spwifiy.play.fill")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
+                    .disabled(avAudioPlayer.currentPlayingTrack == nil)
 
-                Button {
-                    avAudioPlayer.prevSong()
-                } label: {
-                    Image("spwifiy.previous")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
+                    Button {
+                        avAudioPlayer.prevSong()
+                    } label: {
+                        Image("spwifiy.previous")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
 
-                Button {
-                    avAudioPlayer.nextSong()
-                } label: {
-                    Image("spwifiy.next")
-                        .resizable()
-                        .frame(width: 40, height: 40)
+                    Button {
+                        avAudioPlayer.nextSong()
+                    } label: {
+                        Image("spwifiy.next")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
                 }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
+                .disabled(avAudioPlayer.currentPlayingTrack == nil)
 
                 DotButton(toggle: $avAudioPlayer.isShuffled,
                           image: Image("spwifiy.shuffle"))
@@ -67,6 +71,7 @@ struct PlayingElementView: View {
                         .frame(width: 50)
                 }
                 .frame(minWidth: 100)
+                .disabled(avAudioPlayer.currentPlayingTrack == nil)
 
                 Button {
                     showVolumeSlider.toggle()
@@ -134,44 +139,48 @@ struct PlayingElementView: View {
             .lineLimit(1)
             .frame(maxWidth: 80)
             .fixedSize()
+            .disabled(avAudioPlayer.currentPlayingTrack == nil)
 
             Spacer()
 
             Group {
-                Button {
+                Group {
+                    Button {
 
-                } label: {
-                    Image("spwifiy.like")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
-
-                Button {
-
-                } label: {
-                    Image("spwifiy.add.playlist")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
-
-                Button {
-                    if mainViewModel.currentView == .lyrics {
-                        mainViewModel.navToView(item: mainViewModel.navigationStack[1])
-                    } else {
-                        mainViewModel.currentView = .lyrics
+                    } label: {
+                        Image("spwifiy.like")
+                            .resizable()
+                            .frame(width: 40, height: 40)
                     }
-                } label: {
-                    Image("spwifiy.lyrics")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundStyle(mainViewModel.currentView == .lyrics ? .fgPrimary : .fgSecondary)
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
+
+                    Button {
+
+                    } label: {
+                        Image("spwifiy.add.playlist")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
+
+                    Button {
+                        if mainViewModel.currentView == .lyrics {
+                            mainViewModel.navToView(item: mainViewModel.navigationStack[1])
+                        } else {
+                            mainViewModel.currentView = .lyrics
+                        }
+                    } label: {
+                        Image("spwifiy.lyrics")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundStyle(mainViewModel.currentView == .lyrics ? .fgPrimary : .fgSecondary)
+                    }
+                    .buttonStyle(.plain)
+                    .cursorHover(.pointingHand)
                 }
-                .buttonStyle(.plain)
-                .cursorHover(.pointingHand)
+                .disabled(avAudioPlayer.currentPlayingTrack == nil)
 
                 Button {
                     withAnimation(.defaultAnimation) {
