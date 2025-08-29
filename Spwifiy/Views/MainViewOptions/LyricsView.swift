@@ -22,6 +22,7 @@ struct LyricsView: View {
 
     @State var spotifyLyrics: SpotifyLyrics?
     @State var currentLineIdx: Int?
+    @State var noCacheLyrics: Bool = false
 
     var currentPlayTimeMS: Int {
         Int(currentPlayTime * 1000)
@@ -62,9 +63,22 @@ struct LyricsView: View {
                 .frame(maxWidth: .infinity)
                 .padding()
             } else {
-                Text("No lyrics found")
-                    .font(.title)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                VStack(alignment: .center) {
+                    Text("No lyrics found")
+
+                    Spacer()
+                        .frame(height: 20)
+
+                    Button {
+                        noCacheLyrics = true
+                        currentTrack = currentTrack
+                    } label: {
+                        Text("Force reload lyrics")
+                            .padding()
+                    }
+                }
+                .font(.title)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
         }
         .font(.satoshiBlack(40))
@@ -87,8 +101,10 @@ struct LyricsView: View {
 
             Task {
                 if let songId = currentTrack?.id {
-                    spotifyLyrics = try? await spotifyCache.fetchLyrics(songId: songId)
+                    spotifyLyrics = try? await spotifyCache.fetchLyrics(songId: songId, cache: noCacheLyrics)
                 }
+
+                noCacheLyrics = false
             }
         }
         .task {

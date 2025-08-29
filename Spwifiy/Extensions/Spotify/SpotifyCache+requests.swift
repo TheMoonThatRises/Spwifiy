@@ -199,12 +199,12 @@ extension SpotifyCache {
         }
     }
 
-    public func fetchLyrics(songId: String) async throws -> SpotifyLyrics? {
+    public func fetchLyrics(songId: String, cache: Bool = true) async throws -> SpotifyLyrics? {
         guard let spotifyViewModel else {
             throw SpwifiyErrors.spotifyNoViewModel
         }
 
-        if let lyrics = self[lyricSongId: songId] {
+        if !cache, let lyrics = self[lyricSongId: songId] {
             return lyrics
         }
 

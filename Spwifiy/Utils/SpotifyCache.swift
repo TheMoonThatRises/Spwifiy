@@ -8,11 +8,6 @@
 import SwiftUI
 import SpotifyWebAPI
 
-struct CacheResponse<T> {
-    let item: T?
-    let fresh: Bool
-}
-
 class SpotifyCache: ObservableObject {
 
     var spotifyViewModel: SpotifyViewModel?
