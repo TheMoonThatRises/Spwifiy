@@ -208,7 +208,7 @@ extension SpotifyCache {
             return lyrics
         }
 
-        guard let lyrics = await spotifyViewModel.spotify.getLyrics(trackId: songId) else {
+        guard let lyrics = await spotifyViewModel.extendedSpotifyAPI.getLyrics(trackId: songId) else {
             return nil
         }
 

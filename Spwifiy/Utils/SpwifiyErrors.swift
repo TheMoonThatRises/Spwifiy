@@ -10,6 +10,7 @@ import Foundation
 enum SpwifiyErrors: LocalizedError {
     case authAccessDenied
     case spotifyNoViewModel
+    case failedSecretsRetrievel
     case unknownError(String)
 }
 
@@ -20,6 +21,8 @@ extension SpwifiyErrors {
             return "Authorization access denined"
         case .spotifyNoViewModel:
             return "No view model for Spotify API"
+        case .failedSecretsRetrievel:
+            return "Failed to retrieve cipher secrets"
         case .unknownError(let error):
             return error
         }

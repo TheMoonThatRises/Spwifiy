@@ -13,6 +13,8 @@ struct LyricsView: View {
 
     @ObservedObject var spotifyCache: SpotifyCache
 
+    @Binding var extendedLogin: SpotifyAuthManager.AuthStatus
+
     @Binding var currentTrack: Track?
     @Binding var currentPlayTime: Double
 
@@ -29,7 +31,11 @@ struct LyricsView: View {
 
     var body: some View {
         Group {
-            if let spotifyLyrics {
+            if extendedLogin != .success {
+                Text("Extended Spotify login required for lyric access")
+                    .font(.title)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            } else if let spotifyLyrics {
                 ScrollView {
                     VStack(alignment: .leading) {
                         ForEach(spotifyLyrics.lyrics.lines.enumeratedArray(), id: \.element.startTimeMs) { idx, line in

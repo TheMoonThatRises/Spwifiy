@@ -43,79 +43,87 @@ struct MainView: View {
 
                     HStack {
                         Group {
-                            switch mainViewModel.currentViewAnimated {
-                            // default view
-                            case .home:
-                                HomeView(spotifyDataViewModel: spotifyDataViewModel,
-                                         mainViewModel: mainViewModel)
-                            case .search:
-                                SearchView(avAudioPlayer: avAudioPlayer,
-                                           searchViewModel: searchViewModel,
-                                           selectedArtist: $mainViewModel.selectedArtist,
-                                           selectedAlbum: $mainViewModel.selectedAlbum,
-                                           selectedPlaylist: $mainViewModel.selectedPlaylist)
-                            case .settings:
-                                SettingsView(settingsViewModel: settingsViewModel,
-                                             avAudioPlayer: avAudioPlayer)
-
-                            // sidebar views
-                            case .likedSongs:
-                                LikedSongsView(spotifyCache: spotifyCache,
-                                               avAudioPlayer: avAudioPlayer,
+                            if settingsViewModel.extendedLoginAnimation == .inProcess {
+                                SpotifyCustomLoginView(extendedLogin: $settingsViewModel.extendedLogin,
+                                                       currentView: $mainViewModel.currentView)
+                            } else {
+                                switch mainViewModel.currentViewAnimated {
+                                    // default view
+                                case .home:
+                                    HomeView(spotifyDataViewModel: spotifyDataViewModel,
+                                             mainViewModel: mainViewModel)
+                                case .search:
+                                    SearchView(avAudioPlayer: avAudioPlayer,
+                                               searchViewModel: searchViewModel,
                                                selectedArtist: $mainViewModel.selectedArtist,
-                                               selectedAlbum: $mainViewModel.selectedAlbum)
-                            case .artists:
-                                FollowingArtistView(artists: $spotifyDataViewModel.followedArtists,
-                                                    selectedArtist: $mainViewModel.selectedArtist)
+                                               selectedAlbum: $mainViewModel.selectedAlbum,
+                                               selectedPlaylist: $mainViewModel.selectedPlaylist)
+                                case .settings:
+                                    SettingsView(settingsViewModel: settingsViewModel,
+                                                 avAudioPlayer: avAudioPlayer,
+                                                 extendedSpotifyAuth: spotifyViewModel.extendedSpotifyAuth,
+                                                 extendedSpotifyLogout: spotifyViewModel.extendedSpotifyLogout)
+
+                                    // sidebar views
+                                case .likedSongs:
+                                    LikedSongsView(spotifyCache: spotifyCache,
+                                                   avAudioPlayer: avAudioPlayer,
+                                                   selectedArtist: $mainViewModel.selectedArtist,
+                                                   selectedAlbum: $mainViewModel.selectedAlbum)
+                                case .artists:
+                                    FollowingArtistView(artists: $spotifyDataViewModel.followedArtists,
+                                                        selectedArtist: $mainViewModel.selectedArtist)
                                     .task {
                                         spotifyDataViewModel.populateFollowingArtists()
                                     }
 
-                            // layers deep abstracted view
-                            case .selectedPlaylist:
-                                if let selectedPlaylist = mainViewModel.selectedPlaylist {
-                                    SelectedPlaylistView(spotifyCache: spotifyCache,
-                                                         avAudioPlayer: avAudioPlayer,
-                                                         playlist: selectedPlaylist,
-                                                         selectedArtist: $mainViewModel.selectedArtist,
-                                                         selectedAlbum: $mainViewModel.selectedAlbum
-                                    )
-                                } else {
-                                    Text("Unable to get selected playlist")
-                                        .font(.title)
-                                }
-                            case .selectedArtist:
-                                if let artist = mainViewModel.selectedArtist {
-                                    ArtistView(spotifyCache: spotifyCache,
-                                               artist: artist,
-                                               avAudioPlayer: avAudioPlayer,
-                                               selectedAlbum: $mainViewModel.selectedAlbum)
-                                } else {
-                                    Text("Unable to get selected artist")
-                                        .font(.title)
-                                }
-                            case .selectedAlbum:
-                                if let album = mainViewModel.selectedAlbum {
-                                    SelectedAlbumView(album: album,
-                                                      spotifyCache: spotifyCache,
-                                                      avAudioPlayer: avAudioPlayer,
-                                                      selectedArtist: $mainViewModel.selectedArtist)
-                                } else {
-                                    Text("Unable to get selected album")
-                                        .font(.title)
-                                }
+                                    // layers deep abstracted view
+                                case .selectedPlaylist:
+                                    if let selectedPlaylist = mainViewModel.selectedPlaylist {
+                                        SelectedPlaylistView(spotifyCache: spotifyCache,
+                                                             avAudioPlayer: avAudioPlayer,
+                                                             playlist: selectedPlaylist,
+                                                             selectedArtist: $mainViewModel.selectedArtist,
+                                                             selectedAlbum: $mainViewModel.selectedAlbum
+                                        )
+                                    } else {
+                                        Text("Unable to get selected playlist")
+                                            .font(.title)
+                                    }
+                                case .selectedArtist:
+                                    if let artist = mainViewModel.selectedArtist {
+                                        ArtistView(spotifyCache: spotifyCache,
+                                                   artist: artist,
+                                                   avAudioPlayer: avAudioPlayer,
+                                                   selectedAlbum: $mainViewModel.selectedAlbum)
+                                    } else {
+                                        Text("Unable to get selected artist")
+                                            .font(.title)
+                                    }
+                                case .selectedAlbum:
+                                    if let album = mainViewModel.selectedAlbum {
+                                        SelectedAlbumView(album: album,
+                                                          spotifyCache: spotifyCache,
+                                                          avAudioPlayer: avAudioPlayer,
+                                                          selectedArtist: $mainViewModel.selectedArtist)
+                                    } else {
+                                        Text("Unable to get selected album")
+                                            .font(.title)
+                                    }
 
-                            // misc
-                            case .lyrics:
-                                LyricsView(spotifyCache: spotifyCache,
-                                           currentTrack: $avAudioPlayer.currentPlayingTrack,
-                                           currentPlayTime: $avAudioPlayer.currentPlayTime,
-                                           seek: avAudioPlayer.seek(time:))
+                                    // misc
+                                case .lyrics:
+                                    LyricsView(spotifyCache: spotifyCache,
+                                               extendedLogin: $settingsViewModel.extendedLogin,
+                                               currentTrack: $avAudioPlayer.currentPlayingTrack,
+                                               currentPlayTime: $avAudioPlayer.currentPlayTime,
+                                               seek: avAudioPlayer.seek(time:))
 
-                            // unimplemented views
-                            default:
-                                Text("Unknown error")
-                                    .font(.title)
+                                    // unimplemented views
+                                default:
+                                    Text("Unknown error")
+                                        .font(.title)
+                                }
                             }
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -180,7 +188,12 @@ struct MainView: View {
                 spotifyCache.setSpotifyViewModel(spotifyViewModel: spotifyViewModel)
             }
 
-            await spotifyViewModel.loadUserProfile()
+            async let loadProfile: () = spotifyViewModel.loadUserProfile()
+
+            async let extendedAuthSuccess = spotifyViewModel.extendedSpotifyAuth()
+
+            await loadProfile
+            settingsViewModel.extendedLogin = await extendedAuthSuccess ? .success : .failed
         }
     }
 }

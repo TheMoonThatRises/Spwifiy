@@ -12,12 +12,10 @@ import KeychainAccess
 
 class SpotifyViewModel: ObservableObject {
 
-    public static let loginCallback = "spotify-login-callback"
-    private static let authorizationManagerKey = "authorizationManager"
-
     private static let authScopes: Set<Scope> = Scope.allCases
 
     public let spotify: SpotifyAPI<AuthorizationCodeFlowPKCEManager>
+    public let extendedSpotifyAPI: ExtendedSpotifiyAPI
 
     private let clientId: String
     private let codeVerifier: String
@@ -33,10 +31,10 @@ class SpotifyViewModel: ObservableObject {
 
     @Published var isAuthenticating: Bool = false
 
-    private let keychain: Keychain
+    internal let keychain: Keychain
 
-    private let decoder = JSONDecoder()
-    private let encoder = JSONEncoder()
+    internal let decoder = JSONDecoder()
+    internal let encoder = JSONEncoder()
 
     init() {
         self.clientId = Bundle.main.infoDictionary?["SpotifyClientId"] as? String ?? ""
@@ -46,6 +44,7 @@ class SpotifyViewModel: ObservableObject {
         self.spotify = SpotifyAPI(
             authorizationManager: AuthorizationCodeFlowPKCEManager(clientId: self.clientId)
         )
+        self.extendedSpotifyAPI = ExtendedSpotifiyAPI()
 
         self.isAuthorized = self.spotify.authorizationManager.isAuthorized()
 
@@ -60,6 +59,8 @@ class SpotifyViewModel: ObservableObject {
             state: self.state,
             scopes: SpotifyViewModel.authScopes
         )!
+
+        self.extendedSpotifyAPI.setSpotifyViewModel(spotifyViewModel: self)
 
         CombineHandler.handler(
             passthrough: self.spotify.authorizationManagerDidChange,
@@ -92,47 +93,6 @@ class SpotifyViewModel: ObservableObject {
                 }
             }
         }
-    }
-
-    private func authorizeCallback(completion: Subscribers.Completion<any Error>) throws {
-        switch completion {
-        case .finished:
-            print("user successfully authorized")
-        case .failure(let error):
-            if let authError = error as? SpotifyAuthorizationError, authError.accessWasDenied {
-                print("the user denied the authorization request")
-                throw SpwifiyErrors.authAccessDenied
-            } else {
-                print("couldn't authorize application: \(error)")
-                throw SpwifiyErrors.unknownError(error.localizedDescription)
-            }
-        }
-    }
-
-    private func authorizationManagerDidChange() {
-        isAuthorized = spotify.authorizationManager.isAuthorized()
-
-        do {
-            let authManagerData = try JSONEncoder().encode(spotify.authorizationManager)
-
-            keychain[data: SpotifyViewModel.authorizationManagerKey] = authManagerData
-        } catch {
-            print("unable to store auth manager state")
-        }
-    }
-
-    private func authorizationManagerDidDeauthorize() {
-        isAuthorized = false
-
-        do {
-            try keychain.remove(SpotifyViewModel.authorizationManagerKey)
-        } catch {
-            print("unable to remove unauthorized manager")
-        }
-    }
-
-    public func logout() {
-        spotify.authorizationManager.deauthorize()
     }
 
     public func spotifyRequest<T>(accessPoint: () -> AnyPublisher<T, Error>,
