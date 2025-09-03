@@ -64,4 +64,12 @@ class GenericTable {
         }
     }
 
+    func clearTable<T: PersistableRecord>(type: T.Type) {
+        queryDatabase { dbc in
+            try dbc.write { dbv in
+                try T.deleteAll(dbv)
+            }
+        }
+    }
+
 }

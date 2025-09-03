@@ -51,4 +51,8 @@ class SponsorBlockAPI {
         return sponsorItems
     }
 
+    public func clearCache() {
+        sponsorBlockCache.clearTable()
+    }
+
 }

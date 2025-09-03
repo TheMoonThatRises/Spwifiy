@@ -12,6 +12,8 @@ struct SettingsView: View {
     @ObservedObject var settingsViewModel: SettingsViewModel
     @ObservedObject var avAudioPlayer: AVAudioPlayer
 
+    let clearSpotifyCache: () -> Void
+
     let extendedSpotifyAuth: () async -> Bool
     let extendedSpotifyLogout: () -> Void
 
@@ -58,53 +60,45 @@ struct SettingsView: View {
 
                     SpacedToggle(isOn: $settingsViewModel.displayDiscordRPC) {
                         HStack(spacing: 3) {
-                            Text("Allow Discord Activity Presence")
+                            Text("Allow Discord activity presence")
                                 .font(.callout)
                                 .foregroundStyle(.fgSecondary)
                         }
                     }
 
-                    Group {
-                        HStack(spacing: 3) {
-                            Text("Extended Login Token")
-                                .font(.callout)
-                                .foregroundStyle(.fgSecondary)
+                    SettingsButton(text: "Extended login token") {
+                        if settingsViewModel.extendedLogin == .failed {
+                            settingsViewModel.extendedLogin = .inProcess
+                        } else {
+                            extendedSpotifyLogout()
 
-                            Spacer()
-
-                            Button {
-                                if settingsViewModel.extendedLogin == .failed {
-                                    settingsViewModel.extendedLogin = .inProcess
-                                } else {
-                                    extendedSpotifyLogout()
-
-                                    settingsViewModel.extendedLogin = .failed
-                                }
-                            } label: {
-                                Group {
-                                    if settingsViewModel.extendedLoginAnimation == .success {
-                                        Text("Extended Spotify Logout")
-                                    } else if settingsViewModel.extendedLoginAnimation == .failed {
-                                        Text("Extended Spotify Login")
-                                    } else if settingsViewModel.extendedLoginAnimation == .cookieSet {
-                                        ProgressView()
-                                            .progressViewStyle(.circular)
-                                            .controlSize(.small)
-                                            .task {
-                                                settingsViewModel.extendedLogin = await extendedSpotifyAuth()
-                                                    ? .success
-                                                    : .failed
-                                            }
-                                    }
-                                }
-                                .font(.callout)
-                                .foregroundStyle(.fgPrimary)
-                                .padding(5)
-                            }
-                            .padding([.top, .bottom], 10)
-                            .cursorHover(.pointingHand)
-                            .disabled(![.success, .failed].contains(settingsViewModel.extendedLogin))
+                            settingsViewModel.extendedLogin = .failed
                         }
+                    } buttonLabel: {
+                        Group {
+                            if settingsViewModel.extendedLoginAnimation == .success {
+                                Text("Extended Spotify logout")
+                            } else if settingsViewModel.extendedLoginAnimation == .failed {
+                                Text("Extended Spotify login")
+                            } else if settingsViewModel.extendedLoginAnimation == .cookieSet {
+                                ProgressView()
+                                    .progressViewStyle(.circular)
+                                    .controlSize(.small)
+                                    .task {
+                                        settingsViewModel.extendedLogin = await extendedSpotifyAuth()
+                                        ? .success
+                                        : .failed
+                                    }
+                            }
+                        }
+                    }
+                    .disabled(![.success, .failed].contains(settingsViewModel.extendedLogin))
+
+                    SettingsButton(text: "Clear Spotify and SponsorBlock cache") {
+                        clearSpotifyCache()
+                        SponsorBlockAPI.shared.clearCache()
+                    } buttonLabel: {
+                        Text("Clear cache")
                     }
                 }
             }

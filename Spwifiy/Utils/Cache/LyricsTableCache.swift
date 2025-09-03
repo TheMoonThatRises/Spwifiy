@@ -45,4 +45,8 @@ class LyricsTableCache: GenericTable {
         return item?.content
     }
 
+    public func clearCache() {
+        super.clearTable(type: SpotifyLyricsSqlite<SpotifyLyrics>.self)
+    }
+
 }

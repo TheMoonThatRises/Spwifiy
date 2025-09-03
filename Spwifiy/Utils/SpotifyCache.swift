@@ -82,4 +82,21 @@ class SpotifyCache: ObservableObject {
     public func setSpotifyViewModel(spotifyViewModel: SpotifyViewModel) {
         self.spotifyViewModel = spotifyViewModel
     }
+
+    public func clearCache() {
+        artistsCache.removeAll()
+        artistTopTracksCache.removeAll()
+        artistAlbumsCache.removeAll()
+
+        albumCache.removeAll()
+        albumTracksCache.removeAll()
+
+        playlistCache.removeAll()
+        playlistTrackCache.removeAll()
+
+        savedTracksCache.removeAll()
+        savedTracksContainsCache.removeAll()
+
+        lyricsCache.clearCache()
+    }
 }

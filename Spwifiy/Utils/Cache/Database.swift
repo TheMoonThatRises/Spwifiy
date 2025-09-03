@@ -36,6 +36,10 @@ class Database {
         self.tryConnectDatabase()
     }
 
+    deinit {
+        try? dbc?.close()
+    }
+
     public func getConnection() -> DatabasePool? {
         dbc
     }

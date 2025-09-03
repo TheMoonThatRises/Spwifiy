@@ -39,4 +39,8 @@ class SponsorBlockTableCache: GenericTable {
         return item?.content
     }
 
+    public func clearTable() {
+        super.clearTable(type: SponsorBlockSqlite.self)
+    }
+
 }

@@ -61,6 +61,7 @@ struct MainView: View {
                                 case .settings:
                                     SettingsView(settingsViewModel: settingsViewModel,
                                                  avAudioPlayer: avAudioPlayer,
+                                                 clearSpotifyCache: spotifyCache.clearCache,
                                                  extendedSpotifyAuth: spotifyViewModel.extendedSpotifyAuth,
                                                  extendedSpotifyLogout: spotifyViewModel.extendedSpotifyLogout)
 
