@@ -27,7 +27,13 @@ class YoutubeAPI {
             return nil
         }
 
-        if expiration.hasExpired() {
+        if (
+            !hls.path().contains(IPAddress.ipAddress ?? "")
+        ) || (
+            expiration.hasExpired()
+        ) {
+            print("invalid hls url given, either wrong ip address or url expiration passed")
+
             musicIdCache.removeValue(forKey: musicId)
 
             return nil
