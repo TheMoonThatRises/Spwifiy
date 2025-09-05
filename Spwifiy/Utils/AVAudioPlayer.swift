@@ -295,6 +295,10 @@ class AVAudioPlayer: ObservableObject {
     }
 
     public func playAudio() {
+        guard playerReady else {
+            return
+        }
+
         updateVolume()
 
         player.play()
@@ -303,12 +307,20 @@ class AVAudioPlayer: ObservableObject {
     }
 
     public func pauseAudio() {
+        guard playerReady else {
+            return
+        }
+
         player.pause()
 
         updateNowPlaying()
     }
 
     func seek(time: CMTime) {
+        guard playerReady else {
+            return
+        }
+
         player.seek(to: normalizeSeekTime(time: time), toleranceBefore: .zero, toleranceAfter: .zero)
 
         setPresence(seekTime: time.seconds)
