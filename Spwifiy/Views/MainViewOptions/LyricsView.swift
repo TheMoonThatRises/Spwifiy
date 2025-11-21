@@ -37,31 +37,51 @@ struct LyricsView: View {
                     .font(.title)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             } else if let spotifyLyrics {
-                ScrollView {
-                    VStack(alignment: .leading) {
-                        ForEach(spotifyLyrics.lyrics.lines.enumeratedArray(), id: \.element.startTimeMs) { idx, line in
-                            Button {
-                                let seekTime = Double(line.startTimeMs) / 1000.0
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(alignment: .leading) {
+                            ForEach(spotifyLyrics.lyrics.lines.enumeratedArray(),
+                                    id: \.element.startTimeMs) { idx, line in
+                                Button {
+                                    let seekTime = Double(line.startTimeMs) / 1000.0
 
-                                seek(CMTime(seconds: seekTime,
-                                            preferredTimescale: 100))
-                                currentPlayTime = seekTime
-                            } label: {
-                                Text(line.words)
-                                    .foregroundStyle(currentLineIdx == idx ? .fgPrimary : .fgSecondary)
+                                    seek(CMTime(seconds: seekTime,
+                                                preferredTimescale: 100))
+                                    currentPlayTime = seekTime
+                                } label: {
+                                    Text(line.words)
+                                        .foregroundStyle(currentLineIdx == idx ? .fgPrimary : .fgSecondary)
+                                }
+                                .cursorHover(.pointingHand)
+                                .buttonStyle(.plain)
+                                .id(idx)
+
+                                if line.startTimeMs != spotifyLyrics.lyrics.lines.last?.startTimeMs {
+                                    Spacer()
+                                        .frame(height: 40)
+                                }
                             }
-                            .cursorHover(.pointingHand)
-                            .buttonStyle(.plain)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .onChange(of: currentPlayTimeMS) { newTime in
+                        let lines = spotifyLyrics.lyrics.lines
 
-                            if line.startTimeMs != spotifyLyrics.lyrics.lines.last?.startTimeMs {
-                                Spacer()
-                                    .frame(height: 40)
+                        if let newIdx = lines.firstIndex(where: { line in
+                            let nextStart = lines[safe: lines.firstIndex(of: line)! + 1]?.startTimeMs ?? Int.max
+                            return line.startTimeMs - offset <= newTime && nextStart - offset > newTime
+                        }) {
+                            if newIdx != currentLineIdx {
+                                withAnimation(.defaultAnimation) {
+                                    currentLineIdx = newIdx
+
+                                    proxy.scrollTo(currentLineIdx, anchor: .center)
+                                }
                             }
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
             } else {
                 VStack(alignment: .center) {
                     Text("No lyrics found")
@@ -82,20 +102,6 @@ struct LyricsView: View {
             }
         }
         .font(.satoshiBlack(40))
-        .onChange(of: currentPlayTimeMS) { newTime in
-            if let lines = spotifyLyrics?.lyrics.lines {
-                if let newIdx = lines.firstIndex(where: { line in
-                    let nextStart = lines[safe: lines.firstIndex(of: line)! + 1]?.startTimeMs ?? Int.max
-                    return line.startTimeMs - offset <= newTime && nextStart - offset > newTime
-                }) {
-                    if newIdx != currentLineIdx {
-                        withAnimation(.defaultAnimation) {
-                            currentLineIdx = newIdx
-                        }
-                    }
-                }
-            }
-        }
         .onChange(of: currentTrack) { _ in
             currentLineIdx = nil
 
