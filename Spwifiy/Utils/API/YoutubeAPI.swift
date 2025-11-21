@@ -28,7 +28,8 @@ class YoutubeAPI {
         }
 
         if (
-            !hls.path().contains(IPAddress.ipAddress ?? "")
+//            !hls.path().contains(IPAddress.ipAddress ?? "")
+            false // figure out ip address limiting
         ) || (
             expiration.hasExpired()
         ) {
