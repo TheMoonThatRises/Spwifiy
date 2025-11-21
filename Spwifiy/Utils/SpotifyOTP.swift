@@ -12,7 +12,7 @@ import SwiftyJSON
 class SpotifyOTP {
     private static let serverTimeUrl = "https://open.spotify.com/api/server-time"
     private static var secretsUrl: String {
-        "https://raw.githubusercontent.com/Thereallo1026/spotify-secrets/refs/heads/main/secrets/secretDict.json"
+        "https://github.com/xyloflake/spot-secrets-go/blob/main/secrets/secretDict.json?raw=true"
     }
 
     private static func cleanBuffer(_ input: String) -> [UInt8] {
