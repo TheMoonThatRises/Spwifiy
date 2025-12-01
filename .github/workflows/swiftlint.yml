@@ -4,15 +4,13 @@ on:
   push:
   pull_request:
 
-  workflow_dispatch:
-
 jobs:
   swiftlint:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: SwiftLint
         uses: norio-nomura/action-swiftlint@3.2.1
