@@ -12,7 +12,7 @@ import SpotifyWebAPI
 extension SpotifyViewModel {
 
     public static let loginCallback = "spotify-login-callback"
-    internal static let authorizationManagerKey = "authorizationManager"
+    internal static let authorizationManagerKey = "authorization_manager"
 
     private var spotifyAccessTokenURL: (String, String) -> String {
         { cTotp, totpVer in
