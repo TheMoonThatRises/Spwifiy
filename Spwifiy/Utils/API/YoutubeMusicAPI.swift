@@ -110,11 +110,36 @@ class YoutubeMusicAPI {
     private func getSearchShelfItem(json: [JSON], shelfName: String) -> JSON? {
         json
             .filter {
-                $0["musicShelfRenderer", "title", "runs"]
-                    .array?
-                    .first?["text"].string == shelfName
+                $0["musicShelfRenderer"].dictionary != nil
             }
-            .first?["musicShelfRenderer"]
+            .first?["musicShelfRenderer", "contents"]
+            .array?
+            .filter {
+                $0["musicResponsiveListItemRenderer", "flexColumns"]
+                    .array?
+                    .filter {
+                        $0["musicResponsiveListItemFlexColumnRenderer", "text", "runs"]
+                            .array?
+                            .first?["text"].string ?? "" == shelfName
+                    }
+                    .count ?? 0 > 0
+            }
+            .first?["musicResponsiveListItemRenderer"]
+    }
+
+    private func getTopResultSong(json: [JSON]) -> JSON? {
+        json
+            .filter {
+                $0[
+                    "musicCardShelfRenderer",
+                    "onTap",
+                    "watchEndpoint",
+                    "watchEndpointMusicSupportedConfigs",
+                    "watchEndpointMusicConfig",
+                    "musicVideoType"
+                ].string ?? "" == YoutubeResultType.song.rawValue
+            }
+            .first?["musicCardShelfRenderer"]
     }
 
     private func verifyTopIsType(json: JSON, type: YoutubeResultType) -> Bool {
@@ -134,49 +159,49 @@ class YoutubeMusicAPI {
         ].string == type.rawValue
     }
 
-    private func getMatchingSongs(json: [JSON], artist: String, title: String) -> JSON? {
-        json.filter { item in
-            guard let accessibilityLabel = item[
-                "musicResponsiveListItemRenderer",
-                "overlay",
-                "musicItemThumbnailOverlayRenderer",
-                "content",
-                "musicPlayButtonRenderer",
-                "accessibilityPlayData",
-                "accessibilityData",
-                "label"
-            ].string?.unescapingUnicodeCharacters.lowercased() else {
-                return false
-            }
-
-            return accessibilityLabel.contains(artist.lowercased()) &&
-                   accessibilityLabel.contains(title.lowercased())
-        }.sorted { one, two in
-            guard let oneViews = one[
-                "musicResponsiveListItemRenderer",
-                "flexColumns"
-            ].array?.last?[
-                "musicResponsiveListItemFlexColumnRenderer",
-                "text",
-                "runs"
-            ].array?.first?["text"].string,
-                  let twoViews = two[
-                "musicResponsiveListItemRenderer",
-                "flexColumns"
-            ].array?.last?[
-                "musicResponsiveListItemFlexColumnRenderer",
-                "text",
-                "runs"
-            ].array?.first?["text"].string else {
-                return true
-            }
-
-            return (
-                String(oneViews.split(separator: " ").first ?? "0").shorthandConvert >
-                String(twoViews.split(separator: " ").first ?? "0").shorthandConvert
-            )
-        }.first
-    }
+//    private func getMatchingSongs(json: [JSON], artist: String, title: String) -> JSON? {
+//        json.filter { item in
+//            guard let accessibilityLabel = item[
+//                "musicResponsiveListItemRenderer",
+//                "overlay",
+//                "musicItemThumbnailOverlayRenderer",
+//                "content",
+//                "musicPlayButtonRenderer",
+//                "accessibilityPlayData",
+//                "accessibilityData",
+//                "label"
+//            ].string?.unescapingUnicodeCharacters.lowercased() else {
+//                return false
+//            }
+//
+//            return accessibilityLabel.contains(artist.lowercased()) &&
+//                   accessibilityLabel.contains(title.lowercased())
+//        }.sorted { one, two in
+//            guard let oneViews = one[
+//                "musicResponsiveListItemRenderer",
+//                "flexColumns"
+//            ].array?.last?[
+//                "musicResponsiveListItemFlexColumnRenderer",
+//                "text",
+//                "runs"
+//            ].array?.first?["text"].string,
+//                  let twoViews = two[
+//                "musicResponsiveListItemRenderer",
+//                "flexColumns"
+//            ].array?.last?[
+//                "musicResponsiveListItemFlexColumnRenderer",
+//                "text",
+//                "runs"
+//            ].array?.first?["text"].string else {
+//                return true
+//            }
+//
+//            return (
+//                String(oneViews.split(separator: " ").first ?? "0").shorthandConvert >
+//                String(twoViews.split(separator: " ").first ?? "0").shorthandConvert
+//            )
+//        }.first
+//    }
 
     private func getSongMusicId(json: JSON) -> String? {
         json["musicResponsiveListItemRenderer", "playlistItemData", "videoId"].string
@@ -275,35 +300,41 @@ class YoutubeMusicAPI {
             return nil
         }
 
-        let songResults = getSearchShelfItem(json: apiContent, shelfName: "Songs")?["contents"].array
+        let topResultSong = getTopResultSong(json: apiContent)
+//        let matchingSongs
 
         var musicId = ""
 
-        if let topResult = getTopSearchItem(json: apiContent),
-           let run = topResult["title", "runs"].array?.first,
-           verifyTopIsType(json: run, type: .song),
-           let songId = run["navigationEndpoint", "watchEndpoint", "videoId"].string {
-            musicId = songId
-        } else if let songResults = songResults,
-           let matchJSON = getMatchingSongs(json: songResults, artist: artistName, title: songName),
-           let songId = getSongMusicId(json: matchJSON) {
-            musicId = songId
-        } else if albumName != nil {
-            var newArtistName = artistName
-
-            if artistName.split(separator: ",").count > 0 && songName.lowercased().contains("feat") {
-                newArtistName = String(artistName.split(separator: ",")[0])
-            }
-
-            return await getYoutubeSongId(artistName: newArtistName, songName: songName, albumName: nil)
-        } else {
-            guard let song = songResults?.first,
-                  let songId = getSongMusicId(json: song) else {
-                return nil
-            }
-
+        if let topResultSong = topResultSong,
+           let songId = topResultSong["onTap", "watchEndpoint", "videoId"].string {
             musicId = songId
         }
+
+//        if let topResult = getTopSearchItem(json: apiContent),
+//           let run = topResult["title", "runs"].array?.first,
+//           verifyTopIsType(json: run, type: .song),
+//           let songId = run["navigationEndpoint", "watchEndpoint", "videoId"].string {
+//            musicId = songId
+//        } else if let topResult = topResult,
+//           let matchJSON = getMatchingSongs(json: songResults, artist: artistName, title: songName),
+//           let songId = getSongMusicId(json: matchJSON) {
+//            musicId = songId
+//        } else if albumName != nil {
+//            var newArtistName = artistName
+//
+//            if artistName.split(separator: ",").count > 0 && songName.lowercased().contains("feat") {
+//                newArtistName = String(artistName.split(separator: ",")[0])
+//            }
+//
+//            return await getYoutubeSongId(artistName: newArtistName, songName: songName, albumName: nil)
+//        } else {
+//            guard let song = songResults?.first,
+//                  let songId = getSongMusicId(json: song) else {
+//                return nil
+//            }
+//
+//            musicId = songId
+//        }
 
         musicIdCache[requestString] = musicId
 
