@@ -106,7 +106,9 @@ extension SpotifyViewModel {
     public func extendedSpotifyLogout() {
         var request = URLRequest(url: URL(string: "https://open.spotify.com/api/logout")!)
 
-        request.setValue("Bearer \(spotify.authorizationManager.accessToken!)", forHTTPHeaderField: "Authorization")
+        if let accessToken = spotify.authorizationManager.accessToken {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        }
 
         APIRequest.shared.request(request: request, noCache: true) { _ in
             Task { @MainActor in
