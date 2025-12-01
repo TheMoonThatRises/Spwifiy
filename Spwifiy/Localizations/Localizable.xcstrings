@@ -65,6 +65,9 @@
     "Click the URL below if an authorization window does not appear" : {
 
     },
+    "Client id" : {
+
+    },
     "Discover" : {
       "extractionState" : "manual"
     },
@@ -146,6 +149,9 @@
     "Now playing:" : {
 
     },
+    "OK" : {
+
+    },
     "Pin to Home" : {
 
     },
@@ -158,6 +164,9 @@
     "Playlists" : {
 
     },
+    "Please input your Spotify developer app ID" : {
+
+    },
     "Popular" : {
 
     },
@@ -167,11 +176,17 @@
     "Recent" : {
 
     },
+    "Retrieve client id" : {
+
+    },
     "Saves" : {
 
     },
     "Search" : {
       "extractionState" : "manual"
+    },
+    "Set client id: %@" : {
+
     },
     "Settings" : {
 

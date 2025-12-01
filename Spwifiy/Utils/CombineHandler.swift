@@ -10,11 +10,11 @@ import Combine
 
 class CombineHandler {
 
-    static var cancellables: Set<AnyCancellable> = []
+    private static var cancellables: Set<AnyCancellable> = []
 
-    static func handler<T>(publisher: AnyPublisher<T, Error>,
-                           sink: ((Subscribers.Completion<any Error>) -> Void)? = nil,
-                           receiveValue: ((T) -> Void)? = nil) {
+    public static func handler<T>(publisher: AnyPublisher<T, Error>,
+                                  sink: ((Subscribers.Completion<any Error>) -> Void)? = nil,
+                                  receiveValue: ((T) -> Void)? = nil) {
         let cancellable = publisher
             .sink { completion in
                 sink?(completion)
@@ -28,9 +28,9 @@ class CombineHandler {
         }
     }
 
-    static func handler<T>(passthrough: PassthroughSubject<T, Never>,
-                           sink: ((Subscribers.Completion<Never>) -> Void)? = nil,
-                           receiveValue: ((T) -> Void)? = nil) {
+    public static func handler<T>(passthrough: PassthroughSubject<T, Never>,
+                                  sink: ((Subscribers.Completion<Never>) -> Void)? = nil,
+                                  receiveValue: ((T) -> Void)? = nil) {
         let cancellable = passthrough
             .receive(on: RunLoop.main)
             .sink { completion in
@@ -43,6 +43,13 @@ class CombineHandler {
             cancellable
                 .store(in: &cancellables)
         }
+    }
+
+    public static func clearCancellables() {
+        cancellables.forEach { item in
+            item.cancel()
+        }
+        cancellables.removeAll()
     }
 
 }

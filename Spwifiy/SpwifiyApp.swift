@@ -24,7 +24,8 @@ struct SpwifiyApp: App {
                 if spotifyViewModel.isAuthorized {
                     MainView(spotifyViewModel: spotifyViewModel)
                 } else {
-                    LoginView(spotifyViewModel: spotifyViewModel)
+                    LoginView(spotifyViewModel: spotifyViewModel,
+                              clientId: spotifyViewModel.getClientId())
                 }
             }
             .handlesExternalEvents(preferring: ["{path of URL?}"], allowing: ["*"])

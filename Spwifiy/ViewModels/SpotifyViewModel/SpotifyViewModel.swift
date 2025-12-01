@@ -12,16 +12,18 @@ import KeychainAccess
 
 class SpotifyViewModel: ObservableObject {
 
+    public static let spotifyClientIdKey: String = "spotify_client_id"
+
     private static let authScopes: Set<Scope> = Scope.allCases
 
-    public let spotify: SpotifyAPI<AuthorizationCodeFlowPKCEManager>
+    public private(set) var spotify: SpotifyAPI<AuthorizationCodeFlowPKCEManager>
     public let extendedSpotifyAPI: ExtendedSpotifiyAPI
 
-    private let clientId: String
+    private var clientId: String
     private let codeVerifier: String
     private let codeChallenge: String
     private let state: String
-    public let authorizationURL: URL
+    public var authorizationURL: URL?
 
     @Published var isAuthorized: Bool = false
 
@@ -37,9 +39,8 @@ class SpotifyViewModel: ObservableObject {
     internal let encoder = JSONEncoder()
 
     init() {
-        self.clientId = Bundle.main.infoDictionary?["SpotifyClientId"] as? String ?? ""
-
         self.keychain = Keychain(service: SpwifiyApp.service)
+        self.clientId = self.keychain[string: SpotifyViewModel.spotifyClientIdKey] ?? ""
 
         self.spotify = SpotifyAPI(
             authorizationManager: AuthorizationCodeFlowPKCEManager(clientId: self.clientId)
@@ -53,24 +54,8 @@ class SpotifyViewModel: ObservableObject {
 
         self.state = String.randomURLSafe(length: 128)
 
-        self.authorizationURL = spotify.authorizationManager.makeAuthorizationURL(
-            redirectURI: URL(string: SpwifiyApp.redirectURI + SpotifyViewModel.loginCallback)!,
-            codeChallenge: self.codeChallenge,
-            state: self.state,
-            scopes: SpotifyViewModel.authScopes
-        )!
-
+        self.updateClientId(newClientId: self.clientId)
         self.extendedSpotifyAPI.setSpotifyViewModel(spotifyViewModel: self)
-
-        CombineHandler.handler(
-            passthrough: self.spotify.authorizationManagerDidChange,
-            receiveValue: self.authorizationManagerDidChange
-        )
-
-        CombineHandler.handler(
-            passthrough: self.spotify.authorizationManagerDidDeauthorize,
-            receiveValue: self.authorizationManagerDidDeauthorize
-        )
 
         if let authData = self.keychain[data: SpotifyViewModel.authorizationManagerKey],
            let pckeAuthManager = try? JSONDecoder()
@@ -195,4 +180,37 @@ class SpotifyViewModel: ObservableObject {
             print("unable to load spotify profile: \(error)")
         }
     }
+
+    public func updateClientId(newClientId: String) {
+        keychain[string: SpotifyViewModel.spotifyClientIdKey] = newClientId
+        clientId = newClientId
+
+        spotify = SpotifyAPI(
+            authorizationManager: AuthorizationCodeFlowPKCEManager(clientId: self.clientId)
+        )
+
+        authorizationURL = spotify.authorizationManager.makeAuthorizationURL(
+            redirectURI: URL(string: SpwifiyApp.redirectURI + SpotifyViewModel.loginCallback)!,
+            codeChallenge: codeChallenge,
+            state: state,
+            scopes: SpotifyViewModel.authScopes
+        )
+
+        CombineHandler.clearCancellables()
+
+        CombineHandler.handler(
+            passthrough: self.spotify.authorizationManagerDidChange,
+            receiveValue: self.authorizationManagerDidChange
+        )
+
+        CombineHandler.handler(
+            passthrough: self.spotify.authorizationManagerDidDeauthorize,
+            receiveValue: self.authorizationManagerDidDeauthorize
+        )
+    }
+
+    public func getClientId() -> String {
+        clientId
+    }
+
 }
