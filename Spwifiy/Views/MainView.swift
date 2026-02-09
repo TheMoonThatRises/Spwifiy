@@ -170,6 +170,9 @@ struct MainView: View {
         .onAppear {
             mainViewModel.currentView = .home
         }
+        .onDisappear {
+            avAudioPlayer.unload()
+        }
         .sheet(isPresented: $spotifyViewModel.isAuthenticating) {
             AttemptingReauthSheet()
         }

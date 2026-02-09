@@ -10,7 +10,7 @@ import AVFoundation
 import SpotifyWebAPI
 
 struct QueuePlayerItem {
-    let avPlayerItem: AVPlayerItem
+    let m3u8: URL
     let track: Track
     let expiration: Date
     let sponsorBlockSegments: [(Double, Double)]

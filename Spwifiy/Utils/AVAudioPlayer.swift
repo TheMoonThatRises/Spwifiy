@@ -121,6 +121,10 @@ class AVAudioPlayer: ObservableObject {
     }
 
     deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    public func unload() {
         discordRPC.disconnect()
 
         statusObserveToken?.invalidate()
@@ -131,7 +135,7 @@ class AVAudioPlayer: ObservableObject {
             player.removeTimeObserver(periodicTimeObserverToken)
         }
 
-        NotificationCenter.default.removeObserver(self)
+        player.pause()
     }
 
     private func updateVolume() {
@@ -145,13 +149,6 @@ class AVAudioPlayer: ObservableObject {
         }
 
         return item.expiration.hasExpired() ? nil : item
-    }
-
-    private func createPlayerItem(m3u8: URL) -> AVPlayerItem {
-        let asset = AVURLAsset(url: m3u8)
-        let item = AVPlayerItem(asset: asset)
-
-        return item
     }
 
     private func updateQueueItem(itemIndex: Int) async -> Bool {
@@ -207,7 +204,7 @@ class AVAudioPlayer: ObservableObject {
                 return false
             }
 
-            playerItems[trackId] = QueuePlayerItem(avPlayerItem: createPlayerItem(m3u8: m3u8),
+            playerItems[trackId] = QueuePlayerItem(m3u8: m3u8,
                                                    track: track,
                                                    expiration: expiration,
                                                    sponsorBlockSegments: sponsorBlockSegments)
@@ -242,7 +239,14 @@ class AVAudioPlayer: ObservableObject {
         currentPlayingTrack = trackQueue[playingIndex]
 
         if let playerItem = getPlayerItem(trackId: currentPlayingTrack?.id) {
-            player.replaceCurrentItem(with: playerItem.avPlayerItem)
+            let asset = AVURLAsset(
+                url: playerItem.m3u8,
+                options: [
+                    AVURLAssetPreferPreciseDurationAndTimingKey: true
+                ])
+            let item = AVPlayerItem(asset: asset)
+
+            player.replaceCurrentItem(with: item)
 
             seek(time: CMTime(seconds: 0, preferredTimescale: 1))
 
