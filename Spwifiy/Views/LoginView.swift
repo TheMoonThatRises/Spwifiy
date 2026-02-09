@@ -65,11 +65,15 @@ struct LoginView: View {
     }
 
     private func launchAuthWebpage() {
-        guard let authorizationURL = spotifyViewModel.authorizationURL, !clientId.isEmpty else {
+        guard !clientId.isEmpty else {
             return
         }
 
         spotifyViewModel.updateClientId(newClientId: clientId)
+
+        guard let authorizationURL = spotifyViewModel.authorizationURL else {
+            return
+        }
 
         let openConfig = NSWorkspace.OpenConfiguration()
         openConfig.activates = true
