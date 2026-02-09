@@ -23,6 +23,11 @@ class SettingsViewModel: ObservableObject {
         }
     }
 
-    @Published var extendedLoginAnimation: SpotifyAuthManager.AuthStatus = .failed
+    @Published var extendedLoginAnimation: SpotifyAuthManager.AuthStatus = .failed {
+        didSet {
+            displayExtendedLoginSheet = extendedLoginAnimation == .inProcess
+        }
+    }
+    @Published var displayExtendedLoginSheet: Bool = false
 
 }

@@ -10,16 +10,12 @@ import WebKit
 
 struct SpotifyCustomLoginView: View {
 
+    @Environment(\.dismiss) private var dismiss
+
     @Binding var extendedLogin: SpotifyAuthManager.AuthStatus
-    @Binding var currentView: MainViewOptions
 
     var body: some View {
         SpotifyWebView(authStatus: $extendedLogin)
-            .onChange(of: currentView) { _ in
-                if extendedLogin != .success {
-                    extendedLogin = .failed
-                }
-            }
     }
 
 }

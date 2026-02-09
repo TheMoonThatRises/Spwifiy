@@ -33,9 +33,12 @@ struct LyricsView: View {
     var body: some View {
         Group {
             if extendedLogin != .success {
-                Text("Extended Spotify login required for lyric access")
-                    .font(.title)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                VStack {
+                    Text("Extended Spotify login required for lyric access")
+                    Text("This can be enabled in settings")
+                }
+                .font(.title)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             } else if let spotifyLyrics {
                 ScrollViewReader { proxy in
                     ScrollView {
