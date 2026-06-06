@@ -1,5 +1,8 @@
 # Spwifiy
 
+> [!WARNING]
+> This project will no longer be in active development as Spotify Premium is required for web API access through authorized client ids.
+
 <div align="center">
   An open-source music client utilizing Spotify and YouTube APIs written completely in Swift.
 
